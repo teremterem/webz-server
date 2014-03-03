@@ -20,12 +20,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.terems.minimalweb</groupId>
-	<artifactId>minimalweb</artifactId>
+	<groupId>org.terems</groupId>
+	<artifactId>terems-org</artifactId>
 	<packaging>pom</packaging>
 	<version>1-0-SNAPSHOT</version>
-	<name>Terem's Minimal Web</name>
-	<description>a parent project for web applications</description>
+	<name>Terem's .org</name>
+	<description>a parent project for other apps</description>
 	<organization>
 		<name>Terem's .org</name>
 		<url>http://terems.org</url>
@@ -39,10 +39,10 @@
 	</licenses>
 	
 	<modules>
+		<module>webz</module>
 		<!--
 		<module>todo-poc</module>
 		-->
-		<module>frontend</module>
 	</modules>
 	
 	<properties>
