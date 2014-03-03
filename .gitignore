@@ -1,0 +1,6 @@
+.settings/
+.project
+todo-poc/.settings/
+todo-poc/target/
+todo-poc/.classpath
+todo-poc/.project
