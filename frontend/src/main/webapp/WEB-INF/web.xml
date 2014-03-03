@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	version="2.5">
+
+	<display-name>${project.name}</display-name>
+
+<!--
+	<context-param>
+		<param-name>contextClass</param-name>
+		<param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
+	</context-param>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>org.terems.minimalweb.todo.config</param-value>
+	</context-param>
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+-->
+
+    <servlet>
+        <servlet-name>WebzServlet</servlet-name>
+        <servlet-class>org.terems.webz.servlet.WebzServlet</servlet-class>
+        
+		<init-param>
+			<param-name>accessToken</param-name>
+			<param-value>QHNtgtFLQ8cAAAAAAAAAAUil0YtewX0DYd6LLu4vt5hbATbaiWkjLrbqBwbdfbl5</param-value>
+		</init-param>
+		<init-param>
+			<param-name>dropboxPath</param-name>
+			<param-value>/terems.org/webz/</param-value>
+		</init-param>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>WebzServlet</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+    
+</web-app>
