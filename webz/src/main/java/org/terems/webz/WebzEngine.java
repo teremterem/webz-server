@@ -259,7 +259,7 @@ public class WebzEngine {
 
 		String subfolder = null;
 		for (Map.Entry<Object, Object> entry : domains.entrySet()) {
-			if (domain.toLowerCase().endsWith(entry.getKey().toString().toLowerCase())) {
+			if (domain.toLowerCase().trim().equals(entry.getKey().toString().toLowerCase().trim())) {
 				subfolder = entry.getValue().toString();
 				break;
 			}
