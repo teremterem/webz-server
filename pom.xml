@@ -50,7 +50,12 @@
 		<jetty.version>7.6.3.v20120416</jetty.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<org.springframework.version>4.0.0.RELEASE</org.springframework.version>
+		
+		<wikitext.version>2.1.0.N20140325-2210</wikitext.version>
+		
+		<wikitext.system.path>${basedir}/../../webz/todo/wikitext-standalone-2.1.0-SNAPSHOT</wikitext.system.path>
 	</properties>
+	
 	<dependencyManagement>
 		<dependencies>
 			<!-- misc -->
@@ -65,6 +70,15 @@
 				<groupId>com.dropbox.core</groupId>
 				<artifactId>dropbox-core-sdk</artifactId>
 				<version>${dropbox.version}</version>
+			</dependency>
+			
+			<!-- Mylyn WikiText -->
+			<dependency>
+				<groupId>org.eclipse.mylyn</groupId>
+				<artifactId>wikitext.core</artifactId>
+				<version>${wikitext.version}</version>
+				<scope>system</scope>
+				<systemPath>${wikitext.system.path}/org.eclipse.mylyn.wikitext.core_${wikitext.version}.jar</systemPath>
 			</dependency>
 
 			<!--  WICKET DEPENDENCIES

@@ -6,7 +6,7 @@ public class WebzConstants {
 	public static final String WELCOME_FILE = "index" + HTML_SUFFIX;
 	public static final String DEFAULT_MIMETYPE = "application/octet-stream";
 
-	public static final String AUX_FILES_PREFIX = "+";
+	public static final String AUX_FILES_PREFIX = "_";
 
 	public static final String MIMETYPES_FILE = AUX_FILES_PREFIX + "mimetypes.properties";
 	public static final String DOMAINS_FILE = AUX_FILES_PREFIX + "domains.properties";

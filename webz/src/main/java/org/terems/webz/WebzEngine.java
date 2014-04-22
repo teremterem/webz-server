@@ -176,43 +176,19 @@ public class WebzEngine {
 		}
 	}
 
+	/**
+	 * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	 * Main <code>populateResponse()</code> function. May potentially call itself internally.
+	 * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	 */
 	private boolean populateResponse(String pathName, HttpServletResponse resp, boolean populateNotFound) throws WebzException,
 			IOException {
 		WebzFileMetadata metadata = fileSource.getMetadata(pathName);
 		if (metadata == null) {
-			if (!pathName.toLowerCase().endsWith(WebzConstants.HTML_SUFFIX)) {
-				return populateResponse(pathName + WebzConstants.HTML_SUFFIX, resp, populateNotFound);
-			} else {
-				if (LOG.isTraceEnabled()) {
-					LOG.trace("");
-					LOG.trace("******************************************************************************");
-					LOG.trace("* Path not found: " + pathName);
-					LOG.trace("******************************************************************************");
-				}
-
-				if (populateNotFound) {
-					resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-					populateResponse(WebzConstants.AUX_FILES_PREFIX + HttpServletResponse.SC_NOT_FOUND, resp, false);
-				}
-				return false;
-			}
+			return tryWithOneOfStandardSuffices(pathName, resp, populateNotFound);
 		} else {
 			if (metadata.isFile()) {
-				if (LOG.isTraceEnabled()) {
-					LOG.trace("");
-					LOG.trace("******************************************************************************");
-					LOG.trace("* path / name:    " + pathName);
-				}
-
-				String mimetype = lookupMimetype(pathName);
-
-				if (LOG.isTraceEnabled()) {
-					LOG.trace("******************************************************************************");
-				}
-
-				resp.setContentType(mimetype);
-				fileSource.getFile(pathName, resp.getOutputStream());
-				return true;
+				return populateResponseFromFile(pathName, resp);
 			} else {
 				if (LOG.isTraceEnabled()) {
 					LOG.trace("");
@@ -231,6 +207,79 @@ public class WebzEngine {
 				}
 				return true;
 			}
+		}
+	}
+
+	private boolean tryWithOneOfStandardSuffices(String pathName, HttpServletResponse resp, boolean populateNotFound)
+			throws WebzException, IOException {
+
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// TODO $-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-INTEGRATE-WIKITEXT-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$ TODO \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+
+		if (!pathName.toLowerCase().endsWith(WebzConstants.HTML_SUFFIX)) {
+			return populateResponse(pathName + WebzConstants.HTML_SUFFIX, resp, populateNotFound);
+		} else {
+			if (LOG.isTraceEnabled()) {
+				LOG.trace("");
+				LOG.trace("******************************************************************************");
+				LOG.trace("* Path not found: " + pathName);
+				LOG.trace("******************************************************************************");
+			}
+
+			populateNotFoundResponseIfNecessary(resp, populateNotFound);
+			return false;
+		}
+	}
+
+	/**
+	 * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	 * Reads a file from (abstract) <filesystem>filesystem</filesystem>, processes it and populates <code>resp</code> with 200
+	 * "OK" response and payload.
+	 * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	 */
+	private boolean populateResponseFromFile(String pathName, HttpServletResponse resp) throws IOException, WebzException {
+
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// TODO $-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-INTEGRATE-WIKITEXT-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$ TODO \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("");
+			LOG.trace("******************************************************************************");
+			LOG.trace("* path / name:    " + pathName);
+		}
+
+		String mimetype = lookupMimetype(pathName);
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("******************************************************************************");
+		}
+
+		resp.setContentType(mimetype);
+		fileSource.getFile(pathName, resp.getOutputStream());
+		return true;
+	}
+
+	/**
+	 * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	 * Populates <code>resp</code> with 404 "Not Found" response if <code>populateNotFound</code> is <code>true</code>.
+	 * Otherwise does nothing.
+	 * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	 */
+	private void populateNotFoundResponseIfNecessary(HttpServletResponse resp, boolean populateNotFound) throws WebzException,
+			IOException {
+		if (populateNotFound) {
+			resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			populateResponse(WebzConstants.AUX_FILES_PREFIX + HttpServletResponse.SC_NOT_FOUND, resp, false);
 		}
 	}
 

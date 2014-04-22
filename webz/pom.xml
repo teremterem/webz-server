@@ -28,6 +28,12 @@
 		  <artifactId>dropbox-core-sdk</artifactId>
 		</dependency>
 
+		<!-- Mylyn WikiText -->
+		<dependency>
+			<groupId>org.eclipse.mylyn</groupId>
+			<artifactId>wikitext.core</artifactId>
+		</dependency>
+
 		<!-- LOGGING DEPENDENCIES - LOG4J -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
