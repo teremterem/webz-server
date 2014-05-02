@@ -2,15 +2,24 @@ package org.terems.webz;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
+import org.eclipse.mylyn.wikitext.core.parser.MarkupParser;
+import org.eclipse.mylyn.wikitext.core.parser.builder.HtmlDocumentBuilder;
+import org.eclipse.mylyn.wikitext.core.util.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,11 +27,23 @@ public class WebzEngine {
 
 	private static Logger LOG = LoggerFactory.getLogger(WebzEngine.class);
 
+	private static final int DEFAULT_BUF_SIZE = 2048;
+	private static final int DEFAULT_BUF_SIZE_FOR_PROPS = DEFAULT_BUF_SIZE;
+
 	private WebzFileSource fileSource;
 
 	private Properties mimetypes = new Properties();
 	private Properties domains = new Properties();
-	private Properties baseAuth = new Properties();
+	private Properties general = new Properties();
+	private Properties wikitexts = new Properties();
+
+	private String baseauthRealm;
+	private String baseauthUsername;
+	private String baseauthPassword;
+
+	private String[] defaultFileSuffixesPrioritized;
+	private String defaultMimetype;
+	private String lastResortWelcomeFile;
 
 	public WebzEngine(WebzFileSource fileSource) throws WebzException {
 		this.fileSource = fileSource;
@@ -34,11 +55,29 @@ public class WebzEngine {
 		// TODO implement properties refresh mechanism (for ex. based on properties files update time)
 
 		try {
-			int defaultBufSizeForProps = 2048;
-			mimetypes
-					.load(new ByteArrayInputStream(fileSource.absorbFile(WebzConstants.MIMETYPES_FILE, defaultBufSizeForProps)));
-			domains.load(new ByteArrayInputStream(fileSource.absorbFile(WebzConstants.DOMAINS_FILE, defaultBufSizeForProps)));
-			baseAuth.load(new ByteArrayInputStream(fileSource.absorbFile(WebzConstants.BASE_AUTH_FILE, defaultBufSizeForProps)));
+			mimetypes.load(new ByteArrayInputStream(fileSource.absorbFile(WebzConstants._MIMETYPES_PROPERTIES_FILE,
+					DEFAULT_BUF_SIZE_FOR_PROPS)));
+			domains.load(new ByteArrayInputStream(fileSource.absorbFile(WebzConstants._DOMAINS_PROPERTIES_FILE,
+					DEFAULT_BUF_SIZE_FOR_PROPS)));
+			general.load(new ByteArrayInputStream(fileSource.absorbFile(WebzConstants._GENERAL_PROPERTIES_FILE,
+					DEFAULT_BUF_SIZE_FOR_PROPS)));
+			wikitexts.load(new ByteArrayInputStream(fileSource.absorbFile(WebzConstants._WIKITEXTS_PROPERTIES_FILE,
+					DEFAULT_BUF_SIZE_FOR_PROPS)));
+
+			baseauthRealm = general.getProperty(WebzConstants.BASEAUTH_REALM_PROPERTY, "");
+			baseauthUsername = general.getProperty(WebzConstants.BASEAUTH_USERNAME_PROPERTY, "");
+			baseauthPassword = general.getProperty(WebzConstants.BASEAUTH_PASSWORD_PROPERTY);
+
+			defaultFileSuffixesPrioritized = general.getProperty(WebzConstants.DEFAULT_FILE_SUFFIXES_PROPERTY, ".html").split(
+					"\\s*,\\s*");
+			for (int i = 0; i < defaultFileSuffixesPrioritized.length; i++) {
+				defaultFileSuffixesPrioritized[i] = defaultFileSuffixesPrioritized[i].trim().toLowerCase();
+			}
+
+			defaultMimetype = general.getProperty(WebzConstants.DEFAULT_MIMETYPE_PROPERTY, WebzConstants.DEFAULT_MIMETYPE);
+			lastResortWelcomeFile = general.getProperty(WebzConstants.LAST_RESORT_WELCOME_FILE_PROPERTY,
+					WebzConstants.DEFAULT_LAST_RESORT_WELCOME_FILE);
+
 		} catch (IOException e) {
 			throw new WebzException(e.getMessage(), e);
 		}
@@ -57,16 +96,12 @@ public class WebzEngine {
 	}
 
 	private void replyWithUnauthorized(HttpServletResponse resp) {
-		String realm = baseAuth.getProperty(WebzConstants.REALM_PROPERTY);
-		if (realm == null) {
-			realm = "";
-		}
-		resp.addHeader("WWW-Authenticate", "Basic realm=\"" + realm + "\"");
+		resp.addHeader("WWW-Authenticate", "Basic realm=\"" + baseauthRealm + "\"");
 		replyWithStatusCodeSafely(resp, HttpServletResponse.SC_UNAUTHORIZED);
 	}
 
 	private boolean baseAuthenticationNeeded(HttpServletRequest req) {
-		return baseAuth.containsKey(WebzConstants.PASSWORD_PROPERTY);
+		return general.containsKey(WebzConstants.BASEAUTH_PASSWORD_PROPERTY);
 	}
 
 	private boolean proceedWithBaseAuthentication(HttpServletRequest req) {
@@ -78,7 +113,7 @@ public class WebzEngine {
 
 				if (basic.equalsIgnoreCase("Basic")) {
 					try {
-						String credentials = new String(Base64.decodeBase64(st.nextToken()), "utf8");
+						String credentials = new String(Base64.decodeBase64(st.nextToken()), WebzConstants.DEFAULT_ENCODING);
 						if (LOG.isTraceEnabled()) {
 							LOG.trace("");
 							LOG.trace("");
@@ -106,12 +141,8 @@ public class WebzEngine {
 		return false;
 	}
 
-	private boolean checkCredentials(String username, String password) {
-		String correctUsername = baseAuth.getProperty(WebzConstants.USERNAME_PROPERTY);
-		if (correctUsername == null) {
-			correctUsername = "";
-		}
-		return username.equals(correctUsername) && password.equals(baseAuth.getProperty(WebzConstants.PASSWORD_PROPERTY));
+	private boolean checkCredentials(String usernameEntered, String passwordEntered) {
+		return usernameEntered.equals(baseauthUsername) && passwordEntered.equals(baseauthPassword);
 	}
 
 	private void fulfilRequest0(HttpServletRequest req, HttpServletResponse resp) {
@@ -138,14 +169,14 @@ public class WebzEngine {
 		}
 
 		try {
-			boolean found = populateResponse(pathName, resp, !isDomainSubfolder);
+			boolean found = populateResponse(pathName, resp, !isDomainSubfolder, true);
 			if (!found && isDomainSubfolder) {
 				if (LOG.isTraceEnabled()) {
 					LOG.trace("");
 					LOG.trace("##### !!! ATTENTION !!! ##### !!! MULTI-DOMAIN SUPPORT !!! ##### !!! FAILOVER FROM " + pathName
 							+ " BACK TO " + originalPathName + " !!! #####");
 				}
-				populateResponse(originalPathName, resp, true);
+				populateResponse(originalPathName, resp, true, true);
 			}
 		} catch (Throwable originalException) {
 
@@ -168,7 +199,7 @@ public class WebzEngine {
 	private void replyWithStatusCodeSafely(HttpServletResponse resp, int statusCode) {
 		resp.setStatus(statusCode);
 		try {
-			populateResponse(WebzConstants.AUX_FILES_PREFIX + statusCode, resp, false);
+			populateResponse(WebzConstants.AUX_FILES_PREFIX + statusCode, resp, false, true);
 		} catch (Throwable th) {
 			if (LOG.isTraceEnabled()) {
 				LOG.trace("FAILED TO RENDER PAYLOAD FOR " + statusCode + " STATUS CODE: " + th.getMessage(), th);
@@ -181,14 +212,19 @@ public class WebzEngine {
 	 * Main <code>populateResponse()</code> function. May potentially call itself internally.
 	 * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	 */
-	private boolean populateResponse(String pathName, HttpServletResponse resp, boolean populateNotFound) throws WebzException,
-			IOException {
+	private boolean populateResponse(String pathName, HttpServletResponse resp, boolean populateNotFound,
+			boolean tryStandardSuffixes) throws WebzException, IOException {
 		WebzFileMetadata metadata = fileSource.getMetadata(pathName);
 		if (metadata == null) {
-			return tryWithOneOfStandardSuffices(pathName, resp, populateNotFound);
+			if (tryStandardSuffixes) {
+				return tryWithOneOfStandardSuffixes(pathName, resp, populateNotFound);
+			} else {
+				populateNotFoundResponseIfNecessary(resp, populateNotFound);
+				return false;
+			}
 		} else {
 			if (metadata.isFile()) {
-				return populateResponseFromFile(pathName, resp);
+				return populateResponseFromFile(metadata, pathName, resp);
 			} else {
 				if (LOG.isTraceEnabled()) {
 					LOG.trace("");
@@ -201,29 +237,26 @@ public class WebzEngine {
 					welcomePath += '/';
 				}
 
-				boolean traditionalWelcome = populateResponse(welcomePath + WebzConstants.WELCOME_FILE, resp, false);
+				boolean traditionalWelcome = populateResponse(welcomePath + lastResortWelcomeFile, resp, false,
+						tryStandardSuffixes);
 				if (!traditionalWelcome) {
-					return populateResponse(welcomePath + metadata.getName(), resp, populateNotFound);
+					return populateResponse(welcomePath + metadata.getName(), resp, populateNotFound, tryStandardSuffixes);
 				}
 				return true;
 			}
 		}
 	}
 
-	private boolean tryWithOneOfStandardSuffices(String pathName, HttpServletResponse resp, boolean populateNotFound)
+	private boolean tryWithOneOfStandardSuffixes(String pathName, HttpServletResponse resp, boolean populateNotFound)
 			throws WebzException, IOException {
-
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-		// TODO $-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-INTEGRATE-WIKITEXT-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$ TODO \\
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-
-		if (!pathName.toLowerCase().endsWith(WebzConstants.HTML_SUFFIX)) {
-			return populateResponse(pathName + WebzConstants.HTML_SUFFIX, resp, populateNotFound);
-		} else {
+		boolean alreadyStandardSuffix = false;
+		for (String defaultSuffix : defaultFileSuffixesPrioritized) {
+			if (pathName.toLowerCase().endsWith(defaultSuffix)) {
+				alreadyStandardSuffix = true;
+				break;
+			}
+		}
+		if (alreadyStandardSuffix) {
 			if (LOG.isTraceEnabled()) {
 				LOG.trace("");
 				LOG.trace("******************************************************************************");
@@ -233,7 +266,15 @@ public class WebzEngine {
 
 			populateNotFoundResponseIfNecessary(resp, populateNotFound);
 			return false;
+		} else {
+			for (String defaultSuffix : defaultFileSuffixesPrioritized) {
+				if (populateResponse(pathName + defaultSuffix, resp, false, false)) {
+					return true;
+				}
+			}
+			return false;
 		}
+
 	}
 
 	/**
@@ -242,15 +283,8 @@ public class WebzEngine {
 	 * "OK" response and payload.
 	 * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	 */
-	private boolean populateResponseFromFile(String pathName, HttpServletResponse resp) throws IOException, WebzException {
-
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-		// TODO $-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-INTEGRATE-WIKITEXT-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$-$ TODO \\
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+	private boolean populateResponseFromFile(WebzFileMetadata metadata, String pathName, HttpServletResponse resp)
+			throws IOException, WebzException {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("");
@@ -258,15 +292,151 @@ public class WebzEngine {
 			LOG.trace("* path / name:    " + pathName);
 		}
 
-		String mimetype = lookupMimetype(pathName);
+		String mimetype = null;
+		String wikitextPropertyFile = lookupInWikitexts(pathName);
+		Properties wikitextProperties = null;
+
+		if (wikitextPropertyFile != null) {
+			wikitextPropertyFile = trimWithFileSeparators(wikitextPropertyFile);
+
+			wikitextProperties = new Properties();
+			wikitextProperties.load(new ByteArrayInputStream(fileSource.absorbFile(wikitextPropertyFile,
+					DEFAULT_BUF_SIZE_FOR_PROPS)));
+
+			mimetype = wikitextProperties.getProperty(WebzConstants.MIMETYPE_PROPERTY);
+		}
+
+		if (mimetype == null) {
+			mimetype = lookupMimetype(pathName);
+		}
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("******************************************************************************");
 		}
 
 		resp.setContentType(mimetype);
-		fileSource.getFile(pathName, resp.getOutputStream());
+		if (wikitextProperties == null) {
+
+			fileSource.getFile(pathName, resp.getOutputStream());
+
+		} else {
+			String templateFile = wikitextProperties.getProperty(WebzConstants.TEMPLATE_PROPERTY);
+			if (templateFile == null) {
+				throw new WebzException("template property is not set in " + wikitextPropertyFile);
+			}
+			templateFile = trimWithFileSeparators(trimToFolder(wikitextPropertyFile) + "/"
+					+ trimWithFileSeparators(templateFile));
+
+			String templateEncoding = wikitextProperties.getProperty(WebzConstants.TEMPLATE_ENCODING_PROPERTY,
+					WebzConstants.DEFAULT_ENCODING);
+			StringWriter templageWriter = new StringWriter();
+			IOUtils.copy(new ByteArrayInputStream(fileSource.absorbFile(templateFile, DEFAULT_BUF_SIZE)), templageWriter,
+					templateEncoding);
+			String templateString = templageWriter.toString();
+
+			Pattern sectionsRegexp = Pattern
+					.compile(wikitextProperties.getProperty(WebzConstants.SECTION_VARS_REGEXP_PROPERTY));
+			Matcher templateSectionsMatcher = sectionsRegexp.matcher(templateString);
+
+			String contentEncoding = wikitextProperties.getProperty(WebzConstants.CONTENT_ENCODING_PROPERTY,
+					WebzConstants.DEFAULT_ENCODING);
+			StringWriter contentWriter = new StringWriter();
+			IOUtils.copy(new ByteArrayInputStream(fileSource.absorbFile(pathName, DEFAULT_BUF_SIZE)), contentWriter,
+					contentEncoding);
+			String contentString = contentWriter.toString();
+
+			Matcher contentSectionsMatcher = sectionsRegexp.matcher(contentString);
+
+			Map<String, String> sectionContentMap = new HashMap<String, String>();
+
+			{ // =))
+				int lastPos = 0;
+				String curSectionName = wikitextProperties.getProperty(WebzConstants.DEFAULT_SECTION_PROPERTY,
+						WebzConstants.DEFAULT_SECTION_NAME);
+				boolean sectionsTrim = !Boolean.FALSE.toString().equals(
+						wikitextProperties.getProperty(WebzConstants.SECTIONS_TRIM_PROPERTY, Boolean.TRUE.toString()));
+				while (contentSectionsMatcher.find()) {
+
+					getSectionContent(contentString, sectionContentMap, curSectionName, sectionsTrim, lastPos,
+							contentSectionsMatcher.start());
+
+					lastPos = contentSectionsMatcher.end();
+					curSectionName = contentSectionsMatcher.group(WebzConstants.SECTION_NAME_REGEXP_GROUP);
+				}
+
+				getSectionContent(contentString, sectionContentMap, curSectionName, sectionsTrim, lastPos,
+						contentString.length());
+			}
+
+			{ // =))
+				OutputStreamWriter respWriter = new OutputStreamWriter(resp.getOutputStream(), templateEncoding);
+
+				String defaultLanguage = wikitextProperties.getProperty(WebzConstants.WIKITEXT_LANG_DEFAULT_PROPERTY,
+						WebzConstants.LANGUAGE_RAW);
+
+				int lastPos = 0;
+				while (templateSectionsMatcher.find()) {
+
+					respWriter.write(templateString.substring(lastPos, templateSectionsMatcher.start()));
+
+					lastPos = templateSectionsMatcher.end();
+					String sectionName = templateSectionsMatcher.group(WebzConstants.SECTION_NAME_REGEXP_GROUP);
+
+					String sectionContent = sectionContentMap.get(sectionName);
+					if (sectionContent == null) {
+
+						respWriter.write(templateSectionsMatcher.group());
+
+					} else {
+						String language = wikitextProperties.getProperty(WebzConstants.WIKITEXT_LANG_SECTION_PROPERTY_PREFIX
+								+ sectionName, defaultLanguage);
+						if (language != null) {
+							language = language.trim();
+						}
+
+						if (WebzConstants.LANGUAGE_RAW.equals(language)) {
+
+							respWriter.write(sectionContent);
+
+						} else {
+
+							HtmlDocumentBuilder builder = new HtmlDocumentBuilder(respWriter);
+							// avoid the <html> and <body> tags
+							builder.setEmitAsDocument(false);
+
+							MarkupParser parser = new MarkupParser(ServiceLocator.getInstance().getMarkupLanguage(language));
+							parser.setBuilder(builder);
+							parser.parse(sectionContent);
+
+							// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+							// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+							// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+							// $-$-$-$-$-$-$-$-$-$-$-$ !!! =^_^= WIKITEXT =^_^= INTEGRATED =^_^= !!! $-$-$-$-$-$-$-$-$-$-$-$ \\
+							// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+							// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+							// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+
+						}
+					}
+				}
+
+				respWriter.write(templateString.substring(lastPos, templateString.length()));
+
+				respWriter.flush();
+
+			}
+		}
 		return true;
+	}
+
+	private void getSectionContent(String contentString, Map<String, String> sectionContentMap, String curSectionName,
+			boolean sectionsTrim, int start, int end) {
+		String sectionContent = contentString.substring(start, end);
+		if (sectionsTrim) {
+			sectionContent = sectionContent.trim();
+		}
+
+		sectionContentMap.put(curSectionName, sectionContent);
 	}
 
 	/**
@@ -279,18 +449,37 @@ public class WebzEngine {
 			IOException {
 		if (populateNotFound) {
 			resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			populateResponse(WebzConstants.AUX_FILES_PREFIX + HttpServletResponse.SC_NOT_FOUND, resp, false);
+			populateResponse(WebzConstants.AUX_FILES_PREFIX + HttpServletResponse.SC_NOT_FOUND, resp, false, true);
 		}
+	}
+
+	private String lookupInWikitexts(String pathName) {
+
+		// TODO optimize
+
+		pathName = pathName.toLowerCase();
+		String propertyFile = null;
+		for (Map.Entry<Object, Object> entry : wikitexts.entrySet()) {
+			if (pathName.endsWith(entry.getKey().toString().toLowerCase())) {
+				propertyFile = entry.getValue().toString();
+				break;
+			}
+		}
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("* wikitext property file:       " + propertyFile);
+		}
+		return propertyFile;
 	}
 
 	private String lookupMimetype(String pathName) {
 
 		// TODO optimize
 
-		String mimetype = WebzConstants.DOMAINS_FILE;
+		pathName = pathName.toLowerCase();
+		String mimetype = defaultMimetype;
 		boolean contentTypeKnown = false;
 		for (Map.Entry<Object, Object> entry : mimetypes.entrySet()) {
-			if (pathName.toLowerCase().endsWith(entry.getKey().toString().toLowerCase())) {
+			if (pathName.endsWith(entry.getKey().toString().toLowerCase())) {
 				mimetype = entry.getValue().toString();
 				contentTypeKnown = true;
 				break;
@@ -306,9 +495,10 @@ public class WebzEngine {
 
 		// TODO optimize
 
+		domain = domain.trim().toLowerCase();
 		String subfolder = null;
 		for (Map.Entry<Object, Object> entry : domains.entrySet()) {
-			if (domain.toLowerCase().trim().equals(entry.getKey().toString().toLowerCase().trim())) {
+			if (domain.equals(entry.getKey().toString().toLowerCase().trim())) {
 				subfolder = entry.getValue().toString();
 				break;
 			}
@@ -336,6 +526,17 @@ public class WebzEngine {
 			path = path.substring(0, path.length() - 1);
 		}
 		return path;
+	}
+
+	private Pattern FILE_REGEXP = Pattern.compile("[\\\\/][^\\\\/]*$");
+
+	private String trimToFolder(String path) {
+		String[] pathParts = FILE_REGEXP.split(path);
+		if (pathParts.length > 0) {
+			return pathParts[0];
+		} else {
+			return "";
+		}
 	}
 
 }

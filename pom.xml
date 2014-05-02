@@ -51,9 +51,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<org.springframework.version>4.0.0.RELEASE</org.springframework.version>
 		
+		<guava.version>15.0.0.v201402241730</guava.version>
 		<wikitext.version>2.1.0.N20140325-2210</wikitext.version>
-		
-		<wikitext.system.path>${basedir}/../../webz/todo/wikitext-standalone-2.1.0-SNAPSHOT</wikitext.system.path>
 	</properties>
 	
 	<dependencyManagement>
@@ -63,6 +62,11 @@
 				<groupId>commons-codec</groupId>
 				<artifactId>commons-codec</artifactId>
 				<version>1.9</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>2.4</version>
 			</dependency>
 			
 			<!-- DROPBOX -->
@@ -74,11 +78,50 @@
 			
 			<!-- Mylyn WikiText -->
 			<dependency>
+			    <groupId>com.google.guava</groupId>
+			    <artifactId>guava</artifactId>
+			    <version>${guava.version}</version>
+			</dependency>
+			<!-- ! -->
+			<dependency>
 				<groupId>org.eclipse.mylyn</groupId>
 				<artifactId>wikitext.core</artifactId>
 				<version>${wikitext.version}</version>
-				<scope>system</scope>
-				<systemPath>${wikitext.system.path}/org.eclipse.mylyn.wikitext.core_${wikitext.version}.jar</systemPath>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.mylyn</groupId>
+				<artifactId>wikitext.confluence.core</artifactId>
+				<version>${wikitext.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.mylyn</groupId>
+				<artifactId>wikitext.html.core</artifactId>
+				<version>${wikitext.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.mylyn</groupId>
+				<artifactId>wikitext.markdown.core</artifactId>
+				<version>${wikitext.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.mylyn</groupId>
+				<artifactId>wikitext.mediawiki.core</artifactId>
+				<version>${wikitext.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.mylyn</groupId>
+				<artifactId>wikitext.textile.core</artifactId>
+				<version>${wikitext.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.mylyn</groupId>
+				<artifactId>wikitext.tracwiki.core</artifactId>
+				<version>${wikitext.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.mylyn</groupId>
+				<artifactId>wikitext.twiki.core</artifactId>
+				<version>${wikitext.version}</version>
 			</dependency>
 
 			<!--  WICKET DEPENDENCIES

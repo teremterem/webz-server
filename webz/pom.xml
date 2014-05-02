@@ -21,6 +21,10 @@
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+		</dependency>
 
 		<!-- DROPBOX -->
 		<dependency>
@@ -30,8 +34,41 @@
 
 		<!-- Mylyn WikiText -->
 		<dependency>
+		    <groupId>com.google.guava</groupId>
+		    <artifactId>guava</artifactId>
+		</dependency>
+		<!-- ! -->
+		<dependency>
 			<groupId>org.eclipse.mylyn</groupId>
 			<artifactId>wikitext.core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.mylyn</groupId>
+			<artifactId>wikitext.confluence.core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.mylyn</groupId>
+			<artifactId>wikitext.html.core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.mylyn</groupId>
+			<artifactId>wikitext.markdown.core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.mylyn</groupId>
+			<artifactId>wikitext.mediawiki.core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.mylyn</groupId>
+			<artifactId>wikitext.textile.core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.mylyn</groupId>
+			<artifactId>wikitext.tracwiki.core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.mylyn</groupId>
+			<artifactId>wikitext.twiki.core</artifactId>
 		</dependency>
 
 		<!-- LOGGING DEPENDENCIES - LOG4J -->
