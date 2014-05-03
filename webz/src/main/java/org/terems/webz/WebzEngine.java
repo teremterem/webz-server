@@ -272,6 +272,8 @@ public class WebzEngine {
 					return true;
 				}
 			}
+
+			populateNotFoundResponseIfNecessary(resp, populateNotFound);
 			return false;
 		}
 
