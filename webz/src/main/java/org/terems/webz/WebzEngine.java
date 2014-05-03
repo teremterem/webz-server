@@ -371,8 +371,14 @@ public class WebzEngine {
 			{ // =))
 				OutputStreamWriter respWriter = new OutputStreamWriter(resp.getOutputStream(), templateEncoding);
 
-				String defaultLanguage = wikitextProperties.getProperty(WebzConstants.WIKITEXT_LANG_DEFAULT_PROPERTY,
-						WebzConstants.LANGUAGE_RAW);
+				String defaultLinkRel = wikitextProperties.getProperty(WebzConstants.WIKITEXT_LINK_REL_PROPERTY
+						+ WebzConstants.DEFAULT_PROPERTY_SUFFIX);
+				String defaultAbsoluteLinkTarget = wikitextProperties
+						.getProperty(WebzConstants.WIKITEXT_ABSOLUTE_LINK_TARGEG_PROPERTY
+								+ WebzConstants.DEFAULT_PROPERTY_SUFFIX);
+
+				String defaultLanguage = wikitextProperties.getProperty(WebzConstants.WIKITEXT_LANG_PROPERTY
+						+ WebzConstants.DEFAULT_PROPERTY_SUFFIX, WebzConstants.LANGUAGE_RAW);
 
 				int lastPos = 0;
 				while (templateSectionsMatcher.find()) {
@@ -388,8 +394,8 @@ public class WebzEngine {
 						respWriter.write(templateSectionsMatcher.group());
 
 					} else {
-						String language = wikitextProperties.getProperty(WebzConstants.WIKITEXT_LANG_SECTION_PROPERTY_PREFIX
-								+ sectionName, defaultLanguage);
+						String language = wikitextProperties.getProperty(WebzConstants.WIKITEXT_LANG_PROPERTY
+								+ WebzConstants.SECTION_PROPERTY_SUFFIX + sectionName, defaultLanguage);
 						if (language != null) {
 							language = language.trim();
 						}
@@ -400,9 +406,22 @@ public class WebzEngine {
 
 						} else {
 
+							String linkRel = wikitextProperties.getProperty(WebzConstants.WIKITEXT_LINK_REL_PROPERTY
+									+ WebzConstants.SECTION_PROPERTY_SUFFIX + sectionName, defaultLinkRel);
+							String absoluteLinkTarget = wikitextProperties.getProperty(
+									WebzConstants.WIKITEXT_ABSOLUTE_LINK_TARGEG_PROPERTY
+											+ WebzConstants.SECTION_PROPERTY_SUFFIX + sectionName, defaultAbsoluteLinkTarget);
+
 							HtmlDocumentBuilder builder = new HtmlDocumentBuilder(respWriter);
 							// avoid the <html> and <body> tags
 							builder.setEmitAsDocument(false);
+
+							if (linkRel != null) {
+								builder.setLinkRel(linkRel);
+							}
+							if (absoluteLinkTarget != null) {
+								builder.setDefaultAbsoluteLinkTarget(absoluteLinkTarget);
+							}
 
 							MarkupParser parser = new MarkupParser(ServiceLocator.getInstance().getMarkupLanguage(language));
 							parser.setBuilder(builder);
@@ -411,7 +430,7 @@ public class WebzEngine {
 							// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 							// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 							// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-							// $-$-$-$-$-$-$-$-$-$-$-$ !!! =^_^= WIKITEXT =^_^= INTEGRATED =^_^= !!! $-$-$-$-$-$-$-$-$-$-$-$ \\
+							// !!! =^_^= !!! =^_^= !!! =^_^= !!! WIKITEXT =^_^= INTEGRATED !!! =^_^= !!! =^_^= !!! =^_^= !!! \\
 							// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 							// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 							// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\

@@ -28,8 +28,13 @@ public class WebzConstants {
 	public static final String SECTION_VARS_REGEXP_PROPERTY = "section.vars.regexp";
 	public static final String SECTIONS_TRIM_PROPERTY = "sections.trim";
 	public static final String DEFAULT_SECTION_PROPERTY = "default.section";
-	public static final String WIKITEXT_LANG_DEFAULT_PROPERTY = "wikitext.language.default";
-	public static final String WIKITEXT_LANG_SECTION_PROPERTY_PREFIX = "wikitext.language.section.";
+
+	public static final String WIKITEXT_LANG_PROPERTY = "wikitext.language";
+	public static final String WIKITEXT_LINK_REL_PROPERTY = "wikitext.link.rel";
+	public static final String WIKITEXT_ABSOLUTE_LINK_TARGEG_PROPERTY = "wikitext.absolute.link.target";
+
+	public static final String DEFAULT_PROPERTY_SUFFIX = ".default";
+	public static final String SECTION_PROPERTY_SUFFIX = ".section."; // ***
 
 	// the very defaults of the defaults:
 
