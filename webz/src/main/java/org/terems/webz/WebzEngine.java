@@ -399,7 +399,7 @@ public class WebzEngine {
 						String language = wikitextProperties.getProperty(WebzConstants.WIKITEXT_LANG_PROPERTY
 								+ WebzConstants.SECTION_PROPERTY_SUFFIX + sectionName, defaultLanguage);
 						if (language != null) {
-							language = language.trim();
+							language = language.trim().toLowerCase();
 						}
 
 						if (WebzConstants.LANGUAGE_RAW.equals(language)) {
