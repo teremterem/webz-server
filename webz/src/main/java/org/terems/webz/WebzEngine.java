@@ -5,10 +5,14 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -295,14 +299,14 @@ public class WebzEngine {
 		}
 
 		String mimetype = null;
-		String wikitextPropertyFile = lookupInWikitexts(pathName);
+		String wikitextPropertiesFile = lookupInWikitexts(pathName);
 		Properties wikitextProperties = null;
 
-		if (wikitextPropertyFile != null) {
-			wikitextPropertyFile = trimWithFileSeparators(wikitextPropertyFile);
+		if (wikitextPropertiesFile != null) {
+			wikitextPropertiesFile = trimWithFileSeparators(wikitextPropertiesFile);
 
 			wikitextProperties = new Properties();
-			wikitextProperties.load(new ByteArrayInputStream(fileSource.absorbFile(wikitextPropertyFile,
+			wikitextProperties.load(new ByteArrayInputStream(fileSource.absorbFile(wikitextPropertiesFile,
 					DEFAULT_BUF_SIZE_FOR_PROPS)));
 
 			mimetype = wikitextProperties.getProperty(WebzConstants.MIMETYPE_PROPERTY);
@@ -322,35 +326,39 @@ public class WebzEngine {
 			fileSource.getFile(pathName, resp.getOutputStream());
 
 		} else {
-			processWikitext(pathName, resp, wikitextPropertyFile, wikitextProperties);
+			String templateFile = wikitextProperties.getProperty(WebzConstants.TEMPLATE_PROPERTY);
+			if (templateFile == null) {
+				throw new WebzException("template property is not set in " + wikitextPropertiesFile);
+			}
+
+			String wikitextPropertiesFolder = trimToFolder(wikitextPropertiesFile);
+			templateFile = trimWithFileSeparators(wikitextPropertiesFolder + "/" + trimWithFileSeparators(templateFile));
+
+			StringWriter templateWriter = new StringWriter();
+			String templateEncoding = wikitextProperties.getProperty(WebzConstants.TEMPLATE_ENCODING_PROPERTY,
+					WebzConstants.DEFAULT_ENCODING);
+			IOUtils.copy(new ByteArrayInputStream(fileSource.absorbFile(templateFile, DEFAULT_BUF_SIZE)), templateWriter,
+					templateEncoding);
+			String templateString = templateWriter.toString();
+
+			String contentEncoding = wikitextProperties.getProperty(WebzConstants.CONTENT_ENCODING_PROPERTY,
+					WebzConstants.DEFAULT_ENCODING);
+			StringWriter contentWriter = new StringWriter();
+			IOUtils.copy(new ByteArrayInputStream(fileSource.absorbFile(pathName, DEFAULT_BUF_SIZE)), contentWriter,
+					contentEncoding);
+			String contentString = contentWriter.toString();
+
+			processWikitext(pathName, resp, wikitextPropertiesFolder, wikitextProperties, templateString, contentString,
+					templateEncoding);
 		}
 		return true;
 	}
 
-	private void processWikitext(String pathName, HttpServletResponse resp, String wikitextPropertyFile,
-			Properties wikitextProperties) throws WebzException, IOException, UnsupportedEncodingException {
-		String templateFile = wikitextProperties.getProperty(WebzConstants.TEMPLATE_PROPERTY);
-		if (templateFile == null) {
-			throw new WebzException("template property is not set in " + wikitextPropertyFile);
-		}
-		templateFile = trimWithFileSeparators(trimToFolder(wikitextPropertyFile) + "/" + trimWithFileSeparators(templateFile));
-
-		String templateEncoding = wikitextProperties.getProperty(WebzConstants.TEMPLATE_ENCODING_PROPERTY,
-				WebzConstants.DEFAULT_ENCODING);
-		StringWriter templageWriter = new StringWriter();
-		IOUtils.copy(new ByteArrayInputStream(fileSource.absorbFile(templateFile, DEFAULT_BUF_SIZE)), templageWriter,
-				templateEncoding);
-		String templateString = templageWriter.toString();
-
+	private void processWikitext(String pathName, HttpServletResponse resp, String wikitextPropertiesFolder,
+			Properties wikitextProperties, String templateString, String contentString, String outputEncoding)
+			throws WebzException, IOException, UnsupportedEncodingException {
 		Pattern sectionsRegexp = Pattern.compile(wikitextProperties.getProperty(WebzConstants.SECTION_VARS_REGEXP_PROPERTY));
 		Matcher templateSectionsMatcher = sectionsRegexp.matcher(templateString);
-
-		String contentEncoding = wikitextProperties.getProperty(WebzConstants.CONTENT_ENCODING_PROPERTY,
-				WebzConstants.DEFAULT_ENCODING);
-		StringWriter contentWriter = new StringWriter();
-		IOUtils.copy(new ByteArrayInputStream(fileSource.absorbFile(pathName, DEFAULT_BUF_SIZE)), contentWriter,
-				contentEncoding);
-		String contentString = contentWriter.toString();
 
 		Matcher contentSectionsMatcher = sectionsRegexp.matcher(contentString);
 
@@ -362,12 +370,15 @@ public class WebzEngine {
 
 		// ~
 
-		OutputStreamWriter respWriter = new OutputStreamWriter(resp.getOutputStream(), templateEncoding);
+		OutputStreamWriter respWriter = new OutputStreamWriter(resp.getOutputStream(), outputEncoding);
 
 		String defaultLinkRel = wikitextProperties.getProperty(WebzConstants.WIKITEXT_LINK_REL_PROPERTY
 				+ WebzConstants.DEFAULT_PROPERTY_SUFFIX);
-		String defaultAbsoluteLinkTarget = wikitextProperties.getProperty(WebzConstants.WIKITEXT_ABSOLUTE_LINK_TARGEG_PROPERTY
+		String defaultAbsoluteLinkTarget = wikitextProperties.getProperty(WebzConstants.WIKITEXT_ABSOLUTE_LINK_TARGET_PROPERTY
 				+ WebzConstants.DEFAULT_PROPERTY_SUFFIX);
+
+		Collection<RegexpReplacement> generalRegexpReplacements = extractRegexpReplacements(wikitextProperties,
+				wikitextPropertiesFolder, null);
 
 		String defaultLanguage = wikitextProperties.getProperty(WebzConstants.WIKITEXT_LANG_PROPERTY
 				+ WebzConstants.DEFAULT_PROPERTY_SUFFIX, WebzConstants.LANGUAGE_RAW);
@@ -386,13 +397,27 @@ public class WebzEngine {
 				respWriter.write(templateSectionsMatcher.group());
 
 			} else {
-				String language = wikitextProperties.getProperty(WebzConstants.WIKITEXT_LANG_PROPERTY
-						+ WebzConstants.SECTION_PROPERTY_SUFFIX + sectionName, defaultLanguage);
-				if (language != null) {
-					language = language.trim();
+
+				String language = getSectionLanguage(wikitextProperties, sectionName, defaultLanguage);
+				boolean languageRaw = WebzConstants.LANGUAGE_RAW.equals(language);
+
+				boolean regexpsForRaw = Boolean.TRUE.toString().equals(
+						wikitextProperties.getProperty(WebzConstants.WIKITEXT_REGEXPS_FOR_RAW_PROPERTY,
+								WebzConstants.DEFAULT_REGEXPS_FOR_RAW.toString()));
+
+				if (!languageRaw || regexpsForRaw) {
+					for (RegexpReplacement replacement : generalRegexpReplacements) {
+						sectionContent = sectionContent.replaceAll(replacement.regexp, replacement.replacement);
+					}
+
+					Collection<RegexpReplacement> regexpReplacements = extractRegexpReplacements(wikitextProperties,
+							wikitextPropertiesFolder, sectionName);
+					for (RegexpReplacement replacement : regexpReplacements) {
+						sectionContent = sectionContent.replaceAll(replacement.regexp, replacement.replacement);
+					}
 				}
 
-				if (WebzConstants.LANGUAGE_RAW.equals(language)) {
+				if (languageRaw) {
 
 					respWriter.write(sectionContent);
 
@@ -401,7 +426,7 @@ public class WebzEngine {
 					String linkRel = wikitextProperties.getProperty(WebzConstants.WIKITEXT_LINK_REL_PROPERTY
 							+ WebzConstants.SECTION_PROPERTY_SUFFIX + sectionName, defaultLinkRel);
 					String absoluteLinkTarget = wikitextProperties.getProperty(
-							WebzConstants.WIKITEXT_ABSOLUTE_LINK_TARGEG_PROPERTY + WebzConstants.SECTION_PROPERTY_SUFFIX
+							WebzConstants.WIKITEXT_ABSOLUTE_LINK_TARGET_PROPERTY + WebzConstants.SECTION_PROPERTY_SUFFIX
 									+ sectionName, defaultAbsoluteLinkTarget);
 
 					HtmlDocumentBuilder builder = new HtmlDocumentBuilder(respWriter);
@@ -436,13 +461,92 @@ public class WebzEngine {
 		respWriter.flush();
 	}
 
+	private final class RegexpReplacement {
+		private String regexp;
+		private String replacement;
+	}
+
+	private Collection<RegexpReplacement> extractRegexpReplacements(Properties wikitextProperties,
+			String wikitextPropertiesFolder, String sectionName) throws IOException, WebzException {
+		String regexpsReferencePropertyName = WebzConstants.WIKITEXT_PRELIMINARY_REGEXPS_PROPERTY
+				+ (sectionName == null ? WebzConstants.GENERAL_SECTION_SUFFIX : WebzConstants.SECTION_PROPERTY_SUFFIX
+						+ sectionName);
+		String regexpPropertiesFile = wikitextProperties.getProperty(regexpsReferencePropertyName);
+
+		if (regexpPropertiesFile == null) {
+			return Collections.emptySet();
+		} else {
+			regexpPropertiesFile = trimWithFileSeparators(wikitextPropertiesFolder + "/"
+					+ trimWithFileSeparators(regexpPropertiesFile));
+
+			Properties regexpProperties = new Properties();
+			regexpProperties.load(new ByteArrayInputStream(fileSource.absorbFile(regexpPropertiesFile,
+					DEFAULT_BUF_SIZE_FOR_PROPS)));
+
+			Map<String, RegexpReplacement> regexpReplacementsMap = new TreeMap<String, RegexpReplacement>();
+			for (Map.Entry<Object, Object> entry : regexpProperties.entrySet()) {
+				String property = entry.getKey().toString();
+
+				if (property.startsWith(WebzConstants.REGEXP_PROPERTY_PREFIX)) {
+					getReplacementObject(regexpReplacementsMap,
+							property.substring(WebzConstants.REGEXP_PROPERTY_PREFIX.length())).regexp = entry.getValue()
+							.toString();
+				} else if (property.startsWith(WebzConstants.REPLACEMENT_PROPERTY_PREFIX)) {
+					getReplacementObject(regexpReplacementsMap,
+							property.substring(WebzConstants.REPLACEMENT_PROPERTY_PREFIX.length())).replacement = entry
+							.getValue().toString();
+				} else {
+					if (LOG.isTraceEnabled()) {
+						LOG.trace("unrecognized property: " + property + " ( file: " + regexpPropertiesFile + " )");
+					}
+				}
+			}
+
+			Collection<RegexpReplacement> regexpReplacements = new ArrayList<RegexpReplacement>(regexpReplacementsMap.values()
+					.size());
+			for (Map.Entry<String, RegexpReplacement> entry : regexpReplacementsMap.entrySet()) {
+				RegexpReplacement replacement = entry.getValue();
+
+				if (replacement.regexp != null && replacement.replacement != null) {
+					regexpReplacements.add(replacement);
+				} else {
+					if (LOG.isTraceEnabled()) {
+						LOG.trace("replacement rule '" + entry.getKey() + "' is incomplete ( file: " + regexpPropertiesFile
+								+ " )");
+					}
+				}
+			}
+
+			return regexpReplacements;
+		}
+	}
+
+	private RegexpReplacement getReplacementObject(Map<String, RegexpReplacement> regexpReplacementsMap, String replacementName) {
+		RegexpReplacement result = regexpReplacementsMap.get(replacementName);
+		if (result == null) {
+			result = new RegexpReplacement();
+			regexpReplacementsMap.put(replacementName, result);
+		}
+		return result;
+	}
+
+	private String getSectionLanguage(Properties wikitextProperties, String sectionName, String defaultLanguage) {
+		String language = wikitextProperties.getProperty(WebzConstants.WIKITEXT_LANG_PROPERTY
+				+ WebzConstants.SECTION_PROPERTY_SUFFIX + sectionName, defaultLanguage);
+		if (language != null) {
+			language = language.trim();
+		}
+		return language;
+	}
+
 	private void getAllSectionsContent(Properties wikitextProperties, String contentString, Matcher contentSectionsMatcher,
 			Map<String, String> sectionContentMap) {
 		int lastPos = 0;
 		String curSectionName = wikitextProperties.getProperty(WebzConstants.DEFAULT_SECTION_PROPERTY,
 				WebzConstants.DEFAULT_SECTION_NAME);
-		boolean sectionsTrim = !Boolean.FALSE.toString().equals(
-				wikitextProperties.getProperty(WebzConstants.SECTIONS_TRIM_PROPERTY, Boolean.TRUE.toString()));
+		boolean sectionsTrim = Boolean.TRUE.toString().equals(
+				wikitextProperties.getProperty(WebzConstants.SECTIONS_TRIM_PROPERTY,
+						WebzConstants.DEFAULT_SECTION_TRIM.toString()));
 		while (contentSectionsMatcher.find()) {
 
 			getSectionContent(contentString, sectionContentMap, curSectionName, sectionsTrim, lastPos,

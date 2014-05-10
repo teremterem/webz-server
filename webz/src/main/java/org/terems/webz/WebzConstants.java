@@ -31,10 +31,22 @@ public class WebzConstants {
 
 	public static final String WIKITEXT_LANG_PROPERTY = "wikitext.language";
 	public static final String WIKITEXT_LINK_REL_PROPERTY = "wikitext.link.rel";
-	public static final String WIKITEXT_ABSOLUTE_LINK_TARGEG_PROPERTY = "wikitext.absolute.link.target";
+	public static final String WIKITEXT_ABSOLUTE_LINK_TARGET_PROPERTY = "wikitext.absolute.link.target";
+	public static final String WIKITEXT_PRELIMINARY_REGEXPS_PROPERTY = "wikitext.preliminary.regexps";
+	public static final String WIKITEXT_REGEXPS_FOR_RAW_PROPERTY = "wikitext.regexp.replacements.for.raw";
 
 	public static final String DEFAULT_PROPERTY_SUFFIX = ".default";
+	public static final String GENERAL_SECTION_SUFFIX = ".general";
 	public static final String SECTION_PROPERTY_SUFFIX = ".section."; // ***
+
+	public static final String REGEXP_PROPERTY_PREFIX = "regexp.";
+	public static final String REPLACEMENT_PROPERTY_PREFIX = "replacement.";
+
+	// ~
+
+	public static final String LANGUAGE_RAW = "raw";
+
+	// ~
 
 	// the very defaults of the defaults:
 
@@ -42,10 +54,11 @@ public class WebzConstants {
 
 	public static final int SECTION_NAME_REGEXP_GROUP = 1;
 	public static final String DEFAULT_SECTION_NAME = "DEFAULT";
+	public static final Boolean DEFAULT_SECTION_TRIM = Boolean.TRUE;
 
 	public static final String DEFAULT_LAST_RESORT_WELCOME_FILE = "index.html";
 	public static final String DEFAULT_MIMETYPE = "application/octet-stream";
 
-	public static final String LANGUAGE_RAW = "raw";
+	public static final Boolean DEFAULT_REGEXPS_FOR_RAW = Boolean.FALSE;
 
 }
