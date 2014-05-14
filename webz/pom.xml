@@ -26,6 +26,12 @@
 			<artifactId>commons-io</artifactId>
 		</dependency>
 
+		<!-- Apache -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+
 		<!-- DROPBOX -->
 		<dependency>
 		  <groupId>com.dropbox.core</groupId>

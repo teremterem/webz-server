@@ -50,4 +50,9 @@ public class WebzServlet extends HttpServlet {
 		webzEngine.fulfilRequest(req, resp);
 	}
 
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+		webzEngine.fulfilRequest(req, resp);
+	}
+
 }

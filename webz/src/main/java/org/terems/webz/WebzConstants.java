@@ -3,6 +3,11 @@ package org.terems.webz;
 public class WebzConstants {
 
 	public static final String AUX_FILES_PREFIX = "_";
+	public static final String DOT = ".";
+
+	public static final String EDIT = "edit";
+	public static final String PREVIEW = "preview";
+	public static final String SAVE = "save";
 
 	public static final String _MIMETYPES_PROPERTIES_FILE = AUX_FILES_PREFIX + "mimetypes.properties";
 	public static final String _DOMAINS_PROPERTIES_FILE = AUX_FILES_PREFIX + "domains.properties";
@@ -47,6 +52,11 @@ public class WebzConstants {
 	public static final String LANGUAGE_RAW = "raw";
 
 	// ~
+
+	public static final String EDIT_TEMPLATE_ENCODING_PROPERTY = "edit.template.encoding";
+	public static final String EDIT_TEMPLATE_PROPERTY = "edit.template";
+	public static final String EDIT_INTERNAL_PATH_VAR_PROPERTY = "edit.internal.path.var";
+	public static final String EDIT_TEXTAREA_CONTENT_VAR_PROPERTY = "edit.textarea.content.var";
 
 	// the very defaults of the defaults:
 

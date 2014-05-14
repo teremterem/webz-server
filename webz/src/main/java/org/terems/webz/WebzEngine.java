@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.mylyn.wikitext.core.parser.MarkupParser;
 import org.eclipse.mylyn.wikitext.core.parser.builder.HtmlDocumentBuilder;
 import org.eclipse.mylyn.wikitext.core.util.ServiceLocator;
@@ -92,16 +93,16 @@ public class WebzEngine {
 			if (proceedWithBaseAuthentication(req)) {
 				fulfilRequest0(req, resp);
 			} else {
-				replyWithUnauthorized(resp);
+				replyWithUnauthorized(req, resp);
 			}
 		} else {
 			fulfilRequest0(req, resp);
 		}
 	}
 
-	private void replyWithUnauthorized(HttpServletResponse resp) {
+	private void replyWithUnauthorized(HttpServletRequest req, HttpServletResponse resp) {
 		resp.addHeader("WWW-Authenticate", "Basic realm=\"" + baseauthRealm + "\"");
-		replyWithStatusCodeSafely(resp, HttpServletResponse.SC_UNAUTHORIZED);
+		replyWithStatusCodeSafely(req, resp, HttpServletResponse.SC_UNAUTHORIZED);
 	}
 
 	private boolean baseAuthenticationNeeded(HttpServletRequest req) {
@@ -173,14 +174,14 @@ public class WebzEngine {
 		}
 
 		try {
-			boolean found = populateResponse(pathName, resp, !isDomainSubfolder, true);
+			boolean found = populateResponse(pathName, req, resp, !isDomainSubfolder, true);
 			if (!found && isDomainSubfolder) {
 				if (LOG.isTraceEnabled()) {
 					LOG.trace("");
 					LOG.trace("##### !!! ATTENTION !!! ##### !!! MULTI-DOMAIN SUPPORT !!! ##### !!! FAILOVER FROM " + pathName
 							+ " BACK TO " + originalPathName + " !!! #####");
 				}
-				populateResponse(originalPathName, resp, true, true);
+				populateResponse(originalPathName, req, resp, true, true);
 			}
 		} catch (Throwable originalException) {
 
@@ -195,15 +196,15 @@ public class WebzEngine {
 			}
 
 			if (!resp.isCommitted()) {
-				replyWithStatusCodeSafely(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				replyWithStatusCodeSafely(req, resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			}
 		}
 	}
 
-	private void replyWithStatusCodeSafely(HttpServletResponse resp, int statusCode) {
+	private void replyWithStatusCodeSafely(HttpServletRequest req, HttpServletResponse resp, int statusCode) {
 		resp.setStatus(statusCode);
 		try {
-			populateResponse(WebzConstants.AUX_FILES_PREFIX + statusCode, resp, false, true);
+			populateResponse(WebzConstants.AUX_FILES_PREFIX + statusCode, req, resp, false, true);
 		} catch (Throwable th) {
 			if (LOG.isTraceEnabled()) {
 				LOG.trace("FAILED TO RENDER PAYLOAD FOR " + statusCode + " STATUS CODE: " + th.getMessage(), th);
@@ -216,19 +217,19 @@ public class WebzEngine {
 	 * Main <code>populateResponse()</code> function. May potentially call itself internally.
 	 * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	 */
-	private boolean populateResponse(String pathName, HttpServletResponse resp, boolean populateNotFound,
-			boolean tryStandardSuffixes) throws WebzException, IOException {
+	private boolean populateResponse(String pathName, HttpServletRequest req, HttpServletResponse resp,
+			boolean populateNotFound, boolean tryStandardSuffixes) throws WebzException, IOException {
 		WebzFileMetadata metadata = fileSource.getMetadata(pathName);
 		if (metadata == null) {
 			if (tryStandardSuffixes) {
-				return tryWithOneOfStandardSuffixes(pathName, resp, populateNotFound);
+				return tryWithOneOfStandardSuffixes(pathName, req, resp, populateNotFound);
 			} else {
-				populateNotFoundResponseIfNecessary(resp, populateNotFound);
+				populateNotFoundResponseIfNecessary(req, resp, populateNotFound);
 				return false;
 			}
 		} else {
 			if (metadata.isFile()) {
-				return populateResponseFromFile(metadata, pathName, resp);
+				return populateResponseFromFile(metadata, pathName, req, resp);
 			} else {
 				if (LOG.isTraceEnabled()) {
 					LOG.trace("");
@@ -241,18 +242,18 @@ public class WebzEngine {
 					welcomePath += '/';
 				}
 
-				boolean traditionalWelcome = populateResponse(welcomePath + lastResortWelcomeFile, resp, false,
+				boolean traditionalWelcome = populateResponse(welcomePath + lastResortWelcomeFile, req, resp, false,
 						tryStandardSuffixes);
 				if (!traditionalWelcome) {
-					return populateResponse(welcomePath + metadata.getName(), resp, populateNotFound, tryStandardSuffixes);
+					return populateResponse(welcomePath + metadata.getName(), req, resp, populateNotFound, tryStandardSuffixes);
 				}
 				return true;
 			}
 		}
 	}
 
-	private boolean tryWithOneOfStandardSuffixes(String pathName, HttpServletResponse resp, boolean populateNotFound)
-			throws WebzException, IOException {
+	private boolean tryWithOneOfStandardSuffixes(String pathName, HttpServletRequest req, HttpServletResponse resp,
+			boolean populateNotFound) throws WebzException, IOException {
 		boolean alreadyStandardSuffix = false;
 		for (String defaultSuffix : defaultFileSuffixesPrioritized) {
 			if (pathName.toLowerCase().endsWith(defaultSuffix)) {
@@ -268,16 +269,16 @@ public class WebzEngine {
 				LOG.trace("******************************************************************************");
 			}
 
-			populateNotFoundResponseIfNecessary(resp, populateNotFound);
+			populateNotFoundResponseIfNecessary(req, resp, populateNotFound);
 			return false;
 		} else {
 			for (String defaultSuffix : defaultFileSuffixesPrioritized) {
-				if (populateResponse(pathName + defaultSuffix, resp, false, false)) {
+				if (populateResponse(pathName + defaultSuffix, req, resp, false, false)) {
 					return true;
 				}
 			}
 
-			populateNotFoundResponseIfNecessary(resp, populateNotFound);
+			populateNotFoundResponseIfNecessary(req, resp, populateNotFound);
 			return false;
 		}
 
@@ -289,8 +290,8 @@ public class WebzEngine {
 	 * "OK" response and payload.
 	 * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	 */
-	private boolean populateResponseFromFile(WebzFileMetadata metadata, String pathName, HttpServletResponse resp)
-			throws IOException, WebzException {
+	private boolean populateResponseFromFile(WebzFileMetadata metadata, String pathName, HttpServletRequest req,
+			HttpServletResponse resp) throws IOException, WebzException {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("");
@@ -326,32 +327,106 @@ public class WebzEngine {
 			fileSource.getFile(pathName, resp.getOutputStream());
 
 		} else {
-			String templateFile = wikitextProperties.getProperty(WebzConstants.TEMPLATE_PROPERTY);
-			if (templateFile == null) {
-				throw new WebzException("template property is not set in " + wikitextPropertiesFile);
+			if (req.getParameterMap().containsKey(WebzConstants.EDIT)) {
+				populateWikitextInEditMode(pathName, resp, wikitextProperties);
+			} else if (req.getParameterMap().containsKey(WebzConstants.PREVIEW)) {
+				populateWikitextInPreviewMode(pathName, resp, wikitextPropertiesFile, wikitextProperties);
+			} else if (req.getParameterMap().containsKey(WebzConstants.SAVE)) {
+				saveWikitext(pathName, req, resp, wikitextPropertiesFile, wikitextProperties);
+			} else {
+				populateWikitextInViewMode(pathName, resp, wikitextPropertiesFile, wikitextProperties);
 			}
-
-			String wikitextPropertiesFolder = trimToFolder(wikitextPropertiesFile);
-			templateFile = trimWithFileSeparators(wikitextPropertiesFolder + "/" + trimWithFileSeparators(templateFile));
-
-			StringWriter templateWriter = new StringWriter();
-			String templateEncoding = wikitextProperties.getProperty(WebzConstants.TEMPLATE_ENCODING_PROPERTY,
-					WebzConstants.DEFAULT_ENCODING);
-			IOUtils.copy(new ByteArrayInputStream(fileSource.absorbFile(templateFile, DEFAULT_BUF_SIZE)), templateWriter,
-					templateEncoding);
-			String templateString = templateWriter.toString();
-
-			String contentEncoding = wikitextProperties.getProperty(WebzConstants.CONTENT_ENCODING_PROPERTY,
-					WebzConstants.DEFAULT_ENCODING);
-			StringWriter contentWriter = new StringWriter();
-			IOUtils.copy(new ByteArrayInputStream(fileSource.absorbFile(pathName, DEFAULT_BUF_SIZE)), contentWriter,
-					contentEncoding);
-			String contentString = contentWriter.toString();
-
-			processWikitext(pathName, resp, wikitextPropertiesFolder, wikitextProperties, templateString, contentString,
-					templateEncoding);
 		}
 		return true;
+	}
+
+	private void populateWikitextInEditMode(String pathName, HttpServletResponse resp, Properties wikitextProperties)
+			throws WebzException, IOException, UnsupportedEncodingException {
+
+		String templateFile = wikitexts.getProperty(WebzConstants.EDIT_TEMPLATE_PROPERTY);
+		if (templateFile == null) {
+			throw new WebzException(WebzConstants.EDIT_TEMPLATE_PROPERTY + " property is not set in "
+					+ WebzConstants._WIKITEXTS_PROPERTIES_FILE);
+		}
+
+		String templateEncoding = wikitexts.getProperty(WebzConstants.EDIT_TEMPLATE_ENCODING_PROPERTY,
+				WebzConstants.DEFAULT_ENCODING);
+		String templateString = getFileAsString(templateFile, templateEncoding);
+
+		String contentEncoding = wikitextProperties.getProperty(WebzConstants.CONTENT_ENCODING_PROPERTY,
+				WebzConstants.DEFAULT_ENCODING);
+		String contentString = getFileAsString(pathName, contentEncoding);
+
+		String internalPathVar = wikitexts.getProperty(WebzConstants.EDIT_INTERNAL_PATH_VAR_PROPERTY);
+		String textareaContentVar = wikitexts.getProperty(WebzConstants.EDIT_TEXTAREA_CONTENT_VAR_PROPERTY);
+
+		templateString = templateString.replace(internalPathVar, "/" + trimWithFileSeparators(pathName));
+		templateString = templateString.replace(textareaContentVar, StringEscapeUtils.escapeHtml4(contentString));
+		writeStringToResp(resp, templateString, templateEncoding);
+	}
+
+	private void writeStringToResp(HttpServletResponse resp, String stringToWrite, String outputEncoding)
+			throws UnsupportedEncodingException, IOException {
+		OutputStreamWriter respWriter = new OutputStreamWriter(resp.getOutputStream(), outputEncoding);
+		respWriter.write(stringToWrite);
+		respWriter.flush();
+	}
+
+	private void populateWikitextInPreviewMode(String pathName, HttpServletResponse resp, String wikitextPropertiesFile,
+			Properties wikitextProperties) throws WebzException, IOException, UnsupportedEncodingException {
+
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// TODO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+
+		populateWikitextInViewMode(pathName, resp, wikitextPropertiesFile, wikitextProperties);
+	}
+
+	private void saveWikitext(String pathName, HttpServletRequest req, HttpServletResponse resp, String wikitextPropertiesFile,
+			Properties wikitextProperties) throws WebzException, IOException, UnsupportedEncodingException {
+
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// TODO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+
+		populateWikitextInViewMode(pathName, resp, wikitextPropertiesFile, wikitextProperties);
+	}
+
+	private void populateWikitextInViewMode(String pathName, HttpServletResponse resp, String wikitextPropertiesFile,
+			Properties wikitextProperties) throws WebzException, IOException, UnsupportedEncodingException {
+		String templateFile = wikitextProperties.getProperty(WebzConstants.TEMPLATE_PROPERTY);
+		if (templateFile == null) {
+			throw new WebzException(WebzConstants.TEMPLATE_PROPERTY + " property is not set in " + wikitextPropertiesFile);
+		}
+
+		String wikitextPropertiesFolder = trimToFolder(wikitextPropertiesFile);
+		templateFile = trimWithFileSeparators(wikitextPropertiesFolder + "/" + trimWithFileSeparators(templateFile));
+
+		String templateEncoding = wikitextProperties.getProperty(WebzConstants.TEMPLATE_ENCODING_PROPERTY,
+				WebzConstants.DEFAULT_ENCODING);
+		String templateString = getFileAsString(templateFile, templateEncoding);
+
+		String contentEncoding = wikitextProperties.getProperty(WebzConstants.CONTENT_ENCODING_PROPERTY,
+				WebzConstants.DEFAULT_ENCODING);
+		String contentString = getFileAsString(pathName, contentEncoding);
+
+		processWikitext(pathName, resp, wikitextPropertiesFolder, wikitextProperties, templateString, contentString,
+				templateEncoding);
+	}
+
+	private String getFileAsString(String pathName, String encoding) throws IOException, WebzException {
+		StringWriter contentWriter = new StringWriter();
+		IOUtils.copy(new ByteArrayInputStream(fileSource.absorbFile(pathName, DEFAULT_BUF_SIZE)), contentWriter, encoding);
+		String contentString = contentWriter.toString();
+		return contentString;
 	}
 
 	private void processWikitext(String pathName, HttpServletResponse resp, String wikitextPropertiesFolder,
@@ -575,11 +650,11 @@ public class WebzEngine {
 	 * Otherwise does nothing.
 	 * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	 */
-	private void populateNotFoundResponseIfNecessary(HttpServletResponse resp, boolean populateNotFound) throws WebzException,
-			IOException {
+	private void populateNotFoundResponseIfNecessary(HttpServletRequest req, HttpServletResponse resp, boolean populateNotFound)
+			throws WebzException, IOException {
 		if (populateNotFound) {
 			resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			populateResponse(WebzConstants.AUX_FILES_PREFIX + HttpServletResponse.SC_NOT_FOUND, resp, false, true);
+			populateResponse(WebzConstants.AUX_FILES_PREFIX + HttpServletResponse.SC_NOT_FOUND, req, resp, false, true);
 		}
 	}
 
@@ -590,7 +665,8 @@ public class WebzEngine {
 		pathName = pathName.toLowerCase();
 		String propertyFile = null;
 		for (Map.Entry<Object, Object> entry : wikitexts.entrySet()) {
-			if (pathName.endsWith(entry.getKey().toString().toLowerCase())) {
+			String property = entry.getKey().toString();
+			if (property.startsWith(WebzConstants.DOT) && pathName.endsWith(property.toLowerCase())) {
 				propertyFile = entry.getValue().toString();
 				break;
 			}
@@ -609,7 +685,8 @@ public class WebzEngine {
 		String mimetype = defaultMimetype;
 		boolean contentTypeKnown = false;
 		for (Map.Entry<Object, Object> entry : mimetypes.entrySet()) {
-			if (pathName.endsWith(entry.getKey().toString().toLowerCase())) {
+			String property = entry.getKey().toString();
+			if (property.startsWith(WebzConstants.DOT) && pathName.endsWith(property.toLowerCase())) {
 				mimetype = entry.getValue().toString();
 				contentTypeKnown = true;
 				break;
