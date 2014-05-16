@@ -15,6 +15,8 @@ public interface WebzFileSource {
 
 	public void uploadFile(String pathName, String content, String encoding, boolean override) throws WebzException;
 
-	public void moveFile(String srcPathName, String destPathName, boolean override) throws WebzException;
+	public void move(String srcPathName, String destPathName, boolean override) throws WebzException;
+
+	public void copy(String srcPathName, String destPathName) throws WebzException;
 
 }

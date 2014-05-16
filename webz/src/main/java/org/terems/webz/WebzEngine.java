@@ -328,12 +328,20 @@ public class WebzEngine {
 
 		} else {
 			if (req.getParameterMap().containsKey(WebzConstants.EDIT)) {
+
 				populateWikitextInEditMode(pathName, resp, wikitextProperties);
-			} else if (req.getParameterMap().containsKey(WebzConstants.PUBLISH)) {
-				// TODO TODO TODO TODO fetch contentEncoding property value only once
-				publishWikitext(pathName, req,
-						wikitextProperties.getProperty(WebzConstants.CONTENT_ENCODING_PROPERTY, WebzConstants.DEFAULT_ENCODING));
+
+			} else if (req.getParameterMap().containsKey(WebzConstants.SAVE_DRAFT)) {
+
+				saveWikitextDraft(pathName, req, wikitextProperties);
 				resp.sendRedirect(req.getRequestURI() + "?" + WebzConstants.EDIT);
+
+			} else if (req.getParameterMap().containsKey(WebzConstants.PUBLISH)) {
+
+				saveWikitextDraft(pathName, req, wikitextProperties);
+				publishWikitextDraft(pathName, wikitextProperties);
+				resp.sendRedirect(req.getRequestURI() + "?");
+
 			} else {
 
 				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
@@ -353,6 +361,22 @@ public class WebzEngine {
 	private void populateWikitextInEditMode(String pathName, HttpServletResponse resp, Properties wikitextProperties)
 			throws WebzException, IOException, UnsupportedEncodingException {
 
+		String draftFilePathName = pathName
+				+ wikitexts.getProperty(WebzConstants.DRAFT_FILE_SUFFIX_PROPERTY, WebzConstants.DEFAULT_DRAFT_FILE_SUFFIX);
+
+		WebzFileMetadata draftFileMetadata = fileSource.getMetadata(draftFilePathName);
+
+		boolean draftFileExistedAlready = draftFileMetadata != null;
+		if (draftFileExistedAlready && !draftFileMetadata.isFile()) {
+			throw new WebzException("'" + draftFilePathName + "' is not a file");
+		}
+
+		populateWikitextEditTemplate(resp, wikitextProperties, draftFileExistedAlready ? draftFilePathName : pathName,
+				draftFileExistedAlready);
+	}
+
+	private void populateWikitextEditTemplate(HttpServletResponse resp, Properties wikitextProperties, String pathName,
+			boolean draftFileExistedAlready) throws WebzException, IOException, UnsupportedEncodingException {
 		String templateFile = wikitexts.getProperty(WebzConstants.EDIT_TEMPLATE_PROPERTY);
 		if (templateFile == null) {
 			throw new WebzException(WebzConstants.EDIT_TEMPLATE_PROPERTY + " property is not set in "
@@ -367,9 +391,11 @@ public class WebzEngine {
 				WebzConstants.DEFAULT_ENCODING);
 		String contentString = getFileAsString(pathName, contentEncoding);
 
+		String draftFileExistedVar = wikitexts.getProperty(WebzConstants.DRAFT_EXISTED_ALREADY_VAR_PROPERTY);
 		String internalPathVar = wikitexts.getProperty(WebzConstants.EDIT_INTERNAL_PATH_VAR_PROPERTY);
 		String textareaContentVar = wikitexts.getProperty(WebzConstants.EDIT_TEXTAREA_CONTENT_VAR_PROPERTY);
 
+		templateString = templateString.replace(draftFileExistedVar, String.valueOf(draftFileExistedAlready));
 		templateString = templateString.replace(internalPathVar, "/" + trimWithFileSeparators(pathName));
 		templateString = templateString.replace(textareaContentVar, StringEscapeUtils.escapeHtml4(contentString));
 		writeStringToResp(resp, templateString, templateEncoding);
@@ -382,9 +408,7 @@ public class WebzEngine {
 		respWriter.flush();
 	}
 
-	private void publishWikitext(String pathName, HttpServletRequest req, String contentEncoding) throws WebzException,
-			IOException, UnsupportedEncodingException {
-
+	private void saveWikitextDraft(String pathName, HttpServletRequest req, Properties wikitextProperties) throws WebzException {
 		String wikitextNewContent = req.getParameter(WebzConstants.WIKITEXT_INPUT_NAME);
 		if (wikitextNewContent == null) {
 			throw new WebzException(WebzConstants.PUBLISH + " action invoked but " + WebzConstants.WIKITEXT_INPUT_NAME
@@ -392,7 +416,17 @@ public class WebzEngine {
 		}
 		String draftFilePathName = pathName
 				+ wikitexts.getProperty(WebzConstants.DRAFT_FILE_SUFFIX_PROPERTY, WebzConstants.DEFAULT_DRAFT_FILE_SUFFIX);
-		fileSource.uploadFile(draftFilePathName, wikitextNewContent, contentEncoding, false);
+
+		String contentEncoding = wikitextProperties.getProperty(WebzConstants.CONTENT_ENCODING_PROPERTY,
+				WebzConstants.DEFAULT_ENCODING);
+		fileSource.uploadFile(draftFilePathName, wikitextNewContent, contentEncoding, true);
+	}
+
+	private void publishWikitextDraft(String pathName, Properties wikitextProperties) throws WebzException, IOException,
+			UnsupportedEncodingException {
+
+		String draftFilePathName = pathName
+				+ wikitexts.getProperty(WebzConstants.DRAFT_FILE_SUFFIX_PROPERTY, WebzConstants.DEFAULT_DRAFT_FILE_SUFFIX);
 
 		String historyFolderPathName = pathName
 				+ wikitexts.getProperty(WebzConstants.HISTORY_FOLDER_SUFFIX_PROPERTY,
@@ -406,9 +440,10 @@ public class WebzEngine {
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 		// TODO ~~~ remove quick fixes from moveFile method: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO \\
-		fileSource.moveFile(pathName, trimWithFileSeparators(historyFolderPathName) + "/h", false);
+		fileSource.move(pathName, trimWithFileSeparators(historyFolderPathName) + "/" + WebzConstants.HISTORY_VERSION_PREFIX,
+				false);
 
-		fileSource.moveFile(draftFilePathName, pathName, true);
+		fileSource.move(draftFilePathName, pathName, true);
 	}
 
 	private void populateWikitextInViewMode(String pathName, HttpServletResponse resp, String wikitextPropertiesFile,

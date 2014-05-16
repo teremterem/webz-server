@@ -73,7 +73,7 @@ public class DropboxFileSource extends BaseWebzFileSource {
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 			// TODO ~ WHAT TO DO WITH DROPBOX NATIVE HISTORY? ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO \\
-			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+			// TODO ~ WHAT LOGIC TO APPLY IN CASE OF OVERRIDE=FALSE IN FINAL VERSION OF METHOD? ~~~~~~~ TODO \\
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 
@@ -88,7 +88,7 @@ public class DropboxFileSource extends BaseWebzFileSource {
 	}
 
 	@Override
-	public void moveFile(String srcPathName, String destPathName, boolean override) throws WebzException {
+	public void move(String srcPathName, String destPathName, boolean override) throws WebzException {
 		try {
 
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
@@ -114,6 +114,15 @@ public class DropboxFileSource extends BaseWebzFileSource {
 			}
 
 			client.move(normalizePathName(dropboxPath + srcPathName), quickfixedDest);
+		} catch (DbxException e) {
+			throw new WebzException(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public void copy(String srcPathName, String destPathName) throws WebzException {
+		try {
+			client.copy(normalizePathName(dropboxPath + srcPathName), normalizePathName(dropboxPath + destPathName));
 		} catch (DbxException e) {
 			throw new WebzException(e.getMessage(), e);
 		}
