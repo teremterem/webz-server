@@ -329,11 +329,21 @@ public class WebzEngine {
 		} else {
 			if (req.getParameterMap().containsKey(WebzConstants.EDIT)) {
 				populateWikitextInEditMode(pathName, resp, wikitextProperties);
-			} else if (req.getParameterMap().containsKey(WebzConstants.PREVIEW)) {
-				populateWikitextInPreviewMode(pathName, resp, wikitextPropertiesFile, wikitextProperties);
-			} else if (req.getParameterMap().containsKey(WebzConstants.SAVE)) {
-				saveWikitext(pathName, req, resp, wikitextPropertiesFile, wikitextProperties);
+			} else if (req.getParameterMap().containsKey(WebzConstants.PUBLISH)) {
+				// TODO TODO TODO TODO fetch contentEncoding property value only once
+				publishWikitext(pathName, req,
+						wikitextProperties.getProperty(WebzConstants.CONTENT_ENCODING_PROPERTY, WebzConstants.DEFAULT_ENCODING));
+				resp.sendRedirect(req.getRequestURI() + "?" + WebzConstants.EDIT);
 			} else {
+
+				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+				// TODO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO \\
+				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+
 				populateWikitextInViewMode(pathName, resp, wikitextPropertiesFile, wikitextProperties);
 			}
 		}
@@ -372,32 +382,33 @@ public class WebzEngine {
 		respWriter.flush();
 	}
 
-	private void populateWikitextInPreviewMode(String pathName, HttpServletResponse resp, String wikitextPropertiesFile,
-			Properties wikitextProperties) throws WebzException, IOException, UnsupportedEncodingException {
+	private void publishWikitext(String pathName, HttpServletRequest req, String contentEncoding) throws WebzException,
+			IOException, UnsupportedEncodingException {
 
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		String wikitextNewContent = req.getParameter(WebzConstants.WIKITEXT_INPUT_NAME);
+		if (wikitextNewContent == null) {
+			throw new WebzException(WebzConstants.PUBLISH + " action invoked but " + WebzConstants.WIKITEXT_INPUT_NAME
+					+ " request parameter was not submitted");
+		}
+		String draftFilePathName = pathName
+				+ wikitexts.getProperty(WebzConstants.DRAFT_FILE_SUFFIX_PROPERTY, WebzConstants.DEFAULT_DRAFT_FILE_SUFFIX);
+		fileSource.uploadFile(draftFilePathName, wikitextNewContent, contentEncoding, false);
+
+		String historyFolderPathName = pathName
+				+ wikitexts.getProperty(WebzConstants.HISTORY_FOLDER_SUFFIX_PROPERTY,
+						WebzConstants.DEFAULT_HISTORY_FOLDER_SUFFIX);
+		fileSource.createFolder(historyFolderPathName);
+
+		// TODO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO \\
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 		// TODO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO \\
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// TODO ~~~ remove quick fixes from moveFile method: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO \\
+		fileSource.moveFile(pathName, trimWithFileSeparators(historyFolderPathName) + "/h", false);
 
-		populateWikitextInViewMode(pathName, resp, wikitextPropertiesFile, wikitextProperties);
-	}
-
-	private void saveWikitext(String pathName, HttpServletRequest req, HttpServletResponse resp, String wikitextPropertiesFile,
-			Properties wikitextProperties) throws WebzException, IOException, UnsupportedEncodingException {
-
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-		// TODO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO \\
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-
-		populateWikitextInViewMode(pathName, resp, wikitextPropertiesFile, wikitextProperties);
+		fileSource.moveFile(draftFilePathName, pathName, true);
 	}
 
 	private void populateWikitextInViewMode(String pathName, HttpServletResponse resp, String wikitextPropertiesFile,

@@ -5,10 +5,6 @@ public class WebzConstants {
 	public static final String AUX_FILES_PREFIX = "_";
 	public static final String DOT = ".";
 
-	public static final String EDIT = "edit";
-	public static final String PREVIEW = "preview";
-	public static final String SAVE = "save";
-
 	public static final String _MIMETYPES_PROPERTIES_FILE = AUX_FILES_PREFIX + "mimetypes.properties";
 	public static final String _DOMAINS_PROPERTIES_FILE = AUX_FILES_PREFIX + "domains.properties";
 	public static final String _GENERAL_PROPERTIES_FILE = AUX_FILES_PREFIX + "general.properties";
@@ -53,10 +49,17 @@ public class WebzConstants {
 
 	// ~
 
+	public static final String WIKITEXT_INPUT_NAME = "wikitextInput";
+
+	public static final String EDIT = "edit";
+	public static final String PUBLISH = "publish";
+
 	public static final String EDIT_TEMPLATE_ENCODING_PROPERTY = "edit.template.encoding";
 	public static final String EDIT_TEMPLATE_PROPERTY = "edit.template";
 	public static final String EDIT_INTERNAL_PATH_VAR_PROPERTY = "edit.internal.path.var";
 	public static final String EDIT_TEXTAREA_CONTENT_VAR_PROPERTY = "edit.textarea.content.var";
+	public static final String HISTORY_FOLDER_SUFFIX_PROPERTY = "history.folder.suffix";
+	public static final String DRAFT_FILE_SUFFIX_PROPERTY = "draft.file.suffix";
 
 	// the very defaults of the defaults:
 
@@ -70,5 +73,8 @@ public class WebzConstants {
 	public static final String DEFAULT_MIMETYPE = "application/octet-stream";
 
 	public static final Boolean DEFAULT_REGEXPS_FOR_RAW = Boolean.FALSE;
+
+	public static final String DEFAULT_HISTORY_FOLDER_SUFFIX = ".history";
+	public static final String DEFAULT_DRAFT_FILE_SUFFIX = ".draft";
 
 }

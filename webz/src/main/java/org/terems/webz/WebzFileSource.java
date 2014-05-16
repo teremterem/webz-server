@@ -11,4 +11,10 @@ public interface WebzFileSource {
 
 	public WebzFileMetadata getMetadata(String pathName) throws WebzException;
 
+	public void createFolder(String pathName) throws WebzException;
+
+	public void uploadFile(String pathName, String content, String encoding, boolean override) throws WebzException;
+
+	public void moveFile(String srcPathName, String destPathName, boolean override) throws WebzException;
+
 }
