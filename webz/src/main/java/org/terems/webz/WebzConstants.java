@@ -1,6 +1,12 @@
 package org.terems.webz;
 
+import org.apache.commons.io.ByteOrderMark;
+
 public class WebzConstants {
+
+	public static final int DEFAULT_BUF_SIZE = 8192;
+
+	// ~
 
 	public static final String AUX_FILES_PREFIX = "_";
 	public static final String DOT = ".";
@@ -22,9 +28,6 @@ public class WebzConstants {
 
 	public static final String MIMETYPE_PROPERTY = "mimetype";
 	public static final String TEMPLATE_PROPERTY = "template";
-
-	public static final String TEMPLATE_ENCODING_PROPERTY = "template.encoding";
-	public static final String CONTENT_ENCODING_PROPERTY = "content.encoding";
 
 	public static final String SECTION_VARS_REGEXP_PROPERTY = "section.vars.regexp";
 	public static final String SECTIONS_TRIM_PROPERTY = "sections.trim";
@@ -58,7 +61,6 @@ public class WebzConstants {
 	public static final String PUBLISH = "publish";
 	public static final String SAVE_DRAFT = "saveDraft";
 
-	public static final String EDIT_TEMPLATE_ENCODING_PROPERTY = "edit.template.encoding";
 	public static final String EDIT_TEMPLATE_PROPERTY = "edit.template";
 
 	public static final String EDIT_INTERNAL_PATH_VAR_PROPERTY = "edit.internal.path.var";
@@ -70,7 +72,19 @@ public class WebzConstants {
 
 	// the very defaults of the defaults:
 
-	public static final String DEFAULT_ENCODING = "utf8";
+	public static final String DEFAULT_ENCODING = ByteOrderMark.UTF_8.getCharsetName();
+
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+	// TODO ~ REMOVE REMOVE REMOVE REMOVE REMOVE: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO \\
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+	public static final String TROLOLO = DEFAULT_ENCODING;
+
+	public static final ByteOrderMark[] ALL_BOMS = { ByteOrderMark.UTF_8, ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_16LE,
+			ByteOrderMark.UTF_32BE, ByteOrderMark.UTF_32LE };
 
 	public static final int SECTION_NAME_REGEXP_GROUP = 1;
 	public static final String DEFAULT_SECTION_NAME = "DEFAULT";

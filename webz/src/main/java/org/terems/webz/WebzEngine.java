@@ -1,10 +1,12 @@
 package org.terems.webz;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.mylyn.wikitext.core.parser.MarkupParser;
 import org.eclipse.mylyn.wikitext.core.parser.builder.HtmlDocumentBuilder;
@@ -31,9 +34,6 @@ import org.slf4j.LoggerFactory;
 public class WebzEngine {
 
 	private static Logger LOG = LoggerFactory.getLogger(WebzEngine.class);
-
-	private static final int DEFAULT_BUF_SIZE = 2048;
-	private static final int DEFAULT_BUF_SIZE_FOR_PROPS = DEFAULT_BUF_SIZE;
 
 	private WebzFileSource fileSource;
 
@@ -61,13 +61,13 @@ public class WebzEngine {
 
 		try {
 			mimetypes.load(new ByteArrayInputStream(fileSource.absorbFile(WebzConstants._MIMETYPES_PROPERTIES_FILE,
-					DEFAULT_BUF_SIZE_FOR_PROPS)));
+					WebzConstants.DEFAULT_BUF_SIZE)));
 			domains.load(new ByteArrayInputStream(fileSource.absorbFile(WebzConstants._DOMAINS_PROPERTIES_FILE,
-					DEFAULT_BUF_SIZE_FOR_PROPS)));
+					WebzConstants.DEFAULT_BUF_SIZE)));
 			general.load(new ByteArrayInputStream(fileSource.absorbFile(WebzConstants._GENERAL_PROPERTIES_FILE,
-					DEFAULT_BUF_SIZE_FOR_PROPS)));
+					WebzConstants.DEFAULT_BUF_SIZE)));
 			wikitexts.load(new ByteArrayInputStream(fileSource.absorbFile(WebzConstants._WIKITEXTS_PROPERTIES_FILE,
-					DEFAULT_BUF_SIZE_FOR_PROPS)));
+					WebzConstants.DEFAULT_BUF_SIZE)));
 
 			baseauthRealm = general.getProperty(WebzConstants.BASEAUTH_REALM_PROPERTY, "");
 			baseauthUsername = general.getProperty(WebzConstants.BASEAUTH_USERNAME_PROPERTY, "");
@@ -308,7 +308,7 @@ public class WebzEngine {
 
 			wikitextProperties = new Properties();
 			wikitextProperties.load(new ByteArrayInputStream(fileSource.absorbFile(wikitextPropertiesFile,
-					DEFAULT_BUF_SIZE_FOR_PROPS)));
+					WebzConstants.DEFAULT_BUF_SIZE)));
 
 			mimetype = wikitextProperties.getProperty(WebzConstants.MIMETYPE_PROPERTY);
 		}
@@ -324,6 +324,13 @@ public class WebzEngine {
 		resp.setContentType(mimetype);
 		if (wikitextProperties == null) {
 
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+			// TODO ~ DECIDE WHAT TO DO WITH BOM HERE: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO \\
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 			fileSource.getFile(pathName, resp.getOutputStream());
 
 		} else {
@@ -383,13 +390,9 @@ public class WebzEngine {
 					+ WebzConstants._WIKITEXTS_PROPERTIES_FILE);
 		}
 
-		String templateEncoding = wikitexts.getProperty(WebzConstants.EDIT_TEMPLATE_ENCODING_PROPERTY,
-				WebzConstants.DEFAULT_ENCODING);
-		String templateString = getFileAsString(templateFile, templateEncoding);
+		String templateString = getFileAsString(templateFile);
 
-		String contentEncoding = wikitextProperties.getProperty(WebzConstants.CONTENT_ENCODING_PROPERTY,
-				WebzConstants.DEFAULT_ENCODING);
-		String contentString = getFileAsString(pathName, contentEncoding);
+		String contentString = getFileAsString(pathName);
 
 		String draftFileExistedVar = wikitexts.getProperty(WebzConstants.DRAFT_EXISTED_ALREADY_VAR_PROPERTY);
 		String internalPathVar = wikitexts.getProperty(WebzConstants.EDIT_INTERNAL_PATH_VAR_PROPERTY);
@@ -398,7 +401,7 @@ public class WebzEngine {
 		templateString = templateString.replace(draftFileExistedVar, String.valueOf(draftFileExistedAlready));
 		templateString = templateString.replace(internalPathVar, "/" + trimWithFileSeparators(pathName));
 		templateString = templateString.replace(textareaContentVar, StringEscapeUtils.escapeHtml4(contentString));
-		writeStringToResp(resp, templateString, templateEncoding);
+		writeStringToResp(resp, templateString, WebzConstants.TROLOLO);
 	}
 
 	private void writeStringToResp(HttpServletResponse resp, String stringToWrite, String outputEncoding)
@@ -417,9 +420,7 @@ public class WebzEngine {
 		String draftFilePathName = pathName
 				+ wikitexts.getProperty(WebzConstants.DRAFT_FILE_SUFFIX_PROPERTY, WebzConstants.DEFAULT_DRAFT_FILE_SUFFIX);
 
-		String contentEncoding = wikitextProperties.getProperty(WebzConstants.CONTENT_ENCODING_PROPERTY,
-				WebzConstants.DEFAULT_ENCODING);
-		fileSource.uploadFile(draftFilePathName, wikitextNewContent, contentEncoding, true);
+		fileSource.uploadFile(draftFilePathName, wikitextNewContent, WebzConstants.TROLOLO, true);
 	}
 
 	private void publishWikitextDraft(String pathName, Properties wikitextProperties) throws WebzException, IOException,
@@ -456,22 +457,29 @@ public class WebzEngine {
 		String wikitextPropertiesFolder = trimToFolder(wikitextPropertiesFile);
 		templateFile = trimWithFileSeparators(wikitextPropertiesFolder + "/" + trimWithFileSeparators(templateFile));
 
-		String templateEncoding = wikitextProperties.getProperty(WebzConstants.TEMPLATE_ENCODING_PROPERTY,
-				WebzConstants.DEFAULT_ENCODING);
-		String templateString = getFileAsString(templateFile, templateEncoding);
+		String templateString = getFileAsString(templateFile);
 
-		String contentEncoding = wikitextProperties.getProperty(WebzConstants.CONTENT_ENCODING_PROPERTY,
-				WebzConstants.DEFAULT_ENCODING);
-		String contentString = getFileAsString(pathName, contentEncoding);
+		String contentString = getFileAsString(pathName);
 
 		processWikitext(pathName, resp, wikitextPropertiesFolder, wikitextProperties, templateString, contentString,
-				templateEncoding);
+				WebzConstants.TROLOLO);
 	}
 
-	private String getFileAsString(String pathName, String encoding) throws IOException, WebzException {
+	private String getFileAsString(String pathName) throws IOException, WebzException {
 		StringWriter contentWriter = new StringWriter();
-		IOUtils.copy(new ByteArrayInputStream(fileSource.absorbFile(pathName, DEFAULT_BUF_SIZE)), contentWriter, encoding);
+
+		BOMInputStream bomIn = new BOMInputStream(new ByteArrayInputStream(fileSource.absorbFile(pathName,
+				WebzConstants.DEFAULT_BUF_SIZE)), false, WebzConstants.ALL_BOMS);
+
+		String encoding = bomIn.getBOMCharsetName();
+		if (encoding == null) {
+			encoding = WebzConstants.DEFAULT_ENCODING;
+		}
+
+		IOUtils.copy(bomIn, contentWriter, encoding);
 		String contentString = contentWriter.toString();
+
+		bomIn.close();
 		return contentString;
 	}
 
@@ -491,7 +499,8 @@ public class WebzEngine {
 
 		// ~
 
-		OutputStreamWriter respWriter = new OutputStreamWriter(resp.getOutputStream(), outputEncoding);
+		Writer respWriter = new BufferedWriter(new OutputStreamWriter(resp.getOutputStream(), outputEncoding),
+				WebzConstants.DEFAULT_BUF_SIZE);
 
 		String defaultLinkRel = wikitextProperties.getProperty(WebzConstants.WIKITEXT_LINK_REL_PROPERTY
 				+ WebzConstants.DEFAULT_PROPERTY_SUFFIX);
@@ -602,7 +611,7 @@ public class WebzEngine {
 
 			Properties regexpProperties = new Properties();
 			regexpProperties.load(new ByteArrayInputStream(fileSource.absorbFile(regexpPropertiesFile,
-					DEFAULT_BUF_SIZE_FOR_PROPS)));
+					WebzConstants.DEFAULT_BUF_SIZE)));
 
 			Map<String, RegexpReplacement> regexpReplacementsMap = new TreeMap<String, RegexpReplacement>();
 			for (Map.Entry<Object, Object> entry : regexpProperties.entrySet()) {
