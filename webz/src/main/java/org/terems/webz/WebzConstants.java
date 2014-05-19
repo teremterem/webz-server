@@ -1,5 +1,7 @@
 package org.terems.webz;
 
+import java.util.regex.Pattern;
+
 import org.apache.commons.io.ByteOrderMark;
 
 public class WebzConstants {
@@ -29,7 +31,11 @@ public class WebzConstants {
 	public static final String MIMETYPE_PROPERTY = "mimetype";
 	public static final String TEMPLATE_PROPERTY = "template";
 
+	public static final String OUTPUT_ENCODING_PROPERTY = "output.encoding";
+
 	public static final String SECTION_VARS_REGEXP_PROPERTY = "section.vars.regexp";
+	public static final String SECTION_NAME_REGEXP_GROUP_PROPERTY = "section.name.regexp.group";
+
 	public static final String SECTIONS_TRIM_PROPERTY = "sections.trim";
 	public static final String DEFAULT_SECTION_PROPERTY = "default.section";
 
@@ -53,7 +59,8 @@ public class WebzConstants {
 	// ~
 
 	public static final String HISTORY_VERSION_PREFIX = "v";
-	public static final String HISTORY_VERSION_REGEXP = HISTORY_VERSION_PREFIX + "\\d+";
+	public static final Pattern HISTORY_VERSION_REGEXP = Pattern.compile(HISTORY_VERSION_PREFIX + "(\\d+)");
+	public static final int HISTORY_VERSION_NUMBER_REGEXP_GROUP = 1;
 
 	public static final String WIKITEXT_INPUT_NAME = "wikitextInput";
 
@@ -61,7 +68,9 @@ public class WebzConstants {
 	public static final String PUBLISH = "publish";
 	public static final String SAVE_DRAFT = "saveDraft";
 
-	public static final String EDIT_TEMPLATE_PROPERTY = "edit.template";
+	public static final String EDIT_PAGE_ENCODING_PROPERTY = "edit.page.encoding";
+
+	public static final String EDIT_PAGE_TEMPLATE_PROPERTY = "edit.page.template";
 
 	public static final String EDIT_INTERNAL_PATH_VAR_PROPERTY = "edit.internal.path.var";
 	public static final String EDIT_TEXTAREA_CONTENT_VAR_PROPERTY = "edit.textarea.content.var";
@@ -74,21 +83,11 @@ public class WebzConstants {
 
 	public static final String DEFAULT_ENCODING = ByteOrderMark.UTF_8.getCharsetName();
 
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-	// TODO ~ REMOVE REMOVE REMOVE REMOVE REMOVE: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO \\
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-	public static final String TROLOLO = DEFAULT_ENCODING;
-
 	public static final ByteOrderMark[] ALL_BOMS = { ByteOrderMark.UTF_8, ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_16LE,
 			ByteOrderMark.UTF_32BE, ByteOrderMark.UTF_32LE };
 
-	public static final int SECTION_NAME_REGEXP_GROUP = 1;
 	public static final String DEFAULT_SECTION_NAME = "DEFAULT";
-	public static final Boolean DEFAULT_SECTION_TRIM = Boolean.TRUE;
+	public static final Boolean DEFAULT_SECTION_TRIM = Boolean.FALSE;
 
 	public static final String DEFAULT_LAST_RESORT_WELCOME_FILE = "index.html";
 	public static final String DEFAULT_MIMETYPE = "application/octet-stream";

@@ -10,7 +10,9 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -89,6 +91,32 @@ public class WebzEngine {
 	}
 
 	public void fulfilRequest(HttpServletRequest req, HttpServletResponse resp) {
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// TODO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("");
+			LOG.trace("**************************************************");
+			Enumeration<Locale> locales = req.getLocales();
+			while (locales.hasMoreElements()) {
+				Locale locale = locales.nextElement();
+				LOG.trace(locale.toLanguageTag());
+			}
+			LOG.trace("**************************************************");
+			LOG.trace("");
+		}
+
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// TODO ~~~~~~~ SEPARATE HTTP PASSWORD FOR EVERY DOMAIN: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 		if (baseAuthenticationNeeded(req)) {
 			if (proceedWithBaseAuthentication(req)) {
 				fulfilRequest0(req, resp);
@@ -327,7 +355,7 @@ public class WebzEngine {
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-			// TODO ~ DECIDE WHAT TO DO WITH BOM HERE: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO \\
+			// TODO ~~~~~~ WHAT TO DO WITH "BYTE ORDER MARK" (BOM) IF PRESENT IN STATIC CONTENT? ~~~~~~ TODO \\
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
@@ -384,9 +412,9 @@ public class WebzEngine {
 
 	private void populateWikitextEditTemplate(HttpServletResponse resp, Properties wikitextProperties, String pathName,
 			boolean draftFileExistedAlready) throws WebzException, IOException, UnsupportedEncodingException {
-		String templateFile = wikitexts.getProperty(WebzConstants.EDIT_TEMPLATE_PROPERTY);
+		String templateFile = wikitexts.getProperty(WebzConstants.EDIT_PAGE_TEMPLATE_PROPERTY);
 		if (templateFile == null) {
-			throw new WebzException(WebzConstants.EDIT_TEMPLATE_PROPERTY + " property is not set in "
+			throw new WebzException(WebzConstants.EDIT_PAGE_TEMPLATE_PROPERTY + " property is not set in "
 					+ WebzConstants._WIKITEXTS_PROPERTIES_FILE);
 		}
 
@@ -401,7 +429,10 @@ public class WebzEngine {
 		templateString = templateString.replace(draftFileExistedVar, String.valueOf(draftFileExistedAlready));
 		templateString = templateString.replace(internalPathVar, "/" + trimWithFileSeparators(pathName));
 		templateString = templateString.replace(textareaContentVar, StringEscapeUtils.escapeHtml4(contentString));
-		writeStringToResp(resp, templateString, WebzConstants.TROLOLO);
+
+		String editPageEncoding = wikitexts.getProperty(WebzConstants.EDIT_PAGE_ENCODING_PROPERTY,
+				WebzConstants.DEFAULT_ENCODING);
+		writeStringToResp(resp, templateString, editPageEncoding);
 	}
 
 	private void writeStringToResp(HttpServletResponse resp, String stringToWrite, String outputEncoding)
@@ -420,7 +451,9 @@ public class WebzEngine {
 		String draftFilePathName = pathName
 				+ wikitexts.getProperty(WebzConstants.DRAFT_FILE_SUFFIX_PROPERTY, WebzConstants.DEFAULT_DRAFT_FILE_SUFFIX);
 
-		fileSource.uploadFile(draftFilePathName, wikitextNewContent, WebzConstants.TROLOLO, true);
+		String editPageEncoding = wikitexts.getProperty(WebzConstants.EDIT_PAGE_ENCODING_PROPERTY,
+				WebzConstants.DEFAULT_ENCODING);
+		fileSource.uploadFile(draftFilePathName, wikitextNewContent, editPageEncoding, true);
 	}
 
 	private void publishWikitextDraft(String pathName, Properties wikitextProperties) throws WebzException, IOException,
@@ -429,22 +462,30 @@ public class WebzEngine {
 		String draftFilePathName = pathName
 				+ wikitexts.getProperty(WebzConstants.DRAFT_FILE_SUFFIX_PROPERTY, WebzConstants.DEFAULT_DRAFT_FILE_SUFFIX);
 
-		String historyFolderPathName = pathName
+		String historyFolderPathName = trimWithFileSeparators(pathName
 				+ wikitexts.getProperty(WebzConstants.HISTORY_FOLDER_SUFFIX_PROPERTY,
-						WebzConstants.DEFAULT_HISTORY_FOLDER_SUFFIX);
+						WebzConstants.DEFAULT_HISTORY_FOLDER_SUFFIX));
+
 		fileSource.createFolder(historyFolderPathName);
+		fileSource.move(pathName, historyFolderPathName + "/" + getNextVersionFileName(historyFolderPathName));
 
-		// TODO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO \\
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-		// TODO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO \\
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-		// TODO ~~~ remove quick fixes from moveFile method: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO \\
-		fileSource.move(pathName, trimWithFileSeparators(historyFolderPathName) + "/" + WebzConstants.HISTORY_VERSION_PREFIX,
-				false);
+		fileSource.move(draftFilePathName, pathName);
+	}
 
-		fileSource.move(draftFilePathName, pathName, true);
+	private String getNextVersionFileName(String historyFolderPathName) throws WebzException {
+		long lastVersion = 0;
+
+		for (WebzFileMetadata file : fileSource.getListOfChildren(historyFolderPathName)) {
+			Matcher matcher = WebzConstants.HISTORY_VERSION_REGEXP.matcher(file.getName());
+			if (matcher.matches()) {
+				long version = Long.valueOf(matcher.group(WebzConstants.HISTORY_VERSION_NUMBER_REGEXP_GROUP));
+				if (version > lastVersion) {
+					lastVersion = version;
+				}
+			}
+		}
+
+		return WebzConstants.HISTORY_VERSION_PREFIX + (lastVersion + 1);
 	}
 
 	private void populateWikitextInViewMode(String pathName, HttpServletResponse resp, String wikitextPropertiesFile,
@@ -461,8 +502,10 @@ public class WebzEngine {
 
 		String contentString = getFileAsString(pathName);
 
+		String outputEncoding = wikitextProperties.getProperty(WebzConstants.OUTPUT_ENCODING_PROPERTY,
+				WebzConstants.DEFAULT_ENCODING);
 		processWikitext(pathName, resp, wikitextPropertiesFolder, wikitextProperties, templateString, contentString,
-				WebzConstants.TROLOLO);
+				outputEncoding);
 	}
 
 	private String getFileAsString(String pathName) throws IOException, WebzException {
@@ -513,13 +556,16 @@ public class WebzEngine {
 		String defaultLanguage = wikitextProperties.getProperty(WebzConstants.WIKITEXT_LANG_PROPERTY
 				+ WebzConstants.DEFAULT_PROPERTY_SUFFIX, WebzConstants.LANGUAGE_RAW);
 
+		int sectionNameRegexpGroup = Integer.parseInt(wikitextProperties
+				.getProperty(WebzConstants.SECTION_NAME_REGEXP_GROUP_PROPERTY));
+
 		int lastPos = 0;
 		while (templateSectionsMatcher.find()) {
 
 			respWriter.write(templateString.substring(lastPos, templateSectionsMatcher.start()));
 
 			lastPos = templateSectionsMatcher.end();
-			String sectionName = templateSectionsMatcher.group(WebzConstants.SECTION_NAME_REGEXP_GROUP);
+			String sectionName = templateSectionsMatcher.group(sectionNameRegexpGroup);
 
 			String sectionContent = sectionContentMap.get(sectionName);
 			if (sectionContent == null) {
@@ -531,9 +577,8 @@ public class WebzEngine {
 				String language = getSectionLanguage(wikitextProperties, sectionName, defaultLanguage);
 				boolean languageRaw = WebzConstants.LANGUAGE_RAW.equals(language);
 
-				boolean regexpsForRaw = Boolean.TRUE.toString().equals(
-						wikitextProperties.getProperty(WebzConstants.WIKITEXT_REGEXPS_FOR_RAW_PROPERTY,
-								WebzConstants.DEFAULT_REGEXPS_FOR_RAW.toString()));
+				boolean regexpsForRaw = Boolean.parseBoolean(wikitextProperties.getProperty(
+						WebzConstants.WIKITEXT_REGEXPS_FOR_RAW_PROPERTY, WebzConstants.DEFAULT_REGEXPS_FOR_RAW.toString()));
 
 				if (!languageRaw || regexpsForRaw) {
 					for (RegexpReplacement replacement : generalRegexpReplacements) {
@@ -674,16 +719,18 @@ public class WebzEngine {
 		int lastPos = 0;
 		String curSectionName = wikitextProperties.getProperty(WebzConstants.DEFAULT_SECTION_PROPERTY,
 				WebzConstants.DEFAULT_SECTION_NAME);
-		boolean sectionsTrim = Boolean.TRUE.toString().equals(
-				wikitextProperties.getProperty(WebzConstants.SECTIONS_TRIM_PROPERTY,
-						WebzConstants.DEFAULT_SECTION_TRIM.toString()));
+		boolean sectionsTrim = Boolean.parseBoolean(wikitextProperties.getProperty(WebzConstants.SECTIONS_TRIM_PROPERTY,
+				WebzConstants.DEFAULT_SECTION_TRIM.toString()));
+		int sectionNameRegexpGroup = Integer.parseInt(wikitextProperties
+				.getProperty(WebzConstants.SECTION_NAME_REGEXP_GROUP_PROPERTY));
+
 		while (contentSectionsMatcher.find()) {
 
 			getSectionContent(contentString, sectionContentMap, curSectionName, sectionsTrim, lastPos,
 					contentSectionsMatcher.start());
 
 			lastPos = contentSectionsMatcher.end();
-			curSectionName = contentSectionsMatcher.group(WebzConstants.SECTION_NAME_REGEXP_GROUP);
+			curSectionName = contentSectionsMatcher.group(sectionNameRegexpGroup);
 		}
 
 		getSectionContent(contentString, sectionContentMap, curSectionName, sectionsTrim, lastPos, contentString.length());
