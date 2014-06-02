@@ -32,12 +32,13 @@ import org.eclipse.mylyn.wikitext.core.parser.builder.HtmlDocumentBuilder;
 import org.eclipse.mylyn.wikitext.core.util.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.terems.webz.base.BaseWebzFile;
 
 public class WebzEngine {
 
 	private static Logger LOG = LoggerFactory.getLogger(WebzEngine.class);
 
-	private WebzFileSource fileSource;
+	private WebzFileSystem fileSystem;
 
 	private Properties mimetypes = new Properties();
 	private Properties domains = new Properties();
@@ -52,8 +53,8 @@ public class WebzEngine {
 	private String defaultMimetype;
 	private String lastResortWelcomeFile;
 
-	public WebzEngine(WebzFileSource fileSource) throws WebzException {
-		this.fileSource = fileSource;
+	public WebzEngine(WebzFileSystem fileSystem) throws WebzException {
+		this.fileSystem = fileSystem;
 		initMimetypes();
 	}
 
@@ -62,13 +63,13 @@ public class WebzEngine {
 		// TODO implement properties refresh mechanism (for ex. based on properties files update time)
 
 		try {
-			mimetypes.load(new ByteArrayInputStream(fileSource.absorbFile(WebzConstants._MIMETYPES_PROPERTIES_FILE,
+			mimetypes.load(new ByteArrayInputStream(fileSystem.get(WebzConstants._MIMETYPES_PROPERTIES_FILE).getFileContent(
 					WebzConstants.DEFAULT_BUF_SIZE)));
-			domains.load(new ByteArrayInputStream(fileSource.absorbFile(WebzConstants._DOMAINS_PROPERTIES_FILE,
+			domains.load(new ByteArrayInputStream(fileSystem.get(WebzConstants._DOMAINS_PROPERTIES_FILE).getFileContent(
 					WebzConstants.DEFAULT_BUF_SIZE)));
-			general.load(new ByteArrayInputStream(fileSource.absorbFile(WebzConstants._GENERAL_PROPERTIES_FILE,
+			general.load(new ByteArrayInputStream(fileSystem.get(WebzConstants._GENERAL_PROPERTIES_FILE).getFileContent(
 					WebzConstants.DEFAULT_BUF_SIZE)));
-			wikitexts.load(new ByteArrayInputStream(fileSource.absorbFile(WebzConstants._WIKITEXTS_PROPERTIES_FILE,
+			wikitexts.load(new ByteArrayInputStream(fileSystem.get(WebzConstants._WIKITEXTS_PROPERTIES_FILE).getFileContent(
 					WebzConstants.DEFAULT_BUF_SIZE)));
 
 			baseauthRealm = general.getProperty(WebzConstants.BASEAUTH_REALM_PROPERTY, "");
@@ -147,11 +148,6 @@ public class WebzEngine {
 				if (basic.equalsIgnoreCase("Basic")) {
 					try {
 						String credentials = new String(Base64.decodeBase64(st.nextToken()), WebzConstants.DEFAULT_ENCODING);
-						if (LOG.isTraceEnabled()) {
-							LOG.trace("");
-							LOG.trace("");
-							LOG.trace("Credentials: " + credentials);
-						}
 						int colonPos = credentials.indexOf(":");
 						if (colonPos > -1) {
 							String username = credentials.substring(0, colonPos).trim();
@@ -175,7 +171,13 @@ public class WebzEngine {
 	}
 
 	private boolean checkCredentials(String usernameEntered, String passwordEntered) {
-		return usernameEntered.equals(baseauthUsername) && passwordEntered.equals(baseauthPassword);
+		boolean accepted = usernameEntered.equals(baseauthUsername) && passwordEntered.equals(baseauthPassword);
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("");
+			LOG.trace("");
+			LOG.trace("Credentials - " + usernameEntered + ":***** - " + (accepted ? "Accepted." : "REJECTED !!"));
+		}
+		return accepted;
 	}
 
 	private void fulfilRequest0(HttpServletRequest req, HttpServletResponse resp) {
@@ -183,7 +185,7 @@ public class WebzEngine {
 		if (pathName == null) {
 			pathName = "";
 		} else {
-			pathName = trimWithFileSeparators(pathName);
+			pathName = BaseWebzFile.trimFileSeparators(pathName);
 		}
 		String originalPathName = pathName; // reserving path name before domain subfolder operations
 
@@ -247,8 +249,8 @@ public class WebzEngine {
 	 */
 	private boolean populateResponse(String pathName, HttpServletRequest req, HttpServletResponse resp,
 			boolean populateNotFound, boolean tryStandardSuffixes) throws WebzException, IOException {
-		WebzFileMetadata metadata = fileSource.getMetadata(pathName);
-		if (metadata == null) {
+		WebzFile file = fileSystem.get(pathName);
+		if (!file.exits()) {
 			if (tryStandardSuffixes) {
 				return tryWithOneOfStandardSuffixes(pathName, req, resp, populateNotFound);
 			} else {
@@ -256,12 +258,12 @@ public class WebzEngine {
 				return false;
 			}
 		} else {
-			if (metadata.isFile()) {
-				return populateResponseFromFile(metadata, pathName, req, resp);
+			if (file.isFile()) {
+				return populateResponseFromFile(file, req, resp);
 			} else {
 				if (LOG.isTraceEnabled()) {
 					LOG.trace("");
-					LOG.trace("!!! Folder Name from Metadata: " + metadata.getName());
+					LOG.trace("!!! Folder Name from Metadata: " + file.getName());
 					LOG.trace("!!! Path Name: " + pathName);
 				}
 
@@ -273,7 +275,7 @@ public class WebzEngine {
 				boolean traditionalWelcome = populateResponse(welcomePath + lastResortWelcomeFile, req, resp, false,
 						tryStandardSuffixes);
 				if (!traditionalWelcome) {
-					return populateResponse(welcomePath + metadata.getName(), req, resp, populateNotFound, tryStandardSuffixes);
+					return populateResponse(welcomePath + file.getName(), req, resp, populateNotFound, tryStandardSuffixes);
 				}
 				return true;
 			}
@@ -318,31 +320,31 @@ public class WebzEngine {
 	 * "OK" response and payload.
 	 * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	 */
-	private boolean populateResponseFromFile(WebzFileMetadata metadata, String pathName, HttpServletRequest req,
-			HttpServletResponse resp) throws IOException, WebzException {
+	private boolean populateResponseFromFile(WebzFile file, HttpServletRequest req, HttpServletResponse resp)
+			throws IOException, WebzException {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("");
 			LOG.trace("******************************************************************************");
-			LOG.trace("* path / name:    " + pathName);
+			LOG.trace("* path / name:    " + file.getPathName());
 		}
 
 		String mimetype = null;
-		String wikitextPropertiesFile = lookupInWikitexts(pathName);
+		String wikitextPropertiesFile = lookupInWikitexts(file.getPathName());
 		Properties wikitextProperties = null;
 
 		if (wikitextPropertiesFile != null) {
-			wikitextPropertiesFile = trimWithFileSeparators(wikitextPropertiesFile);
+			wikitextPropertiesFile = BaseWebzFile.trimFileSeparators(wikitextPropertiesFile);
 
 			wikitextProperties = new Properties();
-			wikitextProperties.load(new ByteArrayInputStream(fileSource.absorbFile(wikitextPropertiesFile,
+			wikitextProperties.load(new ByteArrayInputStream(fileSystem.get(wikitextPropertiesFile).getFileContent(
 					WebzConstants.DEFAULT_BUF_SIZE)));
 
 			mimetype = wikitextProperties.getProperty(WebzConstants.MIMETYPE_PROPERTY);
 		}
 
 		if (mimetype == null) {
-			mimetype = lookupMimetype(pathName);
+			mimetype = lookupMimetype(file.getPathName());
 		}
 
 		if (LOG.isTraceEnabled()) {
@@ -359,22 +361,22 @@ public class WebzEngine {
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-			fileSource.getFile(pathName, resp.getOutputStream());
+			file.fileContentToOutputStream(resp.getOutputStream());
 
 		} else {
 			if (req.getParameterMap().containsKey(WebzConstants.EDIT)) {
 
-				populateWikitextInEditMode(pathName, resp, wikitextProperties);
+				populateWikitextInEditMode(file, resp, wikitextProperties);
 
 			} else if (req.getParameterMap().containsKey(WebzConstants.SAVE_DRAFT)) {
 
-				saveWikitextDraft(pathName, req, wikitextProperties);
+				saveWikitextDraft(file, req, wikitextProperties);
 				resp.sendRedirect(req.getRequestURI() + "?" + WebzConstants.EDIT);
 
 			} else if (req.getParameterMap().containsKey(WebzConstants.PUBLISH)) {
 
-				saveWikitextDraft(pathName, req, wikitextProperties);
-				publishWikitextDraft(pathName, wikitextProperties);
+				saveWikitextDraft(file, req, wikitextProperties);
+				publishWikitextDraft(file, wikitextProperties);
 				resp.sendRedirect(req.getRequestURI() + "?");
 
 			} else {
@@ -387,30 +389,30 @@ public class WebzEngine {
 				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 
-				populateWikitextInViewMode(pathName, resp, wikitextPropertiesFile, wikitextProperties);
+				populateWikitextInViewMode(file, resp, wikitextPropertiesFile, wikitextProperties);
 			}
 		}
 		return true;
 	}
 
-	private void populateWikitextInEditMode(String pathName, HttpServletResponse resp, Properties wikitextProperties)
+	private void populateWikitextInEditMode(WebzFile file, HttpServletResponse resp, Properties wikitextProperties)
 			throws WebzException, IOException, UnsupportedEncodingException {
 
-		String draftFilePathName = pathName
+		String draftFilePathName = file.getPathName()
 				+ wikitexts.getProperty(WebzConstants.DRAFT_FILE_SUFFIX_PROPERTY, WebzConstants.DEFAULT_DRAFT_FILE_SUFFIX);
 
-		WebzFileMetadata draftFileMetadata = fileSource.getMetadata(draftFilePathName);
+		WebzFile draftFile = fileSystem.get(draftFilePathName);
 
-		boolean draftFileExistedAlready = draftFileMetadata != null;
-		if (draftFileExistedAlready && !draftFileMetadata.isFile()) {
+		boolean draftFileExistedAlready = draftFile.exits();
+		if (draftFileExistedAlready && !draftFile.isFile()) {
 			throw new WebzException("'" + draftFilePathName + "' is not a file");
 		}
 
-		populateWikitextEditTemplate(resp, wikitextProperties, draftFileExistedAlready ? draftFilePathName : pathName,
+		populateWikitextEditTemplate(resp, wikitextProperties, draftFileExistedAlready ? draftFile : file,
 				draftFileExistedAlready);
 	}
 
-	private void populateWikitextEditTemplate(HttpServletResponse resp, Properties wikitextProperties, String pathName,
+	private void populateWikitextEditTemplate(HttpServletResponse resp, Properties wikitextProperties, WebzFile file,
 			boolean draftFileExistedAlready) throws WebzException, IOException, UnsupportedEncodingException {
 		String templateFile = wikitexts.getProperty(WebzConstants.EDIT_PAGE_TEMPLATE_PROPERTY);
 		if (templateFile == null) {
@@ -418,16 +420,16 @@ public class WebzEngine {
 					+ WebzConstants._WIKITEXTS_PROPERTIES_FILE);
 		}
 
-		String templateString = getFileAsString(templateFile);
+		String templateString = getFileAsString(fileSystem.get(templateFile));
 
-		String contentString = getFileAsString(pathName);
+		String contentString = getFileAsString(file);
 
 		String draftFileExistedVar = wikitexts.getProperty(WebzConstants.DRAFT_EXISTED_ALREADY_VAR_PROPERTY);
 		String internalPathVar = wikitexts.getProperty(WebzConstants.EDIT_INTERNAL_PATH_VAR_PROPERTY);
 		String textareaContentVar = wikitexts.getProperty(WebzConstants.EDIT_TEXTAREA_CONTENT_VAR_PROPERTY);
 
 		templateString = templateString.replace(draftFileExistedVar, String.valueOf(draftFileExistedAlready));
-		templateString = templateString.replace(internalPathVar, "/" + trimWithFileSeparators(pathName));
+		templateString = templateString.replace(internalPathVar, "/" + file.getPathName());
 		templateString = templateString.replace(textareaContentVar, StringEscapeUtils.escapeHtml4(contentString));
 
 		String editPageEncoding = wikitexts.getProperty(WebzConstants.EDIT_PAGE_ENCODING_PROPERTY,
@@ -442,40 +444,42 @@ public class WebzEngine {
 		respWriter.flush();
 	}
 
-	private void saveWikitextDraft(String pathName, HttpServletRequest req, Properties wikitextProperties) throws WebzException {
+	private void saveWikitextDraft(WebzFile file, HttpServletRequest req, Properties wikitextProperties) throws IOException,
+			WebzException {
 		String wikitextNewContent = req.getParameter(WebzConstants.WIKITEXT_INPUT_NAME);
 		if (wikitextNewContent == null) {
 			throw new WebzException(WebzConstants.PUBLISH + " action invoked but " + WebzConstants.WIKITEXT_INPUT_NAME
 					+ " request parameter was not submitted");
 		}
-		String draftFilePathName = pathName
-				+ wikitexts.getProperty(WebzConstants.DRAFT_FILE_SUFFIX_PROPERTY, WebzConstants.DEFAULT_DRAFT_FILE_SUFFIX);
+		WebzFile draftFile = fileSystem.get(file.getPathName()
+				+ wikitexts.getProperty(WebzConstants.DRAFT_FILE_SUFFIX_PROPERTY, WebzConstants.DEFAULT_DRAFT_FILE_SUFFIX));
 
 		String editPageEncoding = wikitexts.getProperty(WebzConstants.EDIT_PAGE_ENCODING_PROPERTY,
 				WebzConstants.DEFAULT_ENCODING);
-		fileSource.uploadFile(draftFilePathName, wikitextNewContent, editPageEncoding, true);
+		draftFile.uploadFile(wikitextNewContent.getBytes(editPageEncoding));
 	}
 
-	private void publishWikitextDraft(String pathName, Properties wikitextProperties) throws WebzException, IOException,
+	private void publishWikitextDraft(WebzFile file, Properties wikitextProperties) throws WebzException, IOException,
 			UnsupportedEncodingException {
 
-		String draftFilePathName = pathName
-				+ wikitexts.getProperty(WebzConstants.DRAFT_FILE_SUFFIX_PROPERTY, WebzConstants.DEFAULT_DRAFT_FILE_SUFFIX);
+		WebzFile draftFile = fileSystem.get(file.getPathName()
+				+ wikitexts.getProperty(WebzConstants.DRAFT_FILE_SUFFIX_PROPERTY, WebzConstants.DEFAULT_DRAFT_FILE_SUFFIX));
 
-		String historyFolderPathName = trimWithFileSeparators(pathName
+		WebzFile historyFolder = fileSystem.get(file.getPathName()
 				+ wikitexts.getProperty(WebzConstants.HISTORY_FOLDER_SUFFIX_PROPERTY,
 						WebzConstants.DEFAULT_HISTORY_FOLDER_SUFFIX));
 
-		fileSource.createFolder(historyFolderPathName);
-		fileSource.move(pathName, historyFolderPathName + "/" + getNextVersionFileName(historyFolderPathName));
+		historyFolder.createFolder();
 
-		fileSource.move(draftFilePathName, pathName);
+		file.move(historyFolder.getPathName() + "/" + getNextVersionFileName(historyFolder));
+
+		fileSystem.move(draftFile, file);
 	}
 
-	private String getNextVersionFileName(String historyFolderPathName) throws WebzException {
+	private String getNextVersionFileName(WebzFile historyFolder) throws IOException, WebzException {
 		long lastVersion = 0;
 
-		for (WebzFileMetadata file : fileSource.getListOfChildren(historyFolderPathName)) {
+		for (WebzFile file : historyFolder.getFolderSpecific().getChildren()) {
 			Matcher matcher = WebzConstants.HISTORY_VERSION_REGEXP.matcher(file.getName());
 			if (matcher.matches()) {
 				long version = Long.valueOf(matcher.group(WebzConstants.HISTORY_VERSION_NUMBER_REGEXP_GROUP));
@@ -488,7 +492,7 @@ public class WebzEngine {
 		return WebzConstants.HISTORY_VERSION_PREFIX + (lastVersion + 1);
 	}
 
-	private void populateWikitextInViewMode(String pathName, HttpServletResponse resp, String wikitextPropertiesFile,
+	private void populateWikitextInViewMode(WebzFile file, HttpServletResponse resp, String wikitextPropertiesFile,
 			Properties wikitextProperties) throws WebzException, IOException, UnsupportedEncodingException {
 		String templateFile = wikitextProperties.getProperty(WebzConstants.TEMPLATE_PROPERTY);
 		if (templateFile == null) {
@@ -496,23 +500,22 @@ public class WebzEngine {
 		}
 
 		String wikitextPropertiesFolder = trimToFolder(wikitextPropertiesFile);
-		templateFile = trimWithFileSeparators(wikitextPropertiesFolder + "/" + trimWithFileSeparators(templateFile));
+		templateFile = wikitextPropertiesFolder + "/" + BaseWebzFile.trimFileSeparators(templateFile);
 
-		String templateString = getFileAsString(templateFile);
+		String templateString = getFileAsString(fileSystem.get(templateFile));
 
-		String contentString = getFileAsString(pathName);
+		String contentString = getFileAsString(file);
 
 		String outputEncoding = wikitextProperties.getProperty(WebzConstants.OUTPUT_ENCODING_PROPERTY,
 				WebzConstants.DEFAULT_ENCODING);
-		processWikitext(pathName, resp, wikitextPropertiesFolder, wikitextProperties, templateString, contentString,
-				outputEncoding);
+		processWikitext(resp, wikitextPropertiesFolder, wikitextProperties, templateString, contentString, outputEncoding);
 	}
 
-	private String getFileAsString(String pathName) throws IOException, WebzException {
+	private String getFileAsString(WebzFile file) throws IOException, WebzException {
 		StringWriter contentWriter = new StringWriter();
 
-		BOMInputStream bomIn = new BOMInputStream(new ByteArrayInputStream(fileSource.absorbFile(pathName,
-				WebzConstants.DEFAULT_BUF_SIZE)), false, WebzConstants.ALL_BOMS);
+		BOMInputStream bomIn = new BOMInputStream(new ByteArrayInputStream(file.getFileContent()), false,
+				WebzConstants.ALL_BOMS);
 
 		String encoding = bomIn.getBOMCharsetName();
 		if (encoding == null) {
@@ -526,9 +529,9 @@ public class WebzEngine {
 		return contentString;
 	}
 
-	private void processWikitext(String pathName, HttpServletResponse resp, String wikitextPropertiesFolder,
-			Properties wikitextProperties, String templateString, String contentString, String outputEncoding)
-			throws WebzException, IOException, UnsupportedEncodingException {
+	private void processWikitext(HttpServletResponse resp, String wikitextPropertiesFolder, Properties wikitextProperties,
+			String templateString, String contentString, String outputEncoding) throws WebzException, IOException,
+			UnsupportedEncodingException {
 		Pattern sectionsRegexp = Pattern.compile(wikitextProperties.getProperty(WebzConstants.SECTION_VARS_REGEXP_PROPERTY));
 		Matcher templateSectionsMatcher = sectionsRegexp.matcher(templateString);
 
@@ -651,11 +654,10 @@ public class WebzEngine {
 		if (regexpPropertiesFile == null) {
 			return Collections.emptySet();
 		} else {
-			regexpPropertiesFile = trimWithFileSeparators(wikitextPropertiesFolder + "/"
-					+ trimWithFileSeparators(regexpPropertiesFile));
+			regexpPropertiesFile = wikitextPropertiesFolder + "/" + BaseWebzFile.trimFileSeparators(regexpPropertiesFile);
 
 			Properties regexpProperties = new Properties();
-			regexpProperties.load(new ByteArrayInputStream(fileSource.absorbFile(regexpPropertiesFile,
+			regexpProperties.load(new ByteArrayInputStream(fileSystem.get(regexpPropertiesFile).getFileContent(
 					WebzConstants.DEFAULT_BUF_SIZE)));
 
 			Map<String, RegexpReplacement> regexpReplacementsMap = new TreeMap<String, RegexpReplacement>();
@@ -822,19 +824,8 @@ public class WebzEngine {
 		if (subfolder == null) {
 			return null;
 		} else {
-			return trimWithFileSeparators(subfolder);
+			return BaseWebzFile.trimFileSeparators(subfolder);
 		}
-	}
-
-	private String trimWithFileSeparators(String path) {
-		path = path.trim();
-		if (path.startsWith("/") || path.startsWith("\\")) {
-			path = path.substring(1);
-		}
-		if (path.endsWith("/") || path.endsWith("\\")) {
-			path = path.substring(0, path.length() - 1);
-		}
-		return path;
 	}
 
 	private Pattern FILE_REGEXP = Pattern.compile("[\\\\/][^\\\\/]*$");

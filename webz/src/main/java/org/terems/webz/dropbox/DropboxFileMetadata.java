@@ -2,63 +2,76 @@ package org.terems.webz.dropbox;
 
 import java.util.Date;
 
-import org.terems.webz.WebzFileMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.terems.webz.WebzFile;
+import org.terems.webz.WebzFileSystem;
+import org.terems.webz.base.BaseWebzFileMetadata;
 
 import com.dropbox.core.DbxEntry;
 
-public class DropboxFileMetadata implements WebzFileMetadata {
+public class DropboxFileMetadata extends BaseWebzFileMetadata<DbxEntry> {
 
-	private DbxEntry dbxEntry;
-	private boolean isFile;
-	private DbxEntry.File asFile = null;
+	private static Logger LOG = LoggerFactory.getLogger(DropboxFileMetadata.class);
 
-	public DropboxFileMetadata(DbxEntry dbxEntry) {
-		this.dbxEntry = dbxEntry;
-		isFile = dbxEntry.isFile();
-		if (isFile) {
-			asFile = dbxEntry.asFile();
+	protected DropboxFileMetadata(WebzFileSystem fileSystem, WebzFile file, DbxEntry dbxEntry) {
+		super(fileSystem, file, dbxEntry);
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("");
+			LOG.trace("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+			LOG.trace("!!!!! new DropboxFileMetadata(...); !!!!!");
+			LOG.trace("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+			LOG.trace(dbxEntry.toStringMultiline());
+			LOG.trace("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+			LOG.trace("");
 		}
+	}
+
+	@Override
+	public String getPathName() {
+		return getMetadataObject().path;
 	}
 
 	@Override
 	public String getName() {
-		return dbxEntry.name;
-	}
-
-	@Override
-	public String getPath() {
-		return dbxEntry.path;
+		return getMetadataObject().name;
 	}
 
 	@Override
 	public boolean isFile() {
-		return isFile;
+		return getMetadataObject().isFile();
 	}
 
 	@Override
-	public Long getNumberOfBytes() {
-		if (isFile) {
-			return asFile.numBytes;
-		} else {
-			return null;
-		}
+	public boolean isFolder() {
+		return getMetadataObject().isFolder();
 	}
 
 	@Override
-	public Date getLastModified() {
-		if (isFile) {
-			return asFile.lastModified;
-		} else {
-			return null;
-		}
-	}
+	protected FileSpecific initFileSpecific() {
+		final DbxEntry.File dbxFile = getMetadataObject().asFile();
 
-	@Override
-	public String getRevision() {
-		if (isFile) {
-			return asFile.rev;
-		} else {
+		if (dbxFile == null) {
 			return null;
+		} else {
+			return new FileSpecific() {
+
+				@Override
+				public String getRevision() {
+					return dbxFile.rev;
+				}
+
+				@Override
+				public long getNumberOfBytes() {
+					return dbxFile.numBytes;
+				}
+
+				@Override
+				public Date getLastModified() {
+					return dbxFile.lastModified;
+				}
+			};
 		}
 	}
 

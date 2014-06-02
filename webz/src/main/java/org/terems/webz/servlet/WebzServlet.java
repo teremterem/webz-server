@@ -12,8 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzEngine;
 import org.terems.webz.WebzException;
-import org.terems.webz.WebzFileSource;
-import org.terems.webz.dropbox.DropboxFileSource;
+import org.terems.webz.WebzFileSystem;
+import org.terems.webz.dropbox.DropboxFileSystem;
 import org.terems.webz.dropbox.gae.GaeHttpRequestor;
 
 import com.dropbox.core.DbxClient;
@@ -33,7 +33,7 @@ public class WebzServlet extends HttpServlet {
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
 		String dropboxPath = config.getInitParameter("dropboxPath");
-		WebzFileSource dropboxFileSource = new DropboxFileSource(new DbxClient(DBX_CONFIG,
+		WebzFileSystem dropboxFileSource = new DropboxFileSystem(new DbxClient(DBX_CONFIG,
 				config.getInitParameter("accessToken")), dropboxPath);
 
 		try {
