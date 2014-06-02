@@ -370,29 +370,35 @@ public class WebzEngine {
 
 			} else if (req.getParameterMap().containsKey(WebzConstants.SAVE_DRAFT)) {
 
-				saveWikitextDraft(file, req, wikitextProperties);
+				saveWikitextDraft(file, req);
 				resp.sendRedirect(req.getRequestURI() + "?" + WebzConstants.EDIT);
 
 			} else if (req.getParameterMap().containsKey(WebzConstants.PUBLISH)) {
 
-				saveWikitextDraft(file, req, wikitextProperties);
-				publishWikitextDraft(file, wikitextProperties);
+				publishWikitext(file, req);
 				resp.sendRedirect(req.getRequestURI() + "?");
+
+			} else if (req.getParameterMap().containsKey(WebzConstants.PREVIEW)) {
+
+				viewWikitext(fileContentAsString(getNewWikitextContent(req)), resp, wikitextPropertiesFile, wikitextProperties);
 
 			} else {
 
-				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-				// TODO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO \\
-				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-
-				populateWikitextInViewMode(file, resp, wikitextPropertiesFile, wikitextProperties);
+				viewWikitext(fileContentAsString(file.getFileContent()), resp, wikitextPropertiesFile, wikitextProperties);
 			}
 		}
 		return true;
+	}
+
+	private byte[] getNewWikitextContent(HttpServletRequest req) throws WebzException, UnsupportedEncodingException {
+		String wikitextNewContent = req.getParameter(WebzConstants.WIKITEXT_INPUT_NAME);
+		if (wikitextNewContent == null) {
+			throw new WebzException(WebzConstants.WIKITEXT_INPUT_NAME + " request parameter was not submitted");
+		}
+
+		String editPageEncoding = wikitexts.getProperty(WebzConstants.EDIT_PAGE_ENCODING_PROPERTY,
+				WebzConstants.DEFAULT_ENCODING);
+		return wikitextNewContent.getBytes(editPageEncoding);
 	}
 
 	private void populateWikitextInEditMode(WebzFile file, HttpServletResponse resp, Properties wikitextProperties)
@@ -420,9 +426,9 @@ public class WebzEngine {
 					+ WebzConstants._WIKITEXTS_PROPERTIES_FILE);
 		}
 
-		String templateString = getFileAsString(fileSystem.get(templateFile));
+		String templateString = fileContentAsString(fileSystem.get(templateFile).getFileContent());
 
-		String contentString = getFileAsString(file);
+		String contentString = fileContentAsString(file.getFileContent());
 
 		String draftFileExistedVar = wikitexts.getProperty(WebzConstants.DRAFT_EXISTED_ALREADY_VAR_PROPERTY);
 		String internalPathVar = wikitexts.getProperty(WebzConstants.EDIT_INTERNAL_PATH_VAR_PROPERTY);
@@ -444,55 +450,26 @@ public class WebzEngine {
 		respWriter.flush();
 	}
 
-	private void saveWikitextDraft(WebzFile file, HttpServletRequest req, Properties wikitextProperties) throws IOException,
-			WebzException {
-		String wikitextNewContent = req.getParameter(WebzConstants.WIKITEXT_INPUT_NAME);
-		if (wikitextNewContent == null) {
-			throw new WebzException(WebzConstants.PUBLISH + " action invoked but " + WebzConstants.WIKITEXT_INPUT_NAME
-					+ " request parameter was not submitted");
-		}
-		WebzFile draftFile = fileSystem.get(file.getPathName()
+	private WebzFile getDraftFile(WebzFile file) throws IOException, WebzException {
+		return fileSystem.get(file.getPathName()
 				+ wikitexts.getProperty(WebzConstants.DRAFT_FILE_SUFFIX_PROPERTY, WebzConstants.DEFAULT_DRAFT_FILE_SUFFIX));
-
-		String editPageEncoding = wikitexts.getProperty(WebzConstants.EDIT_PAGE_ENCODING_PROPERTY,
-				WebzConstants.DEFAULT_ENCODING);
-		draftFile.uploadFile(wikitextNewContent.getBytes(editPageEncoding));
 	}
 
-	private void publishWikitextDraft(WebzFile file, Properties wikitextProperties) throws WebzException, IOException,
+	private void saveWikitextDraft(WebzFile file, HttpServletRequest req) throws IOException, WebzException {
+		getDraftFile(file).uploadFile(getNewWikitextContent(req));
+	}
+
+	private void publishWikitext(WebzFile file, HttpServletRequest req) throws WebzException, IOException,
 			UnsupportedEncodingException {
+		file.uploadFile(getNewWikitextContent(req));
 
-		WebzFile draftFile = fileSystem.get(file.getPathName()
-				+ wikitexts.getProperty(WebzConstants.DRAFT_FILE_SUFFIX_PROPERTY, WebzConstants.DEFAULT_DRAFT_FILE_SUFFIX));
-
-		WebzFile historyFolder = fileSystem.get(file.getPathName()
-				+ wikitexts.getProperty(WebzConstants.HISTORY_FOLDER_SUFFIX_PROPERTY,
-						WebzConstants.DEFAULT_HISTORY_FOLDER_SUFFIX));
-
-		historyFolder.createFolder();
-
-		file.move(historyFolder.getPathName() + "/" + getNextVersionFileName(historyFolder));
-
-		fileSystem.move(draftFile, file);
-	}
-
-	private String getNextVersionFileName(WebzFile historyFolder) throws IOException, WebzException {
-		long lastVersion = 0;
-
-		for (WebzFile file : historyFolder.getFolderSpecific().getChildren()) {
-			Matcher matcher = WebzConstants.HISTORY_VERSION_REGEXP.matcher(file.getName());
-			if (matcher.matches()) {
-				long version = Long.valueOf(matcher.group(WebzConstants.HISTORY_VERSION_NUMBER_REGEXP_GROUP));
-				if (version > lastVersion) {
-					lastVersion = version;
-				}
-			}
+		WebzFile draftFile = getDraftFile(file);
+		if (draftFile.exits() && draftFile.isFile()) {
+			draftFile.delete();
 		}
-
-		return WebzConstants.HISTORY_VERSION_PREFIX + (lastVersion + 1);
 	}
 
-	private void populateWikitextInViewMode(WebzFile file, HttpServletResponse resp, String wikitextPropertiesFile,
+	private void viewWikitext(String contentString, HttpServletResponse resp, String wikitextPropertiesFile,
 			Properties wikitextProperties) throws WebzException, IOException, UnsupportedEncodingException {
 		String templateFile = wikitextProperties.getProperty(WebzConstants.TEMPLATE_PROPERTY);
 		if (templateFile == null) {
@@ -502,20 +479,17 @@ public class WebzEngine {
 		String wikitextPropertiesFolder = trimToFolder(wikitextPropertiesFile);
 		templateFile = wikitextPropertiesFolder + "/" + BaseWebzFile.trimFileSeparators(templateFile);
 
-		String templateString = getFileAsString(fileSystem.get(templateFile));
-
-		String contentString = getFileAsString(file);
+		String templateString = fileContentAsString(fileSystem.get(templateFile).getFileContent());
 
 		String outputEncoding = wikitextProperties.getProperty(WebzConstants.OUTPUT_ENCODING_PROPERTY,
 				WebzConstants.DEFAULT_ENCODING);
 		processWikitext(resp, wikitextPropertiesFolder, wikitextProperties, templateString, contentString, outputEncoding);
 	}
 
-	private String getFileAsString(WebzFile file) throws IOException, WebzException {
+	private String fileContentAsString(byte[] fileContent) throws IOException, WebzException {
 		StringWriter contentWriter = new StringWriter();
 
-		BOMInputStream bomIn = new BOMInputStream(new ByteArrayInputStream(file.getFileContent()), false,
-				WebzConstants.ALL_BOMS);
+		BOMInputStream bomIn = new BOMInputStream(new ByteArrayInputStream(fileContent), false, WebzConstants.ALL_BOMS);
 
 		String encoding = bomIn.getBOMCharsetName();
 		if (encoding == null) {

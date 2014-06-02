@@ -63,7 +63,7 @@ public abstract class BaseWebzFileMetadata<MO> implements WebzFileMetadata<MO> {
 
 	@SuppressWarnings("unchecked")
 	protected WebzFileMetadata.FolderSpecific fetchWithChildrenAndInitFolderSpecific() throws IOException, WebzException {
-		return fileSystem.fetchMetadataWithChildren(file, (WebzFileMetadata<Object>) this);
+		return fileSystem._fetchMetadataWithChildren(file, (WebzFileMetadata<Object>) this);
 	}
 
 	private void initFolderSpecificThreadSafe() throws IOException, WebzException {

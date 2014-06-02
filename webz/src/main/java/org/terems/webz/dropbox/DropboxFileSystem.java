@@ -11,16 +11,16 @@ import java.util.List;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFileMetadata;
-import org.terems.webz.WebzFileSystem;
 import org.terems.webz.base.BaseWebzFile;
 import org.terems.webz.base.BaseWebzFileMetadata;
+import org.terems.webz.base.BaseWebzFileSystem;
 
 import com.dropbox.core.DbxClient;
 import com.dropbox.core.DbxEntry;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxWriteMode;
 
-public class DropboxFileSystem implements WebzFileSystem {
+public class DropboxFileSystem extends BaseWebzFileSystem {
 
 	private DbxClient dbxClient;
 	private String dbxBasePath;
@@ -40,20 +40,17 @@ public class DropboxFileSystem implements WebzFileSystem {
 				file, dbxEntry)));
 	}
 
-	private void setMetadataIfNotNull(WebzFile file, DbxEntry dbxEntry) {
+	private void setMetadataIfNotNull(WebzFile file, DbxEntry dbxEntry, boolean refreshIfNull) {
 		WebzFileMetadata<Object> metadata = wrapMetadataSafely(file, dbxEntry);
 		if (metadata != null) {
 			file.setMetadataThreadSafe(metadata);
+		} else if (refreshIfNull) {
+			file.refreshThreadSafe();
 		}
 	}
 
 	@Override
-	public WebzFile get(String pathName) {
-		return new BaseWebzFile(this, pathName);
-	}
-
-	@Override
-	public WebzFile fetchMetadata(WebzFile file) throws IOException, WebzException {
+	public WebzFile _fetchMetadata(WebzFile file) throws IOException, WebzException {
 		try {
 			file.setMetadataThreadSafe(wrapMetadataSafely(file, dbxClient.getMetadata(dropboxPathName(file))));
 			return file;
@@ -63,7 +60,7 @@ public class DropboxFileSystem implements WebzFileSystem {
 	}
 
 	@Override
-	public WebzFileMetadata.FolderSpecific fetchMetadataWithChildren(WebzFile file, WebzFileMetadata<Object> metadata)
+	public WebzFileMetadata.FolderSpecific _fetchMetadataWithChildren(WebzFile file, WebzFileMetadata<Object> metadata)
 			throws IOException, WebzException {
 		try {
 			DbxEntry.WithChildren wc = dbxClient.getMetadataWithChildren(dropboxPathName(file));
@@ -92,9 +89,9 @@ public class DropboxFileSystem implements WebzFileSystem {
 	}
 
 	@Override
-	public WebzFile fileContentToOutputStream(WebzFile file, OutputStream out) throws IOException, WebzException {
+	public WebzFile _fileContentToOutputStream(WebzFile file, OutputStream out) throws IOException, WebzException {
 		try {
-			setMetadataIfNotNull(file, dbxClient.getFile(dropboxPathName(file), null, out));
+			setMetadataIfNotNull(file, dbxClient.getFile(dropboxPathName(file), null, out), false);
 			return file;
 		} catch (DbxException e) {
 			throw new WebzException(e);
@@ -102,9 +99,9 @@ public class DropboxFileSystem implements WebzFileSystem {
 	}
 
 	@Override
-	public WebzFile createFolder(WebzFile file) throws IOException, WebzException {
+	public WebzFile _createFolder(WebzFile file) throws IOException, WebzException {
 		try {
-			setMetadataIfNotNull(file, dbxClient.createFolder(dropboxPathName(file)));
+			setMetadataIfNotNull(file, dbxClient.createFolder(dropboxPathName(file)), true);
 			return file;
 		} catch (DbxException e) {
 			throw new WebzException(e);
@@ -112,22 +109,11 @@ public class DropboxFileSystem implements WebzFileSystem {
 	}
 
 	@Override
-	public WebzFile uploadFile(WebzFile file, byte[] content, boolean override) throws IOException, WebzException {
+	public WebzFile _uploadFile(WebzFile file, byte[] content) throws IOException, WebzException {
 		try {
-
-			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-			// TODO ~ WHAT TO DO WITH DROPBOX NATIVE HISTORY? ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO \\
-			// TODO ~ WHAT LOGIC TO APPLY IN CASE OF OVERRIDE=FALSE IN FINAL VERSION OF METHOD? ~~~~~~~ TODO \\
-			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
-
 			InputStream stream = new ByteArrayInputStream(content);
-			setMetadataIfNotNull(
-					file,
-					dbxClient.uploadFile(dropboxPathName(file), override ? DbxWriteMode.force() : DbxWriteMode.add(),
-							stream.available(), stream));
+			setMetadataIfNotNull(file,
+					dbxClient.uploadFile(dropboxPathName(file), DbxWriteMode.force(), stream.available(), stream), true);
 			return file;
 		} catch (DbxException e) {
 			throw new WebzException(e);
@@ -135,9 +121,9 @@ public class DropboxFileSystem implements WebzFileSystem {
 	}
 
 	@Override
-	public WebzFile move(WebzFile srcFile, WebzFile destFile) throws IOException, WebzException {
+	public WebzFile _move(WebzFile srcFile, WebzFile destFile) throws IOException, WebzException {
 		try {
-			setMetadataIfNotNull(destFile, dbxClient.move(dropboxPathName(srcFile), dropboxPathName(destFile)));
+			setMetadataIfNotNull(destFile, dbxClient.move(dropboxPathName(srcFile), dropboxPathName(destFile)), true);
 
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 			// ~~~~~ TODO check if exactly destFile should be returned ~~~~~ \\
@@ -149,14 +135,24 @@ public class DropboxFileSystem implements WebzFileSystem {
 	}
 
 	@Override
-	public WebzFile copy(WebzFile srcFile, WebzFile destFile) throws IOException, WebzException {
+	public WebzFile _copy(WebzFile srcFile, WebzFile destFile) throws IOException, WebzException {
 		try {
-			setMetadataIfNotNull(destFile, dbxClient.copy(dropboxPathName(srcFile), dropboxPathName(destFile)));
+			setMetadataIfNotNull(destFile, dbxClient.copy(dropboxPathName(srcFile), dropboxPathName(destFile)), true);
 
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 			// ~~~~~ TODO check if exactly destFile should be returned ~~~~~ \\
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \\
 			return destFile;
+		} catch (DbxException e) {
+			throw new WebzException(e);
+		}
+	}
+
+	@Override
+	public void _delete(WebzFile file) throws IOException, WebzException {
+		try {
+			dbxClient.delete(dropboxPathName(file));
+			file.refreshThreadSafe();
 		} catch (DbxException e) {
 			throw new WebzException(e);
 		}

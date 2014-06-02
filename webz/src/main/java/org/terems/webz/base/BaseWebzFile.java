@@ -66,14 +66,28 @@ public class BaseWebzFile extends WebzFileMetadataProxy<Object> implements WebzF
 	}
 
 	protected synchronized void initMetadataThreadSafe() throws IOException, WebzException {
-		if (metadataRef == null) {
-			fileSystem.fetchMetadata(this);
+		if (!isMetadataInitialized()) {
+			fileSystem._fetchMetadata(this);
 		}
 	}
 
+	// ~
+
+	@Override
+	public boolean isMetadataInitialized() {
+		return metadataRef != null;
+	}
+
+	@Override
+	public synchronized void refreshThreadSafe() {
+		metadataRef = null;
+	}
+
+	// ~
+
 	@Override
 	protected WebzFileMetadata<Object> getMetadata() throws IOException, WebzException {
-		if (metadataRef == null) {
+		if (!isMetadataInitialized()) {
 			initMetadataThreadSafe();
 		}
 		return metadataRef.get();
@@ -81,29 +95,29 @@ public class BaseWebzFile extends WebzFileMetadataProxy<Object> implements WebzF
 
 	@Override
 	public WebzFile fileContentToOutputStream(OutputStream out) throws IOException, WebzException {
-		return fileSystem.fileContentToOutputStream(this, out);
+		return fileSystem._fileContentToOutputStream(this, out);
 	}
 
 	// ~
 
 	@Override
 	public WebzFile createFolder() throws IOException, WebzException {
-		return fileSystem.createFolder(this);
+		return fileSystem._createFolder(this);
 	}
 
 	@Override
 	public WebzFile uploadFile(byte[] content) throws IOException, WebzException {
-		return fileSystem.uploadFile(this, content, true);
+		return fileSystem._uploadFile(this, content);
 	}
 
 	@Override
 	public WebzFile move(WebzFile destFile) throws IOException, WebzException {
-		return fileSystem.move(this, destFile);
+		return fileSystem._move(this, destFile);
 	}
 
 	@Override
 	public WebzFile copy(WebzFile destFile) throws IOException, WebzException {
-		return fileSystem.copy(this, destFile);
+		return fileSystem._copy(this, destFile);
 	}
 
 	@Override
@@ -114,6 +128,11 @@ public class BaseWebzFile extends WebzFileMetadataProxy<Object> implements WebzF
 	@Override
 	public WebzFile copy(String destPathName) throws IOException, WebzException {
 		return copy(fileSystem.get(destPathName));
+	}
+
+	@Override
+	public void delete() throws IOException, WebzException {
+		fileSystem._delete(this);
 	}
 
 }

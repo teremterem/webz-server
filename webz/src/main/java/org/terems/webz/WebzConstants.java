@@ -7,6 +7,7 @@ import org.apache.commons.io.ByteOrderMark;
 public class WebzConstants {
 
 	public static final int DEFAULT_BUF_SIZE = 8192;
+	public static final int DEFAULT_FILE_PAYLOAD_SIZE_THRESHOLD_TO_CACHE = 16384;
 
 	// ~
 
@@ -67,6 +68,7 @@ public class WebzConstants {
 	public static final String EDIT = "edit";
 	public static final String PUBLISH = "publish";
 	public static final String SAVE_DRAFT = "saveDraft";
+	public static final String PREVIEW = "preview";
 
 	public static final String EDIT_PAGE_ENCODING_PROPERTY = "edit.page.encoding";
 

@@ -7,6 +7,14 @@ public interface WebzFile extends WebzFileMetadata<Object> {
 
 	public boolean exits() throws IOException, WebzException;
 
+	// ~
+
+	public boolean isMetadataInitialized();
+
+	public void refreshThreadSafe();
+
+	// ~
+
 	public void setMetadataThreadSafe(WebzFileMetadata<Object> metadata);
 
 	public byte[] getFileContent(long expectedNumberOfBytes) throws IOException, WebzException;
@@ -26,5 +34,7 @@ public interface WebzFile extends WebzFileMetadata<Object> {
 	public WebzFile move(String destPathName) throws IOException, WebzException;
 
 	public WebzFile copy(String destPathName) throws IOException, WebzException;
+
+	public void delete() throws IOException, WebzException;
 
 }

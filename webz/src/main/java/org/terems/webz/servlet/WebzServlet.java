@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzEngine;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFileSystem;
+import org.terems.webz.base.BaseFileSystemCache;
 import org.terems.webz.dropbox.DropboxFileSystem;
 import org.terems.webz.dropbox.gae.GaeHttpRequestor;
 
@@ -37,7 +38,7 @@ public class WebzServlet extends HttpServlet {
 				config.getInitParameter("accessToken")), dropboxPath);
 
 		try {
-			webzEngine = new WebzEngine(dropboxFileSource);
+			webzEngine = new WebzEngine(new BaseFileSystemCache(dropboxFileSource));
 		} catch (WebzException e) {
 			throw new ServletException(e.getMessage(), e);
 		}
