@@ -366,7 +366,7 @@ public class WebzEngine {
 		} else {
 			if (req.getParameterMap().containsKey(WebzConstants.EDIT)) {
 
-				populateWikitextInEditMode(file, resp, wikitextProperties);
+				editWikitext(file, resp, req.getParameterMap().containsKey(WebzConstants.IGNORE_DRAFT));
 
 			} else if (req.getParameterMap().containsKey(WebzConstants.SAVE_DRAFT)) {
 
@@ -401,25 +401,31 @@ public class WebzEngine {
 		return wikitextNewContent.getBytes(editPageEncoding);
 	}
 
-	private void populateWikitextInEditMode(WebzFile file, HttpServletResponse resp, Properties wikitextProperties)
-			throws WebzException, IOException, UnsupportedEncodingException {
+	private void editWikitext(WebzFile file, HttpServletResponse resp, boolean ignoreDraft) throws WebzException, IOException,
+			UnsupportedEncodingException {
 
 		String draftFilePathName = file.getPathName()
 				+ wikitexts.getProperty(WebzConstants.DRAFT_FILE_SUFFIX_PROPERTY, WebzConstants.DEFAULT_DRAFT_FILE_SUFFIX);
 
-		WebzFile draftFile = fileSystem.get(draftFilePathName);
+		boolean showDraft = !ignoreDraft;
+		if (showDraft) {
+			WebzFile draftFile = fileSystem.get(draftFilePathName);
 
-		boolean draftFileExistedAlready = draftFile.exits();
-		if (draftFileExistedAlready && !draftFile.isFile()) {
-			throw new WebzException("'" + draftFilePathName + "' is not a file");
+			showDraft = draftFile.exits();
+			if (showDraft) {
+				if (!draftFile.isFile()) {
+					throw new WebzException("'" + draftFilePathName + "' is not a file");
+				}
+
+				file = draftFile;
+			}
 		}
 
-		populateWikitextEditTemplate(resp, wikitextProperties, draftFileExistedAlready ? draftFile : file,
-				draftFileExistedAlready);
+		populateWikitextEditTemplate(resp, file, showDraft, ignoreDraft);
 	}
 
-	private void populateWikitextEditTemplate(HttpServletResponse resp, Properties wikitextProperties, WebzFile file,
-			boolean draftFileExistedAlready) throws WebzException, IOException, UnsupportedEncodingException {
+	private void populateWikitextEditTemplate(HttpServletResponse resp, WebzFile file, boolean draftOpened, boolean draftIgnored)
+			throws WebzException, IOException, UnsupportedEncodingException {
 		String templateFile = wikitexts.getProperty(WebzConstants.EDIT_PAGE_TEMPLATE_PROPERTY);
 		if (templateFile == null) {
 			throw new WebzException(WebzConstants.EDIT_PAGE_TEMPLATE_PROPERTY + " property is not set in "
@@ -430,11 +436,13 @@ public class WebzEngine {
 
 		String contentString = fileContentAsString(file.getFileContent());
 
-		String draftFileExistedVar = wikitexts.getProperty(WebzConstants.DRAFT_EXISTED_ALREADY_VAR_PROPERTY);
+		String draftOpenedVar = wikitexts.getProperty(WebzConstants.DRAFT_OPENED_VAR_PROPERTY);
+		String draftIgnoredVar = wikitexts.getProperty(WebzConstants.DRAFT_IGNORED_VAR_PROPERTY);
 		String internalPathVar = wikitexts.getProperty(WebzConstants.EDIT_INTERNAL_PATH_VAR_PROPERTY);
 		String textareaContentVar = wikitexts.getProperty(WebzConstants.EDIT_TEXTAREA_CONTENT_VAR_PROPERTY);
 
-		templateString = templateString.replace(draftFileExistedVar, String.valueOf(draftFileExistedAlready));
+		templateString = templateString.replace(draftOpenedVar, String.valueOf(draftOpened));
+		templateString = templateString.replace(draftIgnoredVar, String.valueOf(draftIgnored));
 		templateString = templateString.replace(internalPathVar, "/" + file.getPathName());
 		templateString = templateString.replace(textareaContentVar, StringEscapeUtils.escapeHtml4(contentString));
 

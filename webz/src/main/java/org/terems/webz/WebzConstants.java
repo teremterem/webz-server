@@ -7,7 +7,7 @@ import org.apache.commons.io.ByteOrderMark;
 public class WebzConstants {
 
 	public static final int DEFAULT_BUF_SIZE = 8192;
-	public static final int DEFAULT_FILE_PAYLOAD_SIZE_THRESHOLD_TO_CACHE = 16384;
+	public static final int DEFAULT_FILE_PAYLOAD_SIZE_THRESHOLD_TO_CACHE = 262144; // 16384;
 
 	// ~
 
@@ -67,8 +67,9 @@ public class WebzConstants {
 
 	public static final String EDIT = "edit";
 	public static final String PUBLISH = "publish";
-	public static final String SAVE_DRAFT = "saveDraft";
 	public static final String PREVIEW = "preview";
+	public static final String SAVE_DRAFT = "saveDraft";
+	public static final String IGNORE_DRAFT = "ignoreDraft";
 
 	public static final String EDIT_PAGE_ENCODING_PROPERTY = "edit.page.encoding";
 
@@ -76,7 +77,8 @@ public class WebzConstants {
 
 	public static final String EDIT_INTERNAL_PATH_VAR_PROPERTY = "edit.internal.path.var";
 	public static final String EDIT_TEXTAREA_CONTENT_VAR_PROPERTY = "edit.textarea.content.var";
-	public static final String DRAFT_EXISTED_ALREADY_VAR_PROPERTY = "draft.file.existed.already.var";
+	public static final String DRAFT_OPENED_VAR_PROPERTY = "draft.opened.var";
+	public static final String DRAFT_IGNORED_VAR_PROPERTY = "draft.ignored.var";
 
 	public static final String HISTORY_FOLDER_SUFFIX_PROPERTY = "history.folder.suffix";
 	public static final String DRAFT_FILE_SUFFIX_PROPERTY = "draft.file.suffix";
