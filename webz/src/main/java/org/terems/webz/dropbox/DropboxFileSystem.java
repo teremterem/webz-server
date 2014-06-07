@@ -27,11 +27,19 @@ public class DropboxFileSystem extends BaseWebzFileSystem {
 
 	public DropboxFileSystem(DbxClient dbxClient, String dbxBasePath) {
 		this.dbxClient = dbxClient;
-		this.dbxBasePath = dbxBasePath.trim();
+		this.dbxBasePath = "/" + BaseWebzFile.trimFileSeparators(dbxBasePath);
 	}
 
 	protected String dropboxPathName(WebzFile file) throws IOException, WebzException {
-		return dbxBasePath + file.getPathName();
+		String pathName = BaseWebzFile.trimFileSeparators(file.getPathName());
+
+		if ("".equals(pathName)) {
+			pathName = dbxBasePath;
+		} else {
+			pathName = dbxBasePath + "/" + pathName;
+		}
+
+		return pathName;
 	}
 
 	@SuppressWarnings("unchecked")
