@@ -1,4 +1,4 @@
-package org.terems.webz.dropbox.gae;
+package org.terems.webz.obsolete.dropbox.gae;
 
 import java.io.IOException;
 import java.io.InputStream;

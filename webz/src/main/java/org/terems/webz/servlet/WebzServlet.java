@@ -10,12 +10,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terems.webz.WebzEngine;
 import org.terems.webz.WebzException;
-import org.terems.webz.WebzFileSystem;
-import org.terems.webz.base.BaseFileSystemCache;
-import org.terems.webz.dropbox.DropboxFileSystem;
-import org.terems.webz.dropbox.gae.GaeHttpRequestor;
+import org.terems.webz.impl.cache.GenericFileSystemCache;
+import org.terems.webz.impl.dropbox.DropboxFileSystem;
+import org.terems.webz.internal.WebzFileSystem;
+import org.terems.webz.obsolete.WebzEngine;
+import org.terems.webz.obsolete.dropbox.gae.GaeHttpRequestor;
 
 import com.dropbox.core.DbxClient;
 import com.dropbox.core.DbxRequestConfig;
@@ -34,11 +34,12 @@ public class WebzServlet extends HttpServlet {
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
 		String dropboxPath = config.getInitParameter("dropboxPath");
-		WebzFileSystem dropboxFileSource = new DropboxFileSystem(new DbxClient(DBX_CONFIG,
-				config.getInitParameter("accessToken")), dropboxPath);
 
 		try {
-			webzEngine = new WebzEngine(new BaseFileSystemCache(dropboxFileSource));
+			WebzFileSystem dropboxFileSource = new DropboxFileSystem(new DbxClient(DBX_CONFIG,
+					config.getInitParameter("accessToken")), dropboxPath);
+
+			webzEngine = new WebzEngine(new GenericFileSystemCache(dropboxFileSource));
 		} catch (WebzException e) {
 			throw new ServletException(e.getMessage(), e);
 		}

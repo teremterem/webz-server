@@ -2,39 +2,51 @@ package org.terems.webz;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collection;
 
-public interface WebzFile extends WebzFileMetadata<Object> {
+/** TODO !!! describe !!! */
+public interface WebzFile {
 
-	public boolean exits() throws IOException, WebzException;
+	/** TODO !!! describe !!! */
+	public String getPathName() throws IOException, WebzException;
 
-	// ~
+	// TODO remove this commented out piece completely?
+	// public boolean exits() throws IOException, WebzException;
 
-	public boolean isMetadataInitialized();
+	/** TODO !!! describe !!! */
+	public WebzFileMetadata getMetadata() throws IOException, WebzException;
 
-	public void refreshThreadSafe();
-
-	// ~
-
-	public void setMetadataThreadSafe(WebzFileMetadata<Object> metadata);
-
+	/** TODO !!! describe !!! */
 	public byte[] getFileContent(long expectedNumberOfBytes) throws IOException, WebzException;
 
+	/** TODO !!! describe !!! */
 	public byte[] getFileContent() throws IOException, WebzException;
 
-	public WebzFile fileContentToOutputStream(OutputStream out) throws IOException, WebzException;
+	/** TODO !!! describe !!! */
+	public WebzFileMetadata fileContentToOutputStream(OutputStream out) throws IOException, WebzException;
 
-	public WebzFile createFolder() throws IOException, WebzException;
+	/** TODO !!! describe !!! */
+	public Collection<WebzFile> getChildren() throws IOException, WebzException;
 
-	public WebzFile uploadFile(byte[] content) throws IOException, WebzException;
+	/** TODO !!! describe !!! */
+	public WebzFileMetadata createFolder() throws IOException, WebzException;
 
-	public WebzFile move(WebzFile destFile) throws IOException, WebzException;
+	/** TODO !!! describe !!! */
+	public WebzFileMetadata uploadFile(byte[] content) throws IOException, WebzException;
 
-	public WebzFile copy(WebzFile destFile) throws IOException, WebzException;
+	/** TODO !!! describe !!! */
+	public WebzFileMetadata move(WebzFile destFile) throws IOException, WebzException;
 
-	public WebzFile move(String destPathName) throws IOException, WebzException;
+	/** TODO !!! describe !!! */
+	public WebzFileMetadata copy(WebzFile destFile) throws IOException, WebzException;
 
-	public WebzFile copy(String destPathName) throws IOException, WebzException;
+	/** TODO !!! describe !!! */
+	public WebzFileMetadata move(String destPathName) throws IOException, WebzException;
 
+	/** TODO !!! describe !!! */
+	public WebzFileMetadata copy(String destPathName) throws IOException, WebzException;
+
+	/** TODO !!! describe !!! */
 	public void delete() throws IOException, WebzException;
 
 }

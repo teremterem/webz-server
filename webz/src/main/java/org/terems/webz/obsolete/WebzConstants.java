@@ -1,4 +1,4 @@
-package org.terems.webz;
+package org.terems.webz.obsolete;
 
 import java.util.regex.Pattern;
 

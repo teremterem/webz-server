@@ -2,39 +2,42 @@ package org.terems.webz;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 
-public interface WebzFileMetadata<MO> {
+/**
+ * TODO !!! describe !!!
+ * 
+ * P.S. implementations should be immutable ?
+ * 
+ * P.P.S. should all implementations be Serializable ?
+ **/
+public interface WebzFileMetadata {
 
-	public void setMetadataObjectThreadSafe(MO metadataObject) throws IOException, WebzException;
-
-	public String getPathName() throws IOException, WebzException;
-
+	/** TODO !!! describe !!! */
 	public String getName() throws IOException, WebzException;
 
+	/** TODO !!! describe !!! */
 	public boolean isFile() throws IOException, WebzException;
 
+	/** TODO !!! describe !!! */
 	public boolean isFolder() throws IOException, WebzException;
 
+	/** TODO !!! describe !!! */
 	public FileSpecific getFileSpecific() throws IOException, WebzException;
 
-	public FolderSpecific getFolderSpecific() throws IOException, WebzException;
+	/** TODO !!! describe !!! */
+	public interface FileSpecific extends WebzFileMetadata {
 
-	public interface FileSpecific {
+		/** TODO !!! describe !!! */
+		public long getNumberOfBytes() throws IOException, WebzException;
 
-		public long getNumberOfBytes();
+		/** TODO !!! describe !!! */
+		public Date getLastModified() throws IOException, WebzException;
 
-		public Date getLastModified();
-
-		public String getRevision();
+		/** TODO !!! describe !!! */
+		public String getRevision() throws IOException, WebzException;
 	}
 
-	public interface FolderSpecific {
-
-		public List<WebzFile> getChildren();
-
-		public String getHash();
-
-	}
+	// TODO either get rid of this method if it brings no value for the abstraction layer or describe !!!
+	public String _getNativePathName() throws IOException, WebzException;
 
 }

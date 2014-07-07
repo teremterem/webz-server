@@ -7,7 +7,7 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServlet;
 
-import org.terems.webz.dropbox.gae.GaeHttpRequestor;
+import org.terems.webz.obsolete.dropbox.gae.GaeHttpRequestor;
 
 import com.dropbox.core.DbxAppInfo;
 import com.dropbox.core.DbxAuthFinish;

@@ -1,4 +1,4 @@
-package org.terems.webz;
+package org.terems.webz.obsolete;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
@@ -32,13 +32,17 @@ import org.eclipse.mylyn.wikitext.core.parser.builder.HtmlDocumentBuilder;
 import org.eclipse.mylyn.wikitext.core.util.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terems.webz.base.BaseWebzFile;
+import org.terems.webz.WebzException;
+import org.terems.webz.WebzFile;
+import org.terems.webz.WebzFileFactory;
+import org.terems.webz.WebzFileMetadata;
+import org.terems.webz.impl.GenericWebzFile;
 
 public class WebzEngine {
 
 	private static Logger LOG = LoggerFactory.getLogger(WebzEngine.class);
 
-	private WebzFileSystem fileSystem;
+	private WebzFileFactory fileFactory;
 
 	private Properties mimetypes = new Properties();
 	private Properties domains = new Properties();
@@ -53,8 +57,8 @@ public class WebzEngine {
 	private String defaultMimetype;
 	private String lastResortWelcomeFile;
 
-	public WebzEngine(WebzFileSystem fileSystem) throws WebzException {
-		this.fileSystem = fileSystem;
+	public WebzEngine(WebzFileFactory fileFactory) throws WebzException {
+		this.fileFactory = fileFactory;
 		initMimetypes();
 	}
 
@@ -63,13 +67,13 @@ public class WebzEngine {
 		// TODO implement properties refresh mechanism (for ex. based on properties files update time)
 
 		try {
-			mimetypes.load(new ByteArrayInputStream(fileSystem.get(WebzConstants._MIMETYPES_PROPERTIES_FILE).getFileContent(
+			mimetypes.load(new ByteArrayInputStream(fileFactory.get(WebzConstants._MIMETYPES_PROPERTIES_FILE).getFileContent(
 					WebzConstants.DEFAULT_BUF_SIZE)));
-			domains.load(new ByteArrayInputStream(fileSystem.get(WebzConstants._DOMAINS_PROPERTIES_FILE).getFileContent(
+			domains.load(new ByteArrayInputStream(fileFactory.get(WebzConstants._DOMAINS_PROPERTIES_FILE).getFileContent(
 					WebzConstants.DEFAULT_BUF_SIZE)));
-			general.load(new ByteArrayInputStream(fileSystem.get(WebzConstants._GENERAL_PROPERTIES_FILE).getFileContent(
+			general.load(new ByteArrayInputStream(fileFactory.get(WebzConstants._GENERAL_PROPERTIES_FILE).getFileContent(
 					WebzConstants.DEFAULT_BUF_SIZE)));
-			wikitexts.load(new ByteArrayInputStream(fileSystem.get(WebzConstants._WIKITEXTS_PROPERTIES_FILE).getFileContent(
+			wikitexts.load(new ByteArrayInputStream(fileFactory.get(WebzConstants._WIKITEXTS_PROPERTIES_FILE).getFileContent(
 					WebzConstants.DEFAULT_BUF_SIZE)));
 
 			baseauthRealm = general.getProperty(WebzConstants.BASEAUTH_REALM_PROPERTY, "");
@@ -185,7 +189,7 @@ public class WebzEngine {
 		if (pathName == null) {
 			pathName = "";
 		} else {
-			pathName = BaseWebzFile.trimFileSeparators(pathName);
+			pathName = GenericWebzFile.trimFileSeparators(pathName);
 		}
 		String originalPathName = pathName; // reserving path name before domain subfolder operations
 
@@ -249,8 +253,9 @@ public class WebzEngine {
 	 */
 	private boolean populateResponse(String pathName, HttpServletRequest req, HttpServletResponse resp,
 			boolean populateNotFound, boolean tryStandardSuffixes) throws WebzException, IOException {
-		WebzFile file = fileSystem.get(pathName);
-		if (!file.exits()) {
+		WebzFile file = fileFactory.get(pathName);
+		WebzFileMetadata fileMetadata = file.getMetadata();
+		if (fileMetadata == null) {
 			if (tryStandardSuffixes) {
 				return tryWithOneOfStandardSuffixes(pathName, req, resp, populateNotFound);
 			} else {
@@ -258,12 +263,12 @@ public class WebzEngine {
 				return false;
 			}
 		} else {
-			if (file.isFile()) {
+			if (fileMetadata.isFile()) {
 				return populateResponseFromFile(file, req, resp);
 			} else {
 				if (LOG.isTraceEnabled()) {
 					LOG.trace("");
-					LOG.trace("!!! Folder Name from Metadata: " + file.getName());
+					LOG.trace("!!! Folder Name from Metadata: " + fileMetadata.getName());
 					LOG.trace("!!! Path Name: " + pathName);
 				}
 
@@ -275,7 +280,8 @@ public class WebzEngine {
 				boolean traditionalWelcome = populateResponse(welcomePath + lastResortWelcomeFile, req, resp, false,
 						tryStandardSuffixes);
 				if (!traditionalWelcome) {
-					return populateResponse(welcomePath + file.getName(), req, resp, populateNotFound, tryStandardSuffixes);
+					return populateResponse(welcomePath + fileMetadata.getName(), req, resp, populateNotFound,
+							tryStandardSuffixes);
 				}
 				return true;
 			}
@@ -334,10 +340,10 @@ public class WebzEngine {
 		Properties wikitextProperties = null;
 
 		if (wikitextPropertiesFile != null) {
-			wikitextPropertiesFile = BaseWebzFile.trimFileSeparators(wikitextPropertiesFile);
+			wikitextPropertiesFile = GenericWebzFile.trimFileSeparators(wikitextPropertiesFile);
 
 			wikitextProperties = new Properties();
-			wikitextProperties.load(new ByteArrayInputStream(fileSystem.get(wikitextPropertiesFile).getFileContent(
+			wikitextProperties.load(new ByteArrayInputStream(fileFactory.get(wikitextPropertiesFile).getFileContent(
 					WebzConstants.DEFAULT_BUF_SIZE)));
 
 			mimetype = wikitextProperties.getProperty(WebzConstants.MIMETYPE_PROPERTY);
@@ -409,11 +415,12 @@ public class WebzEngine {
 
 		boolean showDraft = !ignoreDraft;
 		if (showDraft) {
-			WebzFile draftFile = fileSystem.get(draftFilePathName);
+			WebzFile draftFile = fileFactory.get(draftFilePathName);
 
-			showDraft = draftFile.exits();
+			WebzFileMetadata draftFileMetadata = draftFile.getMetadata();
+			showDraft = draftFileMetadata != null;
 			if (showDraft) {
-				if (!draftFile.isFile()) {
+				if (!draftFileMetadata.isFile()) {
 					throw new WebzException("'" + draftFilePathName + "' is not a file");
 				}
 
@@ -432,7 +439,7 @@ public class WebzEngine {
 					+ WebzConstants._WIKITEXTS_PROPERTIES_FILE);
 		}
 
-		String templateString = fileContentAsString(fileSystem.get(templateFile).getFileContent());
+		String templateString = fileContentAsString(fileFactory.get(templateFile).getFileContent());
 
 		String contentString = fileContentAsString(file.getFileContent());
 
@@ -459,7 +466,7 @@ public class WebzEngine {
 	}
 
 	private WebzFile getDraftFile(WebzFile file) throws IOException, WebzException {
-		return fileSystem.get(file.getPathName()
+		return fileFactory.get(file.getPathName()
 				+ wikitexts.getProperty(WebzConstants.DRAFT_FILE_SUFFIX_PROPERTY, WebzConstants.DEFAULT_DRAFT_FILE_SUFFIX));
 	}
 
@@ -472,7 +479,8 @@ public class WebzEngine {
 		file.uploadFile(getNewWikitextContent(req));
 
 		WebzFile draftFile = getDraftFile(file);
-		if (draftFile.exits() && draftFile.isFile()) {
+		WebzFileMetadata draftFileMetadata = draftFile.getMetadata();
+		if (draftFileMetadata != null && draftFileMetadata.isFile()) {
 			draftFile.delete();
 		}
 	}
@@ -485,9 +493,9 @@ public class WebzEngine {
 		}
 
 		String wikitextPropertiesFolder = trimToFolder(wikitextPropertiesFile);
-		templateFile = wikitextPropertiesFolder + "/" + BaseWebzFile.trimFileSeparators(templateFile);
+		templateFile = wikitextPropertiesFolder + "/" + GenericWebzFile.trimFileSeparators(templateFile);
 
-		String templateString = fileContentAsString(fileSystem.get(templateFile).getFileContent());
+		String templateString = fileContentAsString(fileFactory.get(templateFile).getFileContent());
 
 		String outputEncoding = wikitextProperties.getProperty(WebzConstants.OUTPUT_ENCODING_PROPERTY,
 				WebzConstants.DEFAULT_ENCODING);
@@ -636,10 +644,10 @@ public class WebzEngine {
 		if (regexpPropertiesFile == null) {
 			return Collections.emptySet();
 		} else {
-			regexpPropertiesFile = wikitextPropertiesFolder + "/" + BaseWebzFile.trimFileSeparators(regexpPropertiesFile);
+			regexpPropertiesFile = wikitextPropertiesFolder + "/" + GenericWebzFile.trimFileSeparators(regexpPropertiesFile);
 
 			Properties regexpProperties = new Properties();
-			regexpProperties.load(new ByteArrayInputStream(fileSystem.get(regexpPropertiesFile).getFileContent(
+			regexpProperties.load(new ByteArrayInputStream(fileFactory.get(regexpPropertiesFile).getFileContent(
 					WebzConstants.DEFAULT_BUF_SIZE)));
 
 			Map<String, RegexpReplacement> regexpReplacementsMap = new TreeMap<String, RegexpReplacement>();
@@ -806,7 +814,7 @@ public class WebzEngine {
 		if (subfolder == null) {
 			return null;
 		} else {
-			return BaseWebzFile.trimFileSeparators(subfolder);
+			return GenericWebzFile.trimFileSeparators(subfolder);
 		}
 	}
 

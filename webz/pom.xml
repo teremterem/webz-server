@@ -38,6 +38,12 @@
 		  <artifactId>dropbox-core-sdk</artifactId>
 		</dependency>
 
+		<!-- Ehcache -->
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+		</dependency>
+
 		<!-- Mylyn WikiText -->
 		<dependency>
 		    <groupId>com.google.guava</groupId>
