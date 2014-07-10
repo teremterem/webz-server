@@ -4,7 +4,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.ByteOrderMark;
 
-public class WebzConstants {
+@Deprecated
+public class ObsoleteWebzConstants {
 
 	public static final int DEFAULT_BUF_SIZE = 8192;
 	public static final int DEFAULT_FILE_PAYLOAD_SIZE_THRESHOLD_TO_CACHE = 262144; // 16384;

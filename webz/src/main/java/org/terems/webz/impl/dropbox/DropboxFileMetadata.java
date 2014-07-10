@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.terems.webz.WebzException;
-import org.terems.webz.impl.base.BaseWebzFileMetadata;
+import org.terems.webz.impl.BaseWebzFileMetadata;
 
 import com.dropbox.core.DbxEntry;
 

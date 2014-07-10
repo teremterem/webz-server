@@ -1,4 +1,4 @@
-package org.terems.webz.impl.base;
+package org.terems.webz.impl;
 
 import java.io.IOException;
 import java.util.Date;

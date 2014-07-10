@@ -38,9 +38,10 @@ import org.terems.webz.WebzFileFactory;
 import org.terems.webz.WebzFileMetadata;
 import org.terems.webz.impl.GenericWebzFile;
 
-public class WebzEngine {
+@Deprecated
+public class ObsoleteWebzEngine {
 
-	private static Logger LOG = LoggerFactory.getLogger(WebzEngine.class);
+	private static Logger LOG = LoggerFactory.getLogger(ObsoleteWebzEngine.class);
 
 	private WebzFileFactory fileFactory;
 
@@ -57,7 +58,7 @@ public class WebzEngine {
 	private String defaultMimetype;
 	private String lastResortWelcomeFile;
 
-	public WebzEngine(WebzFileFactory fileFactory) throws WebzException {
+	public ObsoleteWebzEngine(WebzFileFactory fileFactory) throws WebzException {
 		this.fileFactory = fileFactory;
 		initMimetypes();
 	}
@@ -67,28 +68,29 @@ public class WebzEngine {
 		// TODO implement properties refresh mechanism (for ex. based on properties files update time)
 
 		try {
-			mimetypes.load(new ByteArrayInputStream(fileFactory.get(WebzConstants._MIMETYPES_PROPERTIES_FILE).getFileContent(
-					WebzConstants.DEFAULT_BUF_SIZE)));
-			domains.load(new ByteArrayInputStream(fileFactory.get(WebzConstants._DOMAINS_PROPERTIES_FILE).getFileContent(
-					WebzConstants.DEFAULT_BUF_SIZE)));
-			general.load(new ByteArrayInputStream(fileFactory.get(WebzConstants._GENERAL_PROPERTIES_FILE).getFileContent(
-					WebzConstants.DEFAULT_BUF_SIZE)));
-			wikitexts.load(new ByteArrayInputStream(fileFactory.get(WebzConstants._WIKITEXTS_PROPERTIES_FILE).getFileContent(
-					WebzConstants.DEFAULT_BUF_SIZE)));
+			mimetypes.load(new ByteArrayInputStream(fileFactory.get(ObsoleteWebzConstants._MIMETYPES_PROPERTIES_FILE)
+					.getFileContent(ObsoleteWebzConstants.DEFAULT_BUF_SIZE)));
+			domains.load(new ByteArrayInputStream(fileFactory.get(ObsoleteWebzConstants._DOMAINS_PROPERTIES_FILE)
+					.getFileContent(ObsoleteWebzConstants.DEFAULT_BUF_SIZE)));
+			general.load(new ByteArrayInputStream(fileFactory.get(ObsoleteWebzConstants._GENERAL_PROPERTIES_FILE)
+					.getFileContent(ObsoleteWebzConstants.DEFAULT_BUF_SIZE)));
+			wikitexts.load(new ByteArrayInputStream(fileFactory.get(ObsoleteWebzConstants._WIKITEXTS_PROPERTIES_FILE)
+					.getFileContent(ObsoleteWebzConstants.DEFAULT_BUF_SIZE)));
 
-			baseauthRealm = general.getProperty(WebzConstants.BASEAUTH_REALM_PROPERTY, "");
-			baseauthUsername = general.getProperty(WebzConstants.BASEAUTH_USERNAME_PROPERTY, "");
-			baseauthPassword = general.getProperty(WebzConstants.BASEAUTH_PASSWORD_PROPERTY);
+			baseauthRealm = general.getProperty(ObsoleteWebzConstants.BASEAUTH_REALM_PROPERTY, "");
+			baseauthUsername = general.getProperty(ObsoleteWebzConstants.BASEAUTH_USERNAME_PROPERTY, "");
+			baseauthPassword = general.getProperty(ObsoleteWebzConstants.BASEAUTH_PASSWORD_PROPERTY);
 
-			defaultFileSuffixesPrioritized = general.getProperty(WebzConstants.DEFAULT_FILE_SUFFIXES_PROPERTY, ".html").split(
-					"\\s*,\\s*");
+			defaultFileSuffixesPrioritized = general.getProperty(ObsoleteWebzConstants.DEFAULT_FILE_SUFFIXES_PROPERTY, ".html")
+					.split("\\s*,\\s*");
 			for (int i = 0; i < defaultFileSuffixesPrioritized.length; i++) {
 				defaultFileSuffixesPrioritized[i] = defaultFileSuffixesPrioritized[i].trim().toLowerCase();
 			}
 
-			defaultMimetype = general.getProperty(WebzConstants.DEFAULT_MIMETYPE_PROPERTY, WebzConstants.DEFAULT_MIMETYPE);
-			lastResortWelcomeFile = general.getProperty(WebzConstants.LAST_RESORT_WELCOME_FILE_PROPERTY,
-					WebzConstants.DEFAULT_LAST_RESORT_WELCOME_FILE);
+			defaultMimetype = general.getProperty(ObsoleteWebzConstants.DEFAULT_MIMETYPE_PROPERTY,
+					ObsoleteWebzConstants.DEFAULT_MIMETYPE);
+			lastResortWelcomeFile = general.getProperty(ObsoleteWebzConstants.LAST_RESORT_WELCOME_FILE_PROPERTY,
+					ObsoleteWebzConstants.DEFAULT_LAST_RESORT_WELCOME_FILE);
 
 		} catch (IOException e) {
 			throw new WebzException(e.getMessage(), e);
@@ -139,7 +141,7 @@ public class WebzEngine {
 	}
 
 	private boolean baseAuthenticationNeeded(HttpServletRequest req) {
-		return general.containsKey(WebzConstants.BASEAUTH_PASSWORD_PROPERTY);
+		return general.containsKey(ObsoleteWebzConstants.BASEAUTH_PASSWORD_PROPERTY);
 	}
 
 	private boolean proceedWithBaseAuthentication(HttpServletRequest req) {
@@ -151,7 +153,8 @@ public class WebzEngine {
 
 				if (basic.equalsIgnoreCase("Basic")) {
 					try {
-						String credentials = new String(Base64.decodeBase64(st.nextToken()), WebzConstants.DEFAULT_ENCODING);
+						String credentials = new String(Base64.decodeBase64(st.nextToken()),
+								ObsoleteWebzConstants.DEFAULT_ENCODING);
 						int colonPos = credentials.indexOf(":");
 						if (colonPos > -1) {
 							String username = credentials.substring(0, colonPos).trim();
@@ -238,7 +241,7 @@ public class WebzEngine {
 	private void replyWithStatusCodeSafely(HttpServletRequest req, HttpServletResponse resp, int statusCode) {
 		resp.setStatus(statusCode);
 		try {
-			populateResponse(WebzConstants.AUX_FILES_PREFIX + statusCode, req, resp, false, true);
+			populateResponse(ObsoleteWebzConstants.AUX_FILES_PREFIX + statusCode, req, resp, false, true);
 		} catch (Throwable th) {
 			if (LOG.isTraceEnabled()) {
 				LOG.trace("FAILED TO RENDER PAYLOAD FOR " + statusCode + " STATUS CODE: " + th.getMessage(), th);
@@ -344,9 +347,9 @@ public class WebzEngine {
 
 			wikitextProperties = new Properties();
 			wikitextProperties.load(new ByteArrayInputStream(fileFactory.get(wikitextPropertiesFile).getFileContent(
-					WebzConstants.DEFAULT_BUF_SIZE)));
+					ObsoleteWebzConstants.DEFAULT_BUF_SIZE)));
 
-			mimetype = wikitextProperties.getProperty(WebzConstants.MIMETYPE_PROPERTY);
+			mimetype = wikitextProperties.getProperty(ObsoleteWebzConstants.MIMETYPE_PROPERTY);
 		}
 
 		if (mimetype == null) {
@@ -370,21 +373,21 @@ public class WebzEngine {
 			file.fileContentToOutputStream(resp.getOutputStream());
 
 		} else {
-			if (req.getParameterMap().containsKey(WebzConstants.EDIT)) {
+			if (req.getParameterMap().containsKey(ObsoleteWebzConstants.EDIT)) {
 
-				editWikitext(file, resp, req.getParameterMap().containsKey(WebzConstants.IGNORE_DRAFT));
+				editWikitext(file, resp, req.getParameterMap().containsKey(ObsoleteWebzConstants.IGNORE_DRAFT));
 
-			} else if (req.getParameterMap().containsKey(WebzConstants.SAVE_DRAFT)) {
+			} else if (req.getParameterMap().containsKey(ObsoleteWebzConstants.SAVE_DRAFT)) {
 
 				saveWikitextDraft(file, req);
-				resp.sendRedirect(req.getRequestURI() + "?" + WebzConstants.EDIT);
+				resp.sendRedirect(req.getRequestURI() + "?" + ObsoleteWebzConstants.EDIT);
 
-			} else if (req.getParameterMap().containsKey(WebzConstants.PUBLISH)) {
+			} else if (req.getParameterMap().containsKey(ObsoleteWebzConstants.PUBLISH)) {
 
 				publishWikitext(file, req);
 				resp.sendRedirect(req.getRequestURI() + "?");
 
-			} else if (req.getParameterMap().containsKey(WebzConstants.PREVIEW)) {
+			} else if (req.getParameterMap().containsKey(ObsoleteWebzConstants.PREVIEW)) {
 
 				viewWikitext(fileContentAsString(getNewWikitextContent(req)), resp, wikitextPropertiesFile, wikitextProperties);
 
@@ -397,13 +400,13 @@ public class WebzEngine {
 	}
 
 	private byte[] getNewWikitextContent(HttpServletRequest req) throws WebzException, UnsupportedEncodingException {
-		String wikitextNewContent = req.getParameter(WebzConstants.WIKITEXT_INPUT_NAME);
+		String wikitextNewContent = req.getParameter(ObsoleteWebzConstants.WIKITEXT_INPUT_NAME);
 		if (wikitextNewContent == null) {
-			throw new WebzException(WebzConstants.WIKITEXT_INPUT_NAME + " request parameter was not submitted");
+			throw new WebzException(ObsoleteWebzConstants.WIKITEXT_INPUT_NAME + " request parameter was not submitted");
 		}
 
-		String editPageEncoding = wikitexts.getProperty(WebzConstants.EDIT_PAGE_ENCODING_PROPERTY,
-				WebzConstants.DEFAULT_ENCODING);
+		String editPageEncoding = wikitexts.getProperty(ObsoleteWebzConstants.EDIT_PAGE_ENCODING_PROPERTY,
+				ObsoleteWebzConstants.DEFAULT_ENCODING);
 		return wikitextNewContent.getBytes(editPageEncoding);
 	}
 
@@ -411,7 +414,8 @@ public class WebzEngine {
 			UnsupportedEncodingException {
 
 		String draftFilePathName = file.getPathName()
-				+ wikitexts.getProperty(WebzConstants.DRAFT_FILE_SUFFIX_PROPERTY, WebzConstants.DEFAULT_DRAFT_FILE_SUFFIX);
+				+ wikitexts.getProperty(ObsoleteWebzConstants.DRAFT_FILE_SUFFIX_PROPERTY,
+						ObsoleteWebzConstants.DEFAULT_DRAFT_FILE_SUFFIX);
 
 		boolean showDraft = !ignoreDraft;
 		if (showDraft) {
@@ -433,28 +437,28 @@ public class WebzEngine {
 
 	private void populateWikitextEditTemplate(HttpServletResponse resp, WebzFile file, boolean draftOpened, boolean draftIgnored)
 			throws WebzException, IOException, UnsupportedEncodingException {
-		String templateFile = wikitexts.getProperty(WebzConstants.EDIT_PAGE_TEMPLATE_PROPERTY);
+		String templateFile = wikitexts.getProperty(ObsoleteWebzConstants.EDIT_PAGE_TEMPLATE_PROPERTY);
 		if (templateFile == null) {
-			throw new WebzException(WebzConstants.EDIT_PAGE_TEMPLATE_PROPERTY + " property is not set in "
-					+ WebzConstants._WIKITEXTS_PROPERTIES_FILE);
+			throw new WebzException(ObsoleteWebzConstants.EDIT_PAGE_TEMPLATE_PROPERTY + " property is not set in "
+					+ ObsoleteWebzConstants._WIKITEXTS_PROPERTIES_FILE);
 		}
 
 		String templateString = fileContentAsString(fileFactory.get(templateFile).getFileContent());
 
 		String contentString = fileContentAsString(file.getFileContent());
 
-		String draftOpenedVar = wikitexts.getProperty(WebzConstants.DRAFT_OPENED_VAR_PROPERTY);
-		String draftIgnoredVar = wikitexts.getProperty(WebzConstants.DRAFT_IGNORED_VAR_PROPERTY);
-		String internalPathVar = wikitexts.getProperty(WebzConstants.EDIT_INTERNAL_PATH_VAR_PROPERTY);
-		String textareaContentVar = wikitexts.getProperty(WebzConstants.EDIT_TEXTAREA_CONTENT_VAR_PROPERTY);
+		String draftOpenedVar = wikitexts.getProperty(ObsoleteWebzConstants.DRAFT_OPENED_VAR_PROPERTY);
+		String draftIgnoredVar = wikitexts.getProperty(ObsoleteWebzConstants.DRAFT_IGNORED_VAR_PROPERTY);
+		String internalPathVar = wikitexts.getProperty(ObsoleteWebzConstants.EDIT_INTERNAL_PATH_VAR_PROPERTY);
+		String textareaContentVar = wikitexts.getProperty(ObsoleteWebzConstants.EDIT_TEXTAREA_CONTENT_VAR_PROPERTY);
 
 		templateString = templateString.replace(draftOpenedVar, String.valueOf(draftOpened));
 		templateString = templateString.replace(draftIgnoredVar, String.valueOf(draftIgnored));
 		templateString = templateString.replace(internalPathVar, "/" + file.getPathName());
 		templateString = templateString.replace(textareaContentVar, StringEscapeUtils.escapeHtml4(contentString));
 
-		String editPageEncoding = wikitexts.getProperty(WebzConstants.EDIT_PAGE_ENCODING_PROPERTY,
-				WebzConstants.DEFAULT_ENCODING);
+		String editPageEncoding = wikitexts.getProperty(ObsoleteWebzConstants.EDIT_PAGE_ENCODING_PROPERTY,
+				ObsoleteWebzConstants.DEFAULT_ENCODING);
 		writeStringToResp(resp, templateString, editPageEncoding);
 	}
 
@@ -467,7 +471,8 @@ public class WebzEngine {
 
 	private WebzFile getDraftFile(WebzFile file) throws IOException, WebzException {
 		return fileFactory.get(file.getPathName()
-				+ wikitexts.getProperty(WebzConstants.DRAFT_FILE_SUFFIX_PROPERTY, WebzConstants.DEFAULT_DRAFT_FILE_SUFFIX));
+				+ wikitexts.getProperty(ObsoleteWebzConstants.DRAFT_FILE_SUFFIX_PROPERTY,
+						ObsoleteWebzConstants.DEFAULT_DRAFT_FILE_SUFFIX));
 	}
 
 	private void saveWikitextDraft(WebzFile file, HttpServletRequest req) throws IOException, WebzException {
@@ -487,9 +492,10 @@ public class WebzEngine {
 
 	private void viewWikitext(String contentString, HttpServletResponse resp, String wikitextPropertiesFile,
 			Properties wikitextProperties) throws WebzException, IOException, UnsupportedEncodingException {
-		String templateFile = wikitextProperties.getProperty(WebzConstants.TEMPLATE_PROPERTY);
+		String templateFile = wikitextProperties.getProperty(ObsoleteWebzConstants.TEMPLATE_PROPERTY);
 		if (templateFile == null) {
-			throw new WebzException(WebzConstants.TEMPLATE_PROPERTY + " property is not set in " + wikitextPropertiesFile);
+			throw new WebzException(ObsoleteWebzConstants.TEMPLATE_PROPERTY + " property is not set in "
+					+ wikitextPropertiesFile);
 		}
 
 		String wikitextPropertiesFolder = trimToFolder(wikitextPropertiesFile);
@@ -497,19 +503,19 @@ public class WebzEngine {
 
 		String templateString = fileContentAsString(fileFactory.get(templateFile).getFileContent());
 
-		String outputEncoding = wikitextProperties.getProperty(WebzConstants.OUTPUT_ENCODING_PROPERTY,
-				WebzConstants.DEFAULT_ENCODING);
+		String outputEncoding = wikitextProperties.getProperty(ObsoleteWebzConstants.OUTPUT_ENCODING_PROPERTY,
+				ObsoleteWebzConstants.DEFAULT_ENCODING);
 		processWikitext(resp, wikitextPropertiesFolder, wikitextProperties, templateString, contentString, outputEncoding);
 	}
 
 	private String fileContentAsString(byte[] fileContent) throws IOException, WebzException {
 		StringWriter contentWriter = new StringWriter();
 
-		BOMInputStream bomIn = new BOMInputStream(new ByteArrayInputStream(fileContent), false, WebzConstants.ALL_BOMS);
+		BOMInputStream bomIn = new BOMInputStream(new ByteArrayInputStream(fileContent), false, ObsoleteWebzConstants.ALL_BOMS);
 
 		String encoding = bomIn.getBOMCharsetName();
 		if (encoding == null) {
-			encoding = WebzConstants.DEFAULT_ENCODING;
+			encoding = ObsoleteWebzConstants.DEFAULT_ENCODING;
 		}
 
 		IOUtils.copy(bomIn, contentWriter, encoding);
@@ -522,7 +528,8 @@ public class WebzEngine {
 	private void processWikitext(HttpServletResponse resp, String wikitextPropertiesFolder, Properties wikitextProperties,
 			String templateString, String contentString, String outputEncoding) throws WebzException, IOException,
 			UnsupportedEncodingException {
-		Pattern sectionsRegexp = Pattern.compile(wikitextProperties.getProperty(WebzConstants.SECTION_VARS_REGEXP_PROPERTY));
+		Pattern sectionsRegexp = Pattern.compile(wikitextProperties
+				.getProperty(ObsoleteWebzConstants.SECTION_VARS_REGEXP_PROPERTY));
 		Matcher templateSectionsMatcher = sectionsRegexp.matcher(templateString);
 
 		Matcher contentSectionsMatcher = sectionsRegexp.matcher(contentString);
@@ -536,21 +543,22 @@ public class WebzEngine {
 		// ~
 
 		Writer respWriter = new BufferedWriter(new OutputStreamWriter(resp.getOutputStream(), outputEncoding),
-				WebzConstants.DEFAULT_BUF_SIZE);
+				ObsoleteWebzConstants.DEFAULT_BUF_SIZE);
 
-		String defaultLinkRel = wikitextProperties.getProperty(WebzConstants.WIKITEXT_LINK_REL_PROPERTY
-				+ WebzConstants.DEFAULT_PROPERTY_SUFFIX);
-		String defaultAbsoluteLinkTarget = wikitextProperties.getProperty(WebzConstants.WIKITEXT_ABSOLUTE_LINK_TARGET_PROPERTY
-				+ WebzConstants.DEFAULT_PROPERTY_SUFFIX);
+		String defaultLinkRel = wikitextProperties.getProperty(ObsoleteWebzConstants.WIKITEXT_LINK_REL_PROPERTY
+				+ ObsoleteWebzConstants.DEFAULT_PROPERTY_SUFFIX);
+		String defaultAbsoluteLinkTarget = wikitextProperties
+				.getProperty(ObsoleteWebzConstants.WIKITEXT_ABSOLUTE_LINK_TARGET_PROPERTY
+						+ ObsoleteWebzConstants.DEFAULT_PROPERTY_SUFFIX);
 
 		Collection<RegexpReplacement> generalRegexpReplacements = extractRegexpReplacements(wikitextProperties,
 				wikitextPropertiesFolder, null);
 
-		String defaultLanguage = wikitextProperties.getProperty(WebzConstants.WIKITEXT_LANG_PROPERTY
-				+ WebzConstants.DEFAULT_PROPERTY_SUFFIX, WebzConstants.LANGUAGE_RAW);
+		String defaultLanguage = wikitextProperties.getProperty(ObsoleteWebzConstants.WIKITEXT_LANG_PROPERTY
+				+ ObsoleteWebzConstants.DEFAULT_PROPERTY_SUFFIX, ObsoleteWebzConstants.LANGUAGE_RAW);
 
 		int sectionNameRegexpGroup = Integer.parseInt(wikitextProperties
-				.getProperty(WebzConstants.SECTION_NAME_REGEXP_GROUP_PROPERTY));
+				.getProperty(ObsoleteWebzConstants.SECTION_NAME_REGEXP_GROUP_PROPERTY));
 
 		int lastPos = 0;
 		while (templateSectionsMatcher.find()) {
@@ -568,10 +576,11 @@ public class WebzEngine {
 			} else {
 
 				String language = getSectionLanguage(wikitextProperties, sectionName, defaultLanguage);
-				boolean languageRaw = WebzConstants.LANGUAGE_RAW.equals(language);
+				boolean languageRaw = ObsoleteWebzConstants.LANGUAGE_RAW.equals(language);
 
 				boolean regexpsForRaw = Boolean.parseBoolean(wikitextProperties.getProperty(
-						WebzConstants.WIKITEXT_REGEXPS_FOR_RAW_PROPERTY, WebzConstants.DEFAULT_REGEXPS_FOR_RAW.toString()));
+						ObsoleteWebzConstants.WIKITEXT_REGEXPS_FOR_RAW_PROPERTY,
+						ObsoleteWebzConstants.DEFAULT_REGEXPS_FOR_RAW.toString()));
 
 				if (!languageRaw || regexpsForRaw) {
 					for (RegexpReplacement replacement : generalRegexpReplacements) {
@@ -591,11 +600,11 @@ public class WebzEngine {
 
 				} else {
 
-					String linkRel = wikitextProperties.getProperty(WebzConstants.WIKITEXT_LINK_REL_PROPERTY
-							+ WebzConstants.SECTION_PROPERTY_SUFFIX + sectionName, defaultLinkRel);
+					String linkRel = wikitextProperties.getProperty(ObsoleteWebzConstants.WIKITEXT_LINK_REL_PROPERTY
+							+ ObsoleteWebzConstants.SECTION_PROPERTY_SUFFIX + sectionName, defaultLinkRel);
 					String absoluteLinkTarget = wikitextProperties.getProperty(
-							WebzConstants.WIKITEXT_ABSOLUTE_LINK_TARGET_PROPERTY + WebzConstants.SECTION_PROPERTY_SUFFIX
-									+ sectionName, defaultAbsoluteLinkTarget);
+							ObsoleteWebzConstants.WIKITEXT_ABSOLUTE_LINK_TARGET_PROPERTY
+									+ ObsoleteWebzConstants.SECTION_PROPERTY_SUFFIX + sectionName, defaultAbsoluteLinkTarget);
 
 					HtmlDocumentBuilder builder = new HtmlDocumentBuilder(respWriter);
 					// avoid the <html> and <body> tags
@@ -636,9 +645,9 @@ public class WebzEngine {
 
 	private Collection<RegexpReplacement> extractRegexpReplacements(Properties wikitextProperties,
 			String wikitextPropertiesFolder, String sectionName) throws IOException, WebzException {
-		String regexpsReferencePropertyName = WebzConstants.WIKITEXT_PRELIMINARY_REGEXPS_PROPERTY
-				+ (sectionName == null ? WebzConstants.GENERAL_SECTION_SUFFIX : WebzConstants.SECTION_PROPERTY_SUFFIX
-						+ sectionName);
+		String regexpsReferencePropertyName = ObsoleteWebzConstants.WIKITEXT_PRELIMINARY_REGEXPS_PROPERTY
+				+ (sectionName == null ? ObsoleteWebzConstants.GENERAL_SECTION_SUFFIX
+						: ObsoleteWebzConstants.SECTION_PROPERTY_SUFFIX + sectionName);
 		String regexpPropertiesFile = wikitextProperties.getProperty(regexpsReferencePropertyName);
 
 		if (regexpPropertiesFile == null) {
@@ -648,19 +657,19 @@ public class WebzEngine {
 
 			Properties regexpProperties = new Properties();
 			regexpProperties.load(new ByteArrayInputStream(fileFactory.get(regexpPropertiesFile).getFileContent(
-					WebzConstants.DEFAULT_BUF_SIZE)));
+					ObsoleteWebzConstants.DEFAULT_BUF_SIZE)));
 
 			Map<String, RegexpReplacement> regexpReplacementsMap = new TreeMap<String, RegexpReplacement>();
 			for (Map.Entry<Object, Object> entry : regexpProperties.entrySet()) {
 				String property = entry.getKey().toString();
 
-				if (property.startsWith(WebzConstants.REGEXP_PROPERTY_PREFIX)) {
+				if (property.startsWith(ObsoleteWebzConstants.REGEXP_PROPERTY_PREFIX)) {
 					getReplacementObject(regexpReplacementsMap,
-							property.substring(WebzConstants.REGEXP_PROPERTY_PREFIX.length())).regexp = entry.getValue()
-							.toString();
-				} else if (property.startsWith(WebzConstants.REPLACEMENT_PROPERTY_PREFIX)) {
+							property.substring(ObsoleteWebzConstants.REGEXP_PROPERTY_PREFIX.length())).regexp = entry
+							.getValue().toString();
+				} else if (property.startsWith(ObsoleteWebzConstants.REPLACEMENT_PROPERTY_PREFIX)) {
 					getReplacementObject(regexpReplacementsMap,
-							property.substring(WebzConstants.REPLACEMENT_PROPERTY_PREFIX.length())).replacement = entry
+							property.substring(ObsoleteWebzConstants.REPLACEMENT_PROPERTY_PREFIX.length())).replacement = entry
 							.getValue().toString();
 				} else {
 					if (LOG.isTraceEnabled()) {
@@ -698,8 +707,8 @@ public class WebzEngine {
 	}
 
 	private String getSectionLanguage(Properties wikitextProperties, String sectionName, String defaultLanguage) {
-		String language = wikitextProperties.getProperty(WebzConstants.WIKITEXT_LANG_PROPERTY
-				+ WebzConstants.SECTION_PROPERTY_SUFFIX + sectionName, defaultLanguage);
+		String language = wikitextProperties.getProperty(ObsoleteWebzConstants.WIKITEXT_LANG_PROPERTY
+				+ ObsoleteWebzConstants.SECTION_PROPERTY_SUFFIX + sectionName, defaultLanguage);
 		if (language != null) {
 			language = language.trim();
 		}
@@ -709,12 +718,12 @@ public class WebzEngine {
 	private void getAllSectionsContent(Properties wikitextProperties, String contentString, Matcher contentSectionsMatcher,
 			Map<String, String> sectionContentMap) {
 		int lastPos = 0;
-		String curSectionName = wikitextProperties.getProperty(WebzConstants.DEFAULT_SECTION_PROPERTY,
-				WebzConstants.DEFAULT_SECTION_NAME);
-		boolean sectionsTrim = Boolean.parseBoolean(wikitextProperties.getProperty(WebzConstants.SECTIONS_TRIM_PROPERTY,
-				WebzConstants.DEFAULT_SECTION_TRIM.toString()));
+		String curSectionName = wikitextProperties.getProperty(ObsoleteWebzConstants.DEFAULT_SECTION_PROPERTY,
+				ObsoleteWebzConstants.DEFAULT_SECTION_NAME);
+		boolean sectionsTrim = Boolean.parseBoolean(wikitextProperties.getProperty(
+				ObsoleteWebzConstants.SECTIONS_TRIM_PROPERTY, ObsoleteWebzConstants.DEFAULT_SECTION_TRIM.toString()));
 		int sectionNameRegexpGroup = Integer.parseInt(wikitextProperties
-				.getProperty(WebzConstants.SECTION_NAME_REGEXP_GROUP_PROPERTY));
+				.getProperty(ObsoleteWebzConstants.SECTION_NAME_REGEXP_GROUP_PROPERTY));
 
 		while (contentSectionsMatcher.find()) {
 
@@ -748,7 +757,7 @@ public class WebzEngine {
 			throws WebzException, IOException {
 		if (populateNotFound) {
 			resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			populateResponse(WebzConstants.AUX_FILES_PREFIX + HttpServletResponse.SC_NOT_FOUND, req, resp, false, true);
+			populateResponse(ObsoleteWebzConstants.AUX_FILES_PREFIX + HttpServletResponse.SC_NOT_FOUND, req, resp, false, true);
 		}
 	}
 
@@ -760,7 +769,7 @@ public class WebzEngine {
 		String propertyFile = null;
 		for (Map.Entry<Object, Object> entry : wikitexts.entrySet()) {
 			String property = entry.getKey().toString();
-			if (property.startsWith(WebzConstants.DOT) && pathName.endsWith(property.toLowerCase())) {
+			if (property.startsWith(ObsoleteWebzConstants.DOT) && pathName.endsWith(property.toLowerCase())) {
 				propertyFile = entry.getValue().toString();
 				break;
 			}
@@ -780,7 +789,7 @@ public class WebzEngine {
 		boolean contentTypeKnown = false;
 		for (Map.Entry<Object, Object> entry : mimetypes.entrySet()) {
 			String property = entry.getKey().toString();
-			if (property.startsWith(WebzConstants.DOT) && pathName.endsWith(property.toLowerCase())) {
+			if (property.startsWith(ObsoleteWebzConstants.DOT) && pathName.endsWith(property.toLowerCase())) {
 				mimetype = entry.getValue().toString();
 				contentTypeKnown = true;
 				break;

@@ -21,9 +21,9 @@ public class GaeHttpRequestor extends HttpRequestor {
 		this.proxy = proxy;
 	}
 
-	public static final int DefaultConnectTimeoutMillis = 35 * 1000;
+	public static final int DefaultConnectTimeoutMillis = 25 * 1000;
 
-	public static final int DefaultReadTimeoutMillis = 35 * 1000;
+	public static final int DefaultReadTimeoutMillis = 25 * 1000;
 
 	public static final GaeHttpRequestor INSTANCE = new GaeHttpRequestor();
 

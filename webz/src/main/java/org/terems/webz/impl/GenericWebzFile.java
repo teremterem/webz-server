@@ -65,18 +65,18 @@ public class GenericWebzFile implements WebzFile {
 
 	@Override
 	public WebzFileMetadata getMetadata() throws IOException, WebzException {
-		return fileSystem._getMetadata(pathName);
+		return fileSystem.getMetadata(pathName);
 	}
 
 	@Override
 	public WebzFileMetadata fileContentToOutputStream(OutputStream out) throws IOException, WebzException {
-		return fileSystem._fileContentToOutputStream(pathName, out);
+		return fileSystem.fileContentToOutputStream(pathName, out);
 	}
 
 	@Override
 	public Collection<WebzFile> getChildren() throws IOException, WebzException {
 
-		Collection<String> childPathNames = fileSystem._getChildPathNames(pathName);
+		Collection<String> childPathNames = fileSystem.getChildPathNames(pathName);
 		if (childPathNames == null) {
 			return null;
 		}
@@ -90,12 +90,12 @@ public class GenericWebzFile implements WebzFile {
 
 	@Override
 	public WebzFileMetadata createFolder() throws IOException, WebzException {
-		return fileSystem._createFolder(pathName);
+		return fileSystem.createFolder(pathName);
 	}
 
 	@Override
 	public WebzFileMetadata uploadFile(byte[] content) throws IOException, WebzException {
-		return fileSystem._uploadFile(pathName, content);
+		return fileSystem.uploadFile(pathName, content);
 	}
 
 	@Override
@@ -110,17 +110,17 @@ public class GenericWebzFile implements WebzFile {
 
 	@Override
 	public WebzFileMetadata move(String destPathName) throws IOException, WebzException {
-		return fileSystem._move(pathName, destPathName);
+		return fileSystem.move(pathName, destPathName);
 	}
 
 	@Override
 	public WebzFileMetadata copy(String destPathName) throws IOException, WebzException {
-		return fileSystem._copy(pathName, destPathName);
+		return fileSystem.copy(pathName, destPathName);
 	}
 
 	@Override
 	public void delete() throws IOException, WebzException {
-		fileSystem._delete(pathName);
+		fileSystem.delete(pathName);
 	}
 
 }

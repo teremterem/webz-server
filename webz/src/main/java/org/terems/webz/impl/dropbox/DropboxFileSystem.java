@@ -6,14 +6,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.LinkedHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFileMetadata;
+import org.terems.webz.impl.BaseWebzFileSystem;
 import org.terems.webz.impl.GenericWebzFile;
-import org.terems.webz.impl.base.BaseWebzFileSystem;
 import org.terems.webz.internal.FreshParentChildrenMetadata;
 import org.terems.webz.internal.ParentChildrenMetadata;
 import org.terems.webz.internal.WebzFileDownloader;
 
+import com.dropbox.core.DbxAccountInfo;
 import com.dropbox.core.DbxClient;
 import com.dropbox.core.DbxClient.Downloader;
 import com.dropbox.core.DbxEntry;
@@ -24,18 +27,24 @@ import com.dropbox.core.util.Maybe;
 
 public class DropboxFileSystem extends BaseWebzFileSystem {
 
-	private DbxClient dbxClient;
-	private String dbxBasePath;
+	private static Logger LOG = LoggerFactory.getLogger(DropboxFileSystem.class);
 
-	private String fileSystemUniqueId;
+	private DbxClient dbxClient;
+
+	private final String dbxBasePath;
+	private final String fileSystemUniqueId;
 
 	public DropboxFileSystem(DbxClient dbxClient, String dbxBasePath) throws WebzException {
 		try {
 			this.dbxClient = dbxClient;
 			this.dbxBasePath = "/" + GenericWebzFile.trimFileSeparators(dbxBasePath);
 
-			// TODO what is referralLink? does it identify dropbox account uniquely?
-			this.fileSystemUniqueId = "dropbox-" + dbxClient.getAccountInfo().referralLink + "-" + this.dbxBasePath;
+			DbxAccountInfo dbxAccountInfo = dbxClient.getAccountInfo();
+			// TODO what is referralLink? can it identify Dropbox file system uniquely?
+			this.fileSystemUniqueId = "Dropbox-" + dbxAccountInfo.referralLink + "-" + this.dbxBasePath;
+
+			LOG.info("'" + this.fileSystemUniqueId + "' file system was created for the following Dropbox account: "
+					+ dbxAccountInfo);
 		} catch (DbxException e) {
 			throw new WebzException(e);
 		}
@@ -65,12 +74,12 @@ public class DropboxFileSystem extends BaseWebzFileSystem {
 	}
 
 	@Override
-	public String _getFileSystemUniqueId() {
+	public String getFileSystemUniqueId() {
 		return this.fileSystemUniqueId;
 	}
 
 	@Override
-	public WebzFileMetadata _getMetadata(String pathName) throws IOException, WebzException {
+	public WebzFileMetadata getMetadata(String pathName) throws IOException, WebzException {
 		try {
 			return wrapMetadataSafely(dbxClient.getMetadata(dropboxPathName(pathName)));
 		} catch (DbxException e) {
@@ -79,7 +88,7 @@ public class DropboxFileSystem extends BaseWebzFileSystem {
 	}
 
 	@Override
-	public ParentChildrenMetadata _getParentChildrenMetadata(String parentPathName) throws IOException, WebzException {
+	public ParentChildrenMetadata getParentChildrenMetadata(String parentPathName) throws IOException, WebzException {
 		try {
 			return populateParentChildrenMetadata(parentPathName,
 					dbxClient.getMetadataWithChildren(dropboxPathName(parentPathName)));
@@ -89,11 +98,11 @@ public class DropboxFileSystem extends BaseWebzFileSystem {
 	}
 
 	@Override
-	public FreshParentChildrenMetadata _getParentChildrenMetadataIfChanged(String parentPathName, Object previousFolderHash)
+	public FreshParentChildrenMetadata getParentChildrenMetadataIfChanged(String parentPathName, Object previousFolderHash)
 			throws IOException, WebzException {
 
 		if (previousFolderHash == null) {
-			return new FreshParentChildrenMetadata(_getParentChildrenMetadata(parentPathName));
+			return new FreshParentChildrenMetadata(getParentChildrenMetadata(parentPathName));
 		}
 
 		try {
@@ -138,7 +147,7 @@ public class DropboxFileSystem extends BaseWebzFileSystem {
 	}
 
 	@Override
-	public WebzFileMetadata _fileContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException {
+	public WebzFileMetadata fileContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException {
 		try {
 			return wrapMetadataSafely(dbxClient.getFile(dropboxPathName(pathName), null, out));
 		} catch (DbxException e) {
@@ -147,7 +156,7 @@ public class DropboxFileSystem extends BaseWebzFileSystem {
 	}
 
 	@Override
-	public WebzFileDownloader _getFileContentDownloader(String pathName) throws IOException, WebzException {
+	public WebzFileDownloader getFileContentDownloader(String pathName) throws IOException, WebzException {
 		try {
 			final Downloader dbxDownloader = dbxClient.startGetFile(dropboxPathName(pathName), null);
 			if (dbxDownloader == null) {
@@ -171,7 +180,7 @@ public class DropboxFileSystem extends BaseWebzFileSystem {
 	}
 
 	@Override
-	public WebzFileMetadata _createFolder(String pathName) throws IOException, WebzException {
+	public WebzFileMetadata createFolder(String pathName) throws IOException, WebzException {
 		try {
 			return wrapMetadataSafely(dbxClient.createFolder(dropboxPathName(pathName)));
 		} catch (DbxException e) {
@@ -180,7 +189,7 @@ public class DropboxFileSystem extends BaseWebzFileSystem {
 	}
 
 	@Override
-	public WebzFileMetadata _uploadFile(String pathName, byte[] content) throws IOException, WebzException {
+	public WebzFileMetadata uploadFile(String pathName, byte[] content) throws IOException, WebzException {
 		try {
 			InputStream stream = new ByteArrayInputStream(content);
 			return wrapMetadataSafely(dbxClient.uploadFile(dropboxPathName(pathName), DbxWriteMode.force(), stream.available(),
@@ -191,7 +200,7 @@ public class DropboxFileSystem extends BaseWebzFileSystem {
 	}
 
 	@Override
-	public WebzFileMetadata _move(String srcPathName, String destPathName) throws IOException, WebzException {
+	public WebzFileMetadata move(String srcPathName, String destPathName) throws IOException, WebzException {
 		try {
 			return wrapMetadataSafely(dbxClient.move(dropboxPathName(srcPathName), dropboxPathName(destPathName)));
 		} catch (DbxException e) {
@@ -200,7 +209,7 @@ public class DropboxFileSystem extends BaseWebzFileSystem {
 	}
 
 	@Override
-	public WebzFileMetadata _copy(String srcPathName, String destPathName) throws IOException, WebzException {
+	public WebzFileMetadata copy(String srcPathName, String destPathName) throws IOException, WebzException {
 		try {
 			return wrapMetadataSafely(dbxClient.copy(dropboxPathName(srcPathName), dropboxPathName(destPathName)));
 		} catch (DbxException e) {
@@ -209,7 +218,7 @@ public class DropboxFileSystem extends BaseWebzFileSystem {
 	}
 
 	@Override
-	public void _delete(String pathName) throws IOException, WebzException {
+	public void delete(String pathName) throws IOException, WebzException {
 		try {
 			dbxClient.delete(dropboxPathName(pathName));
 		} catch (DbxException e) {

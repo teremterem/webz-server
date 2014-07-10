@@ -6,13 +6,13 @@ import java.io.OutputStream;
 
 // TODO delete this class completely
 @Deprecated
-public class CacheTappingOutputStream extends OutputStream {
+public class ObsoleteCacheTappingOutputStream extends OutputStream {
 
 	private OutputStream out;
 	private ByteArrayOutputStream cacheOut;
 	private int filePayloadSizeThreshold;
 
-	public CacheTappingOutputStream(OutputStream out, int initialCachedSize, int filePayloadSizeThreshold) {
+	public ObsoleteCacheTappingOutputStream(OutputStream out, int initialCachedSize, int filePayloadSizeThreshold) {
 		this.out = out;
 		cacheOut = new ByteArrayOutputStream(initialCachedSize);
 		this.filePayloadSizeThreshold = filePayloadSizeThreshold;
