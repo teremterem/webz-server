@@ -175,7 +175,7 @@ public abstract class BaseFileSystemCache extends WebzFileSystemProxy {
 			// all caches should be dropped in such a case
 		} else {
 			if (LOG.isTraceEnabled()) {
-				traceFSMessage(LOG, "PAYLOAD for '" + pathName + "' is being fetched without caching");
+				traceFSMessage(LOG, "PAYLOAD for '" + pathName + "' is being fetched without being cached");
 			}
 			fileSystem.fileContentToOutputStream(pathName, out);
 		}
