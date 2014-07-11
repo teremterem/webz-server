@@ -38,13 +38,10 @@ public class WebzEngineMain implements WebzEngine {
 	@Override
 	public void fulfilRequest(HttpServletRequest req, HttpServletResponse resp) {
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("");
-			LOG.trace("");
-			LOG.trace("****************************************************************************************************");
-			LOG.trace("***  SERVING " + getFullURL(req));
-			LOG.trace("****************************************************************************************************");
-			LOG.trace("");
-			LOG.trace("");
+			LOG.trace("\n\n\n****************************************************************************************************"
+					+ "\n***  SERVING "
+					+ getFullURL(req)
+					+ "\n****************************************************************************************************\n\n");
 		}
 		obsoleteWebzEngine.fulfilRequest(req, resp);
 	}

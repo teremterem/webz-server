@@ -175,8 +175,7 @@ public abstract class BaseFileSystemCache extends WebzFileSystemProxy {
 			// all caches should be dropped in such a case
 		} else {
 			if (LOG.isTraceEnabled()) {
-				LOG.trace("PAYLOAD for '" + pathName + "' if being fetched directly from '"
-						+ fileSystem.getFileSystemUniqueId() + "' without caching");
+				traceFSMessage(LOG, "PAYLOAD for '" + pathName + "' is being fetched without caching");
 			}
 			fileSystem.fileContentToOutputStream(pathName, out);
 		}
@@ -248,6 +247,10 @@ public abstract class BaseFileSystemCache extends WebzFileSystemProxy {
 		super.delete(pathName);
 
 		dropPathNameInCaches(pathName);
+	}
+
+	protected void traceFSMessage(Logger log, String message) {
+		log.trace(message + " (file system: '" + fileSystem.getFileSystemUniqueId() + "')");
 	}
 
 }

@@ -9,6 +9,8 @@ import java.net.URL;
 
 import com.dropbox.core.http.HttpRequestor;
 
+// at some point in time Google app engine will not be used anymore
+@Deprecated
 public class GaeHttpRequestor extends HttpRequestor {
 
 	private final Proxy proxy;
