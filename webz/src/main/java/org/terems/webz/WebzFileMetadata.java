@@ -12,28 +12,28 @@ import java.util.Date;
  **/
 public interface WebzFileMetadata {
 
-	/** TODO !!! describe !!! */
+	/** TODO !!! describe !!! **/
 	public String getName() throws IOException, WebzException;
 
-	/** TODO !!! describe !!! */
+	/** TODO !!! describe !!! **/
 	public boolean isFile() throws IOException, WebzException;
 
-	/** TODO !!! describe !!! */
+	/** TODO !!! describe !!! **/
 	public boolean isFolder() throws IOException, WebzException;
 
-	/** TODO !!! describe !!! */
+	/** TODO !!! describe !!! **/
 	public FileSpecific getFileSpecific() throws IOException, WebzException;
 
-	/** TODO !!! describe !!! */
+	/** TODO !!! describe !!! **/
 	public interface FileSpecific extends WebzFileMetadata {
 
-		/** TODO !!! describe !!! */
+		/** TODO !!! describe !!! **/
 		public long getNumberOfBytes() throws IOException, WebzException;
 
-		/** TODO !!! describe !!! */
+		/** TODO !!! describe !!! **/
 		public Date getLastModified() throws IOException, WebzException;
 
-		/** TODO !!! describe !!! */
+		/** TODO !!! describe !!! **/
 		public String getRevision() throws IOException, WebzException;
 	}
 

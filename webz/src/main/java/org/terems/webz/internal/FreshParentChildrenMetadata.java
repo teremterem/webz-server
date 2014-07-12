@@ -1,12 +1,12 @@
 package org.terems.webz.internal;
 
-/** TODO !!! describe !!! */
+/** TODO !!! describe !!! **/
 public class FreshParentChildrenMetadata {
 
-	/** TODO !!! describe !!! */
+	/** TODO !!! describe !!! **/
 	public ParentChildrenMetadata parentChildrenMetadata;
 
-	/** TODO !!! describe !!! */
+	/** TODO !!! describe !!! **/
 	public FreshParentChildrenMetadata(ParentChildrenMetadata parentChildrenMetadata) {
 		this.parentChildrenMetadata = parentChildrenMetadata;
 	}

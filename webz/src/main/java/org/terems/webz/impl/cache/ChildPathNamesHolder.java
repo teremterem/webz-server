@@ -2,13 +2,13 @@ package org.terems.webz.impl.cache;
 
 import java.util.Collection;
 
-/** TODO !!! describe !!! */
+/** TODO !!! describe !!! **/
 public class ChildPathNamesHolder {
 
-	/** TODO !!! describe !!! */
+	/** TODO !!! describe !!! **/
 	public Collection<String> childPathNames;
 
-	/** TODO !!! describe !!! */
+	/** TODO !!! describe !!! **/
 	public Object folderHash;
 
 }

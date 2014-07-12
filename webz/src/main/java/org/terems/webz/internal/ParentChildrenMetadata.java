@@ -4,16 +4,16 @@ import java.util.Map;
 
 import org.terems.webz.WebzFileMetadata;
 
-/** TODO !!! describe !!! */
+/** TODO !!! describe !!! **/
 public class ParentChildrenMetadata {
 
-	/** TODO !!! describe !!! */
+	/** TODO !!! describe !!! **/
 	public WebzFileMetadata parentMetadata;
 
-	/** TODO !!! describe !!! */
+	/** TODO !!! describe !!! **/
 	public Map<String, WebzFileMetadata> childPathNamesAndMetadata;
 
-	/** TODO !!! describe !!! (dropbox concept) */
+	/** TODO !!! describe !!! **/
 	public Object folderHash;
 
 }
