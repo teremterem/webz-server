@@ -5,20 +5,6 @@
 
 	<display-name>${project.name}</display-name>
 
-<!--
-	<context-param>
-		<param-name>contextClass</param-name>
-		<param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
-	</context-param>
-	<context-param>
-		<param-name>contextConfigLocation</param-name>
-		<param-value>org.terems.minimalweb.todo.config</param-value>
-	</context-param>
-	<listener>
-		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-	</listener>
--->
-
     <servlet>
         <servlet-name>WebzServlet</servlet-name>
         <servlet-class>org.terems.webz.servlet.WebzServlet</servlet-class>
