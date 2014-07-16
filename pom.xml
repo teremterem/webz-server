@@ -1,20 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-   Licensed to the Apache Software Foundation (ASF) under one or more
-   contributor license agreements.  See the NOTICE file distributed with
-   this work for additional information regarding copyright ownership.
-   The ASF licenses this file to You under the Apache License, Version 2.0
-   (the "License"); you may not use this file except in compliance with
-   the License.  You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
--->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -36,8 +20,11 @@
 	</modules>
 	
 	<properties>
+		
+		<servlet.api.version>3.1.0</servlet.api.version>
+		
 		<dropbox.version>[1.7,1.8)</dropbox.version>
-		<jetty.version>8.1.15.v20140411</jetty.version><!-- 9.2.1.v20140609 ? -->
+		<jetty.version>9.2.1.v20140609</jetty.version><!-- 8.1.15.v20140411 worked for aggregate -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<org.springframework.version>4.0.0.RELEASE</org.springframework.version>
 		<ehcache.version>2.8.3</ehcache.version>
@@ -51,10 +38,22 @@
 		
 		<slf4j.log4j12.version>1.7.7</slf4j.log4j12.version>
 		<log4j.version>1.2.17</log4j.version>
+		
+		<maven.compiler.plugin.version>3.1</maven.compiler.plugin.version>
+		<maven.eclipse.plugin.version>2.9</maven.eclipse.plugin.version>
+		<maven.war.plugin.version>2.4</maven.war.plugin.version>
+		
 	</properties>
 	
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>javax.servlet-api</artifactId>
+				<version>${servlet.api.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
 			<!-- misc -->
 			<dependency>
 				<groupId>commons-codec</groupId>
@@ -147,14 +146,6 @@
 				<artifactId>log4j</artifactId>
 				<version>${log4j.version}</version>
 			</dependency>
-	
-			<!--  JETTY DEPENDENCIES FOR TESTING  -->
-			<dependency>
-				<groupId>org.eclipse.jetty.aggregate</groupId>
-				<artifactId>jetty-all-server</artifactId>
-				<version>${jetty.version}</version>
-				<scope>provided</scope>
-			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<build>
@@ -164,7 +155,7 @@
 					<inherited>true</inherited>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.1</version>
+					<version>${maven.compiler.plugin.version}</version>
 					<configuration>
 						<source>1.7</source>
 						<target>1.7</target>
@@ -174,29 +165,14 @@
 					</configuration>
 				</plugin>
 				<plugin>
-					<groupId>org.mortbay.jetty</groupId>
+					<groupId>org.eclipse.jetty</groupId>
 					<artifactId>jetty-maven-plugin</artifactId>
 					<version>${jetty.version}</version>
-					<configuration>
-						<connectors>
-							<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-								<port>8080</port>
-								<maxIdleTime>3600000</maxIdleTime>
-							</connector>
-							<connector implementation="org.eclipse.jetty.server.ssl.SslSocketConnector">
-								<port>8443</port>
-								<maxIdleTime>3600000</maxIdleTime>
-								<keystore>${project.build.directory}/test-classes/keystore</keystore>
-								<password>wicket</password>
-								<keyPassword>wicket</keyPassword>
-							</connector>
-						</connectors>
-					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-eclipse-plugin</artifactId>
-					<version>2.9</version>
+					<version>${maven.eclipse.plugin.version}</version>
 					<configuration>
 						<downloadSources>true</downloadSources>
 					</configuration>
@@ -204,36 +180,14 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
-					<version>2.4</version>
+					<version>${maven.war.plugin.version}</version>
 					<configuration>
-						<webResources>
-							<resource>
-								<directory>src/main/webapp/WEB-INF/</directory>
-								<targetPath>WEB-INF</targetPath>
-								<includes>
-									<include>web.xml</include>
-								</includes>
-								<filtering>true</filtering>
-							</resource>
-						</webResources>
+						<warSourceDirectory>src/main/webapp</warSourceDirectory>
+						<contextXml>src/main/webapp/WEB-INF/jetty-context.xml</contextXml>
+						<failOnMissingWebXml>false</failOnMissingWebXml>
 					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
-
-<!--
-	<repositories>
-		<repository>
-			<id>Apache Nexus</id>
-			<url>https://repository.apache.org/content/repositories/snapshots/</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
--->
-	</project>
+</project>

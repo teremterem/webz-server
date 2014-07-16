@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+<wwweb-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	version="2.5">
-
+<!--
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+-->
+	
 	<display-name>${project.name}</display-name>
-
+	
     <servlet>
         <servlet-name>WebzServlet</servlet-name>
         <servlet-class>org.terems.webz.servlet.WebzServlet</servlet-class>
@@ -18,10 +20,10 @@
 			<param-value>/terems.org/webz/</param-value>
 		</init-param>
     </servlet>
-
+	
     <servlet-mapping>
         <servlet-name>WebzServlet</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
     
-</web-app>
+</wwweb-app>
