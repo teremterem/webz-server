@@ -1,31 +1,30 @@
-package org.terems.webz.dropbox;
+package org.terems.webz.obsolete;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Locale;
+//import java.io.BufferedReader;
+//import java.io.IOException;
+//import java.io.InputStreamReader;
+//import java.util.Locale;
 
-import javax.servlet.http.HttpServlet;
+//import javax.servlet.http.HttpServlet;
 
-import org.terems.webz.obsolete.GaeHttpRequestor;
+//import com.dropbox.core.DbxAppInfo;
+//import com.dropbox.core.DbxAuthFinish;
+//import com.dropbox.core.DbxException;
+//import com.dropbox.core.DbxRequestConfig;
+//import com.dropbox.core.DbxWebAuthNoRedirect;
 
-import com.dropbox.core.DbxAppInfo;
-import com.dropbox.core.DbxAuthFinish;
-import com.dropbox.core.DbxException;
-import com.dropbox.core.DbxRequestConfig;
-import com.dropbox.core.DbxWebAuthNoRedirect;
-
-@SuppressWarnings("serial")
-public class DropboxAuthorization extends HttpServlet {
+//@SuppressWarnings("serial")
+@Deprecated
+public class DropboxAuthorization /*extends HttpServlet*/ {
 
 	private static final String APP_KEY = "jq2afk0p8yb7l56";
 	private static final String APP_SECRET = "pxtmr3ll9wj0v91";
 
-	private static final DbxRequestConfig DBX_CONFIG = new DbxRequestConfig("webz/0.1", Locale.getDefault().toString(),
-			GaeHttpRequestor.INSTANCE/* for google app engine */);
+	//private static final DbxRequestConfig DBX_CONFIG = new DbxRequestConfig("webz/0.1", Locale.getDefault().toString(),
+	//		GaeHttpRequestor.INSTANCE/* for google app engine */);
 
-	public static void main(String[] args) throws IOException, DbxException {
-
+	public static void main(String[] args) /*throws IOException, DbxException*/ {
+/*
 		DbxAppInfo appInfo = new DbxAppInfo(APP_KEY, APP_SECRET);
 		DbxWebAuthNoRedirect webAuth = new DbxWebAuthNoRedirect(DBX_CONFIG, appInfo);
 
@@ -54,6 +53,7 @@ public class DropboxAuthorization extends HttpServlet {
 		System.out.println("********************************************************************************");
 		System.out.println();
 		System.out.println();
+*/
 	}
 
 }
