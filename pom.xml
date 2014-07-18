@@ -9,14 +9,18 @@
 	<packaging>pom</packaging>
 	<version>1-0-SNAPSHOT</version>
 	<name>Terem's .org</name>
-	<description>a parent project for other apps</description>
+	<description>parent project for app(s) and modules</description>
 	<organization>
 		<name>Terem's .org</name>
 		<url>http://terems.org</url>
 	</organization>
 	
 	<modules>
+		<module>webz-interfaces</module>
+		<module>webz-default-plugins</module>
 		<module>webz</module>
+		<module>webz-dropbox</module>
+		<module>webz-app</module>
 	</modules>
 	
 	<properties>

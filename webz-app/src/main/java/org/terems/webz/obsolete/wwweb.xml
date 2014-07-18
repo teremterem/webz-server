@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<wwweb-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	version="2.5">
+<!--
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+-->
+	
+	<display-name>${project.name}</display-name>
+	
+    <servlet>
+        <servlet-name>WebzServlet</servlet-name>
+        <servlet-class>org.terems.webz.servlet.WebzServlet</servlet-class>
+        
+		<init-param>
+			<param-name>accessToken</param-name>
+			<param-value>QHNtgtFLQ8cAAAAAAAAAAUil0YtewX0DYd6LLu4vt5hbATbaiWkjLrbqBwbdfbl5</param-value>
+		</init-param>
+		<init-param>
+			<param-name>dropboxPath</param-name>
+			<param-value>/terems.org/webz/</param-value>
+		</init-param>
+    </servlet>
+	
+    <servlet-mapping>
+        <servlet-name>WebzServlet</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+    
+</wwweb-app>
