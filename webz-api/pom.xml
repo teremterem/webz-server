@@ -4,10 +4,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>webz</artifactId>
+	<artifactId>webz-api</artifactId>
 	<packaging>jar</packaging>
-	<name>WebZ (Engine)</name>
-	<description>WebZ platform for web sites, core module (the engine)</description>
+	<name>WebZ API</name>
+	<description>WebZ platform for web sites, API</description>
 
 	<parent>
 		<groupId>org.terems</groupId>
@@ -16,39 +16,13 @@
     </parent>
 
 	<dependencies>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>webz-api</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>webz-default-plugins</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
 		<!-- Servlet API -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
-
-		<!-- Ehcache -->
-		<dependency>
-			<groupId>net.sf.ehcache</groupId>
-			<artifactId>ehcache</artifactId>
-		</dependency>
-
-		<!-- Logging -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-		</dependency>
 	</dependencies>
+
 	<build>
 		<resources>
 			<resource>

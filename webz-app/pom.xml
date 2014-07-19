@@ -7,7 +7,7 @@
 	<artifactId>webz-app</artifactId>
 	<packaging>war</packaging>
 	<name>WebZ App</name>
-	<description>website platform, web app</description>
+	<description>WebZ platform for web sites, web application "envelope" of the platform</description>
 
 	<parent>
 		<groupId>org.terems</groupId>
@@ -17,85 +17,31 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>webz-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>webz-dropbox</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>webz</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- Servlet API -->
+		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
 
-		<!-- misc -->
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-		</dependency>
-
-		<!-- Apache -->
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-		</dependency>
-
-		<!-- DROPBOX -->
+		<!-- Dropbox -->
 		<dependency>
 		  <groupId>com.dropbox.core</groupId>
 		  <artifactId>dropbox-core-sdk</artifactId>
-		</dependency>
-
-		<!-- Ehcache -->
-		<dependency>
-			<groupId>net.sf.ehcache</groupId>
-			<artifactId>ehcache</artifactId>
-		</dependency>
-
-		<!-- Mylyn WikiText -->
-		<dependency>
-		    <groupId>com.google.guava</groupId>
-		    <artifactId>guava</artifactId>
-		</dependency>
-		<!-- ! -->
-		<dependency>
-			<groupId>org.eclipse.mylyn</groupId>
-			<artifactId>wikitext.core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.mylyn</groupId>
-			<artifactId>wikitext.confluence.core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.mylyn</groupId>
-			<artifactId>wikitext.html.core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.mylyn</groupId>
-			<artifactId>wikitext.markdown.core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.mylyn</groupId>
-			<artifactId>wikitext.mediawiki.core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.mylyn</groupId>
-			<artifactId>wikitext.textile.core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.mylyn</groupId>
-			<artifactId>wikitext.tracwiki.core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.mylyn</groupId>
-			<artifactId>wikitext.twiki.core</artifactId>
-		</dependency>
-
-		<!-- LOGGING DEPENDENCIES - LOG4J -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
 		</dependency>
 	</dependencies>
 	<build>

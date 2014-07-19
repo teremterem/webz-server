@@ -5,9 +5,9 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>webz-default-plugins</artifactId>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>WebZ Default Plugins</name>
-	<description>website platform, default plugins</description>
+	<description>WebZ platform for web sites, default plugins</description>
 
 	<parent>
 		<groupId>org.terems</groupId>
@@ -17,11 +17,18 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>webz-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+		<!-- Servlet API -->
+		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
 
-		<!-- misc -->
+		<!-- Apache -->
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
@@ -30,23 +37,9 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 		</dependency>
-
-		<!-- Apache -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-		</dependency>
-
-		<!-- DROPBOX -->
-		<dependency>
-		  <groupId>com.dropbox.core</groupId>
-		  <artifactId>dropbox-core-sdk</artifactId>
-		</dependency>
-
-		<!-- Ehcache -->
-		<dependency>
-			<groupId>net.sf.ehcache</groupId>
-			<artifactId>ehcache</artifactId>
 		</dependency>
 
 		<!-- Mylyn WikiText -->
@@ -88,7 +81,7 @@
 			<artifactId>wikitext.twiki.core</artifactId>
 		</dependency>
 
-		<!-- LOGGING DEPENDENCIES - LOG4J -->
+		<!-- Logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
@@ -121,16 +114,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 			</plugin>
 			<plugin>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>

@@ -16,7 +16,7 @@
 	</organization>
 	
 	<modules>
-		<module>webz-interfaces</module>
+		<module>webz-api</module>
 		<module>webz-default-plugins</module>
 		<module>webz</module>
 		<module>webz-dropbox</module>
@@ -51,6 +51,7 @@
 	
 	<dependencyManagement>
 		<dependencies>
+			<!-- Servlet API -->
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>javax.servlet-api</artifactId>
@@ -58,7 +59,7 @@
 				<scope>provided</scope>
 			</dependency>
 
-			<!-- misc -->
+			<!-- Apache -->
 			<dependency>
 				<groupId>commons-codec</groupId>
 				<artifactId>commons-codec</artifactId>
@@ -69,15 +70,13 @@
 				<artifactId>commons-io</artifactId>
 				<version>${commons.io.version}</version>
 			</dependency>
-			
-			<!-- Apache -->
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
 				<version>${commons.lang3.version}</version>
 			</dependency>
 			
-			<!-- DROPBOX -->
+			<!-- Dropbox -->
 			<dependency>
 				<groupId>com.dropbox.core</groupId>
 				<artifactId>dropbox-core-sdk</artifactId>
@@ -139,7 +138,7 @@
 				<version>${wikitext.version}</version>
 			</dependency>
 			
-			<!-- LOGGING DEPENDENCIES - LOG4J -->
+			<!-- Logging -->
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-log4j12</artifactId>

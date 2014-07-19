@@ -7,14 +7,14 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.terems.webz.FreshParentChildrenMetadata;
+import org.terems.webz.ParentChildrenMetadata;
+import org.terems.webz.WebzDefaults;
 import org.terems.webz.WebzException;
+import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzFileMetadata;
-import org.terems.webz.impl.WebzFileSystemProxy;
-import org.terems.webz.internal.FreshParentChildrenMetadata;
-import org.terems.webz.internal.ParentChildrenMetadata;
-import org.terems.webz.internal.WebzFileDownloader;
-import org.terems.webz.internal.WebzFileSystem;
-import org.terems.webz.obsolete.ObsoleteWebzConstants;
+import org.terems.webz.WebzFileSystem;
+import org.terems.webz.WebzFileSystemProxy;
 
 // TODO background thread should periodically check certain number of pathNames against Dropbox to drop the whole FS cache if necessary
 // TODO also do similar check when some metadata is being fetched as a "side-effect" in cache implementations to drop the whole FS cache if necessary
@@ -59,7 +59,7 @@ public abstract class BaseFileSystemCache extends WebzFileSystemProxy {
 	protected abstract void initSelfPopulatingCaches();
 
 	public BaseFileSystemCache(WebzFileSystem fileSystem) {
-		this(fileSystem, ObsoleteWebzConstants.DEFAULT_FILE_PAYLOAD_SIZE_THRESHOLD_TO_CACHE);
+		this(fileSystem, WebzDefaults.PAYLOAD_CACHE_THRESHOLD_BYTES);
 	}
 
 	public BaseFileSystemCache(WebzFileSystem fileSystem, int filePayloadSizeThreshold) {
