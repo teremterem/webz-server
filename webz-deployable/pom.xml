@@ -4,10 +4,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>webz-app</artifactId>
+	<artifactId>webz-deployable</artifactId>
 	<packaging>war</packaging>
-	<name>WebZ App</name>
-	<description>WebZ platform for web sites, web application "envelope" of the platform</description>
+	<name>WebZ Deployable</name>
+	<description>WebZ platform for web sites, deployable web application "envelope" of the platform</description>
 
 	<parent>
 		<groupId>org.terems</groupId>

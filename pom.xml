@@ -20,7 +20,7 @@
 		<module>webz-default-plugins</module>
 		<module>webz</module>
 		<module>webz-dropbox</module>
-		<module>webz-app</module>
+		<module>webz-deployable</module>
 	</modules>
 	
 	<properties>
