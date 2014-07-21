@@ -43,6 +43,15 @@
 		  <groupId>com.dropbox.core</groupId>
 		  <artifactId>dropbox-core-sdk</artifactId>
 		</dependency>
+
+		<!-- Jetty (for the sake of viewing it's source code) -->
+		<!--
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+		</dependency>
+		... add other other jetty modules you can find among jetty-maven-plugin dependencies if needed
+		-->
 	</dependencies>
 	<build>
 		<resources>
@@ -67,16 +76,16 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 			</plugin>
 			<plugin>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>

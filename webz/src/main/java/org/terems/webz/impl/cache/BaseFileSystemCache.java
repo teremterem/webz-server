@@ -63,6 +63,9 @@ public abstract class BaseFileSystemCache extends WebzFileSystemProxy {
 	}
 
 	public BaseFileSystemCache(WebzFileSystem fileSystem, int filePayloadSizeThreshold) {
+		// TODO add two additional modes:
+		// 1) payload cache disabled completely
+		// 2) payload cache works for any payload sizes without the threshold
 
 		if (fileSystem instanceof BaseFileSystemCache) {
 			throw new IllegalArgumentException(

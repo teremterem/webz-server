@@ -149,6 +149,17 @@
 				<artifactId>log4j</artifactId>
 				<version>${log4j.version}</version>
 			</dependency>
+			
+			<!-- Jetty (for the sake of viewing it's source code) -->
+			<!--
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-server</artifactId>
+				<version>${jetty.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			... add other other jetty modules you can find among jetty-maven-plugin dependencies if needed
+			-->
 		</dependencies>
 	</dependencyManagement>
 	<build>
@@ -168,11 +179,6 @@
 					</configuration>
 				</plugin>
 				<plugin>
-					<groupId>org.eclipse.jetty</groupId>
-					<artifactId>jetty-maven-plugin</artifactId>
-					<version>${jetty.version}</version>
-				</plugin>
-				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-eclipse-plugin</artifactId>
 					<version>${maven.eclipse.plugin.version}</version>
@@ -185,10 +191,14 @@
 					<artifactId>maven-war-plugin</artifactId>
 					<version>${maven.war.plugin.version}</version>
 					<configuration>
-						<warSourceDirectory>src/main/webapp</warSourceDirectory>
-						<contextXml>src/main/webapp/WEB-INF/jetty-context.xml</contextXml>
 						<failOnMissingWebXml>false</failOnMissingWebXml>
 					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.jetty</groupId>
+					<artifactId>jetty-maven-plugin</artifactId>
+					<version>${jetty.version}</version>
+					<!-- TODO find a way to control Jetty 9 app scanning -->
 				</plugin>
 			</plugins>
 		</pluginManagement>
