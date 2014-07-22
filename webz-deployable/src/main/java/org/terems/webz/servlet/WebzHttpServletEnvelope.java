@@ -4,8 +4,6 @@ import java.util.Locale;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebInitParam;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,8 +19,6 @@ import org.terems.webz.impl.dropbox.DropboxFileSystem;
 import com.dropbox.core.DbxClient;
 import com.dropbox.core.DbxRequestConfig;
 
-@WebServlet(urlPatterns = "/*", initParams = { @WebInitParam(name = "dbxBasePath", value = "/terems.org/webz/"),
-		@WebInitParam(name = "dbxAccessToken", value = "QHNtgtFLQ8cAAAAAAAAAAUil0YtewX0DYd6LLu4vt5hbATbaiWkjLrbqBwbdfbl5") })
 @SuppressWarnings("serial")
 public class WebzHttpServletEnvelope extends HttpServlet {
 
@@ -30,6 +26,9 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 
 	private String dbxBasePath;
 	private String dbxAccessToken;
+
+	private String dbxClientDisplayName;
+	private String dbxClientVersion;
 
 	private WebzEngine webzEngine;
 
@@ -51,6 +50,9 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 
 		dbxBasePath = config.getInitParameter("dbxBasePath");
 		dbxAccessToken = config.getInitParameter("dbxAccessToken");
+
+		dbxClientDisplayName = config.getInitParameter("dbxClientDisplayName");
+		dbxClientVersion = config.getInitParameter("dbxClientVersion");
 	}
 
 	private Object webzEngineMutex = new Object();
@@ -61,9 +63,11 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 		synchronized (webzEngineMutex) {
 
 			if (webzEngine == null) {
-				// TODO use maven module name and version in client identifier (via properties with maven filtering):
-				DbxRequestConfig dbxConfig = new DbxRequestConfig("WebZ-Deployable/1-0-SNAPSHOT", Locale.getDefault()
-						.toString());
+				String dbxClientId = getRidOfWhitespacesSafely(dbxClientDisplayName) + "/"
+						+ getRidOfWhitespacesSafely(dbxClientVersion);
+				LOG.info("Dropbox client ID that will be used: " + dbxClientId);
+
+				DbxRequestConfig dbxConfig = new DbxRequestConfig(dbxClientId, Locale.getDefault().toString());
 				try {
 					WebzFileSystem dropboxFileSource = new DropboxFileSystem(new DbxClient(dbxConfig, dbxAccessToken),
 							dbxBasePath);
@@ -79,6 +83,14 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 				LOG.info("WEBZ ENGINE WAS ALREADY INITIALIZED - NO NEED TO INITIALIZE AGAIN");
 			}
 
+		}
+	}
+
+	private String getRidOfWhitespacesSafely(String value) {
+		if (value == null) {
+			return "null";
+		} else {
+			return value.trim().replaceAll("\\s+", "-");
 		}
 	}
 
