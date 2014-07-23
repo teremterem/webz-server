@@ -1,5 +1,6 @@
 package org.terems.webz.servlet;
 
+import java.io.IOException;
 import java.util.Locale;
 
 import javax.servlet.ServletConfig;
@@ -15,6 +16,7 @@ import org.terems.webz.WebzException;
 import org.terems.webz.WebzFileSystem;
 import org.terems.webz.impl.WebzEngineMain;
 import org.terems.webz.impl.dropbox.DropboxFileSystem;
+import org.terems.webz.obsolete.ObsoleteWebzEngine;
 
 import com.dropbox.core.DbxClient;
 import com.dropbox.core.DbxRequestConfig;
@@ -74,9 +76,9 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 					WebzFileSystem dropboxFileSource = new DropboxFileSystem(new DbxClient(dbxConfig, dbxAccessToken),
 							dbxBasePath);
 
-					webzEngine = new WebzEngineMain(dropboxFileSource);
+					webzEngine = new WebzEngineMain(dropboxFileSource, new ObsoleteWebzEngine());
 
-				} catch (WebzException e) {
+				} catch (IOException | WebzException e) {
 					throw new ServletException(e);
 				}
 

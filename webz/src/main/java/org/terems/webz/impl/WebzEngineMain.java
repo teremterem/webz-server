@@ -1,5 +1,7 @@
 package org.terems.webz.impl;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -7,18 +9,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzEngine;
 import org.terems.webz.WebzException;
+import org.terems.webz.WebzFileFactory;
 import org.terems.webz.WebzFileSystem;
+import org.terems.webz.WebzPlugin;
 import org.terems.webz.impl.cache.ehcache.EhcacheFileSystemCache;
-import org.terems.webz.obsolete.ObsoleteWebzEngine;
 
 public class WebzEngineMain implements WebzEngine {
 
 	private static Logger LOG = LoggerFactory.getLogger(WebzEngineMain.class);
 
-	private ObsoleteWebzEngine obsoleteWebzEngine;
+	private WebzFileFactory rootFileFactory;
+	private WebzPlugin rootPlugin;
 
-	public WebzEngineMain(WebzFileSystem rootFileSystem) throws WebzException {
-		obsoleteWebzEngine = new ObsoleteWebzEngine(new EhcacheFileSystemCache(rootFileSystem));
+	// TODO elaborate !!!
+	public WebzEngineMain(WebzFileSystem rootFileSystem, WebzPlugin rootPlugin) throws IOException, WebzException {
+		this.rootFileFactory = new EhcacheFileSystemCache(rootFileSystem);
+		this.rootPlugin = rootPlugin;
+
+		this.rootPlugin.init(this.rootFileFactory);
 	}
 
 	@Override
@@ -29,7 +37,7 @@ public class WebzEngineMain implements WebzEngine {
 					+ getFullURL(req)
 					+ "\n****************************************************************************************************\n\n");
 		}
-		obsoleteWebzEngine.fulfilRequest(req, resp);
+		rootPlugin.fulfilRequest(req, resp);
 	}
 
 	private String getFullURL(HttpServletRequest request) {

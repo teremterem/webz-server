@@ -21,11 +21,6 @@
 			<artifactId>webz-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>webz-default-plugins</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 
 		<!-- Servlet API -->
 		<dependency>
