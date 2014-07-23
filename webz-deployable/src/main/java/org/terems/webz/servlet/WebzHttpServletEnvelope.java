@@ -67,8 +67,8 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 						+ getRidOfWhitespacesSafely(dbxClientVersion);
 				DbxRequestConfig dbxConfig = new DbxRequestConfig(dbxClientId, Locale.getDefault().toString());
 
-				LOG.info("Dropbox client ID that will be used: '" + dbxConfig.clientIdentifier + "' (locale: "
-						+ dbxConfig.userLocale + ")");
+				LOG.info("Dropbox client ID that will be used: '" + dbxConfig.clientIdentifier + "' (locale: '"
+						+ dbxConfig.userLocale + "')");
 
 				try {
 					WebzFileSystem dropboxFileSource = new DropboxFileSystem(new DbxClient(dbxConfig, dbxAccessToken),
