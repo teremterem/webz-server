@@ -58,7 +58,7 @@
 				<version>${servlet.api.version}</version>
 				<scope>provided</scope>
 			</dependency>
-
+			
 			<!-- Apache -->
 			<dependency>
 				<groupId>commons-codec</groupId>
@@ -162,7 +162,24 @@
 			-->
 		</dependencies>
 	</dependencyManagement>
+
 	<build>
+		<resources>
+			<resource>
+				<filtering>false</filtering>
+				<directory>src/main/resources</directory>
+			</resource>
+			<resource>
+				<filtering>false</filtering>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**</include>
+				</includes>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</resource>
+		</resources>
 		<pluginManagement>
 			<plugins>
 				<plugin>
