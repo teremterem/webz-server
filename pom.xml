@@ -17,8 +17,8 @@
 
 	<modules>
 		<module>webz-api</module>
-		<module>webz-default-plugins</module>
 		<module>webz</module>
+		<module>webz-default-plugins</module>
 		<module>webz-dropbox</module>
 		<module>webz-deployable</module>
 	</modules>
