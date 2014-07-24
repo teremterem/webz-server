@@ -151,13 +151,13 @@
 			</dependency>
 
 			<!-- Jetty (for the sake of viewing it's source code) -->
-			<!--
 			<dependency>
 				<groupId>org.eclipse.jetty.aggregate</groupId>
 				<artifactId>jetty-all</artifactId>
 				<version>${jetty.version}</version>
 				<scope>provided</scope>
 			</dependency>
+			<!--
 			-->
 		</dependencies>
 	</dependencyManagement>
