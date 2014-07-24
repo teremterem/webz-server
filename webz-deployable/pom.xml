@@ -52,10 +52,9 @@
 		<!-- Jetty (for the sake of viewing it's source code) -->
 		<!--
 		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
+			<groupId>org.eclipse.jetty.aggregate</groupId>
+			<artifactId>jetty-all</artifactId>
 		</dependency>
-		... add other other jetty modules you can find among jetty-maven-plugin dependencies if needed
 		-->
 	</dependencies>
 
