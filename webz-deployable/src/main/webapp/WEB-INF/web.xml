@@ -1,9 +1,13 @@
-<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
-         version="3.1"
-         
-metadata-complete="true"><!-- disabling Servlet 3.x annotation scanning -->
+<web-app
+		xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+		version="3.1"
+
+		metadata-complete="true"><!-- disabling Servlet 3.x annotation scanning -->
+
+	<display-name>${project.name}</display-name>
+	<description>${project.description}</description>
 
     <servlet>
         <servlet-name>WebzHttpServletEnvelope</servlet-name>

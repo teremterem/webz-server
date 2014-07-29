@@ -50,11 +50,15 @@
 		</dependency>
 
 		<!-- Jetty (for the sake of viewing it's source code) -->
+		<!--
 		<dependency>
 			<groupId>org.eclipse.jetty.aggregate</groupId>
 			<artifactId>jetty-all</artifactId>
 		</dependency>
-		<!--
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-ant</artifactId>
+		</dependency>
 		-->
 	</dependencies>
 
@@ -73,8 +77,47 @@
 				<artifactId>maven-war-plugin</artifactId>
 			</plugin>
 			<plugin>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
+
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+
+					<execution>
+						<phase>prepare-package</phase>
+						<configuration>
+							<target>
+
+								<copy file="${basedir}/src/main/webapp/WEB-INF/web.xml"
+									tofile="${additional.web.resources}/WEB-INF/quickstart-web.xml"
+									overwrite="true"/>
+
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+
+					<!-- start Jetty and deploy webz-deployable.war using Ant... -->
+					<execution>
+						<id>default-cli</id>
+						<configuration>
+							<target>
+
+								<taskdef classpathref="maven.plugin.classpath" resource="tasks.properties" loaderref="jetty.loader" />
+
+								<jetty.run>
+									<webApp contextXml="${basedir}/target/${project.build.finalName}/WEB-INF/jetty-webapp-context.xml"/>
+								</jetty.run>
+
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

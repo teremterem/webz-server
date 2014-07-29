@@ -25,6 +25,8 @@
 
 	<properties>
 
+		<!-- versions -->
+
 		<servlet.api.version>3.1.0</servlet.api.version>
 
 		<dropbox.version>[1.7,1.8)</dropbox.version>
@@ -46,6 +48,13 @@
 		<maven.compiler.plugin.version>3.1</maven.compiler.plugin.version>
 		<maven.eclipse.plugin.version>2.9</maven.eclipse.plugin.version>
 		<maven.war.plugin.version>2.4</maven.war.plugin.version>
+
+		<maven.antrun.plugin.version>1.7</maven.antrun.plugin.version>
+
+
+		<!-- other -->
+
+		<additional.web.resources>${basedir}/target/additional-web-resources</additional.web.resources>
 
 	</properties>
 
@@ -151,13 +160,19 @@
 			</dependency>
 
 			<!-- Jetty (for the sake of viewing it's source code) -->
+			<!--
 			<dependency>
 				<groupId>org.eclipse.jetty.aggregate</groupId>
 				<artifactId>jetty-all</artifactId>
 				<version>${jetty.version}</version>
 				<scope>provided</scope>
 			</dependency>
-			<!--
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-ant</artifactId>
+				<version>${jetty.version}</version>
+				<scope>provided</scope>
+			</dependency>
 			-->
 		</dependencies>
 	</dependencyManagement>
@@ -212,7 +227,14 @@
 				                <filtering>true</filtering>
 				                <directory>src/main/webapp</directory>
 				                <includes>
-				                    <include>**/web.xml</include>
+				                    <include>**/*.xml</include>
+				                </includes>
+				            </resource>
+				            <resource>
+				                <filtering>true</filtering>
+				                <directory>${additional.web.resources}</directory>
+				                <includes>
+				                    <include>**/*.xml</include>
 				                </includes>
 				            </resource>
 				        </webResources>
@@ -224,10 +246,31 @@
 					</configuration>
 				</plugin>
 				<plugin>
-					<groupId>org.eclipse.jetty</groupId>
-					<artifactId>jetty-maven-plugin</artifactId>
-					<version>${jetty.version}</version>
-					<!-- TODO find a way to control Jetty 9 app scanning -->
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<version>${maven.antrun.plugin.version}</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.eclipse.jetty.aggregate</groupId>
+							<artifactId>jetty-all</artifactId>
+							<version>${jetty.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.eclipse.jetty</groupId>
+							<artifactId>jetty-ant</artifactId>
+							<version>${jetty.version}</version>
+							<exclusions>
+								<exclusion>
+									<groupId>ant</groupId>
+									<artifactId>ant</artifactId>
+								</exclusion>
+								<exclusion>
+									<groupId>ant</groupId>
+									<artifactId>ant-launcher</artifactId>
+								</exclusion>
+							</exclusions>
+						</dependency>
+					</dependencies>
 				</plugin>
 			</plugins>
 		</pluginManagement>
