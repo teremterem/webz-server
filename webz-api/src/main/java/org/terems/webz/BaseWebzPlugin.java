@@ -17,4 +17,8 @@ public abstract class BaseWebzPlugin implements WebzPlugin {
 		return fileFactory;
 	}
 
+	@Override
+	public void destroy() {
+	}
+
 }

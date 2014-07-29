@@ -42,7 +42,7 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 		}
 
 		// TODO leverage from "last modified" http logic supported in parent implementation ?
-		webzEngine.fulfilRequest(req, resp);
+		webzEngine.service(req, resp);
 
 	}
 

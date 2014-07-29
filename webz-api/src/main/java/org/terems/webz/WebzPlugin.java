@@ -13,6 +13,8 @@ public interface WebzPlugin {
 
 	public WebzFileFactory getFileFactory();
 
-	public void fulfilRequest(HttpServletRequest req, HttpServletResponse resp);
+	public void service(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException;
+
+	public void destroy();
 
 }

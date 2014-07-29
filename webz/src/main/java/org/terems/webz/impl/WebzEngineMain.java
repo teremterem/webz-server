@@ -30,14 +30,19 @@ public class WebzEngineMain implements WebzEngine {
 	}
 
 	@Override
-	public void fulfilRequest(HttpServletRequest req, HttpServletResponse resp) {
+	public void service(HttpServletRequest req, HttpServletResponse resp) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("\n\n\n****************************************************************************************************"
 					+ "\n***  SERVING "
 					+ getFullURL(req)
 					+ "\n****************************************************************************************************\n\n");
 		}
-		rootPlugin.fulfilRequest(req, resp);
+		try {
+			rootPlugin.service(req, resp);
+		} catch (IOException | WebzException e) {
+			// TODO 500 error page should be displayed to the user instead
+			throw new RuntimeException(e);
+		}
 	}
 
 	private String getFullURL(HttpServletRequest request) {
