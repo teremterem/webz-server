@@ -15,7 +15,7 @@
         
 		<init-param>
 			<param-name>dbxBasePath</param-name>
-			<param-value>/terems.org/webz/</param-value>
+			<param-value>/terems.org/terems-org/webz-pedesis/</param-value>
 		</init-param>
 		<init-param>
 			<param-name>dbxAccessToken</param-name>

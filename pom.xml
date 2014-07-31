@@ -7,7 +7,7 @@
 	<groupId>org.terems</groupId>
 	<artifactId>terems-org</artifactId>
 	<packaging>pom</packaging>
-	<version>1-0-SNAPSHOT</version>
+	<version>0.9.PEDESIS-SNAPSHOT</version>
 	<name>Terem's .org</name>
 	<description>parent project for app(s) and modules</description>
 	<organization>
