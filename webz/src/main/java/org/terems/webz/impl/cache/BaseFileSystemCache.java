@@ -107,7 +107,7 @@ public abstract class BaseFileSystemCache extends WebzFileSystemProxy {
 		dropFilePayloadAndChildPathNames(pathName);
 	}
 
-	private WebzFileMetadata dropPathNameInCachesAndUpdateMetadata(String pathName, WebzFileMetadata metadata) {
+	private void dropPathNameInCachesAndUpdateMetadata(String pathName, WebzFileMetadata metadata) {
 
 		if (metadata == null) {
 			dropPathNameInCaches(pathName);
@@ -116,8 +116,6 @@ public abstract class BaseFileSystemCache extends WebzFileSystemProxy {
 
 			dropFilePayloadAndChildPathNames(pathName);
 		}
-
-		return metadata;
 	}
 
 	@Override
@@ -185,25 +183,39 @@ public abstract class BaseFileSystemCache extends WebzFileSystemProxy {
 		}
 	}
 
+	private WebzFileMetadata.FileSpecific fetchFileSpecific(final String pathName) throws IOException, WebzException {
+
+		WebzFileMetadata.FileSpecific fileSpecific = fetchMetadata(pathName).getFileSpecific();
+		if (fileSpecific == null) {
+			throw new WebzException("'" + pathName + "' is not a file");
+		}
+
+		return fileSpecific;
+	}
+
 	@Override
-	public WebzFileMetadata fileContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException {
+	public WebzFileMetadata.FileSpecific fileContentToOutputStream(String pathName, OutputStream out) throws IOException,
+			WebzException {
+
 		FilePayloadHolder payloadHolder = fetchFilePayloadHolder(pathName);
 		if (payloadHolder == null) {
 			return null;
 		}
 
+		WebzFileMetadata.FileSpecific fileSpecific = fetchFileSpecific(pathName);
 		writeFilePayload(payloadHolder, pathName, out);
-		return fetchMetadata(pathName);
+		return fileSpecific;
 	}
 
 	@Override
 	public WebzFileDownloader getFileContentDownloader(final String pathName) throws IOException, WebzException {
+
 		final FilePayloadHolder payloadHolder = fetchFilePayloadHolder(pathName);
 		if (payloadHolder == null) {
 			return null;
 		}
 
-		return new WebzFileDownloader(fetchMetadata(pathName)) {
+		return new WebzFileDownloader(fetchFileSpecific(pathName)) {
 
 			@Override
 			public void fileContentToOutputStream(OutputStream out) throws IOException, WebzException {
@@ -217,15 +229,17 @@ public abstract class BaseFileSystemCache extends WebzFileSystemProxy {
 
 		WebzFileMetadata metadata = super.createFolder(pathName);
 
-		return dropPathNameInCachesAndUpdateMetadata(pathName, metadata);
+		dropPathNameInCachesAndUpdateMetadata(pathName, metadata);
+		return metadata;
 	}
 
 	@Override
-	public WebzFileMetadata uploadFile(String pathName, byte[] content) throws IOException, WebzException {
+	public WebzFileMetadata.FileSpecific uploadFile(String pathName, byte[] content) throws IOException, WebzException {
 
-		WebzFileMetadata metadata = super.uploadFile(pathName, content);
+		WebzFileMetadata.FileSpecific fileSpecific = super.uploadFile(pathName, content);
 
-		return dropPathNameInCachesAndUpdateMetadata(pathName, metadata);
+		dropPathNameInCachesAndUpdateMetadata(pathName, fileSpecific);
+		return fileSpecific;
 	}
 
 	@Override
@@ -234,7 +248,8 @@ public abstract class BaseFileSystemCache extends WebzFileSystemProxy {
 		WebzFileMetadata metadata = super.move(srcPathName, destPathName);
 
 		dropPathNameInCaches(srcPathName);
-		return dropPathNameInCachesAndUpdateMetadata(destPathName, metadata);
+		dropPathNameInCachesAndUpdateMetadata(destPathName, metadata);
+		return metadata;
 	}
 
 	@Override
@@ -242,7 +257,8 @@ public abstract class BaseFileSystemCache extends WebzFileSystemProxy {
 
 		WebzFileMetadata metadata = super.copy(srcPathName, destPathName);
 
-		return dropPathNameInCachesAndUpdateMetadata(destPathName, metadata);
+		dropPathNameInCachesAndUpdateMetadata(destPathName, metadata);
+		return metadata;
 	}
 
 	@Override

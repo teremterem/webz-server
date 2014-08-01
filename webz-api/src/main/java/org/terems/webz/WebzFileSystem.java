@@ -28,7 +28,8 @@ public interface WebzFileSystem extends WebzFileFactory {
 	public Collection<String> getChildPathNames(String parentPathName) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzFileMetadata fileContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException;
+	public WebzFileMetadata.FileSpecific fileContentToOutputStream(String pathName, OutputStream out) throws IOException,
+			WebzException;
 
 	/** TODO !!! describe !!! **/
 	public WebzFileDownloader getFileContentDownloader(String pathName) throws IOException, WebzException;
@@ -37,7 +38,7 @@ public interface WebzFileSystem extends WebzFileFactory {
 	public WebzFileMetadata createFolder(String pathName) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzFileMetadata uploadFile(String pathName, byte[] content) throws IOException, WebzException;
+	public WebzFileMetadata.FileSpecific uploadFile(String pathName, byte[] content) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
 	public WebzFileMetadata move(String srcPathName, String destPathName) throws IOException, WebzException;

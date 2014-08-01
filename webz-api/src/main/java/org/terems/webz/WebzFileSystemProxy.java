@@ -56,7 +56,8 @@ public abstract class WebzFileSystemProxy implements WebzFileSystem {
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public WebzFileMetadata fileContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException {
+	public WebzFileMetadata.FileSpecific fileContentToOutputStream(String pathName, OutputStream out) throws IOException,
+			WebzException {
 		return getFileSystem().fileContentToOutputStream(pathName, out);
 	}
 
@@ -74,7 +75,7 @@ public abstract class WebzFileSystemProxy implements WebzFileSystem {
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public WebzFileMetadata uploadFile(String pathName, byte[] content) throws IOException, WebzException {
+	public WebzFileMetadata.FileSpecific uploadFile(String pathName, byte[] content) throws IOException, WebzException {
 		return getFileSystem().uploadFile(pathName, content);
 	}
 
