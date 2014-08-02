@@ -49,15 +49,19 @@
 		  <artifactId>dropbox-core-sdk</artifactId>
 		</dependency>
 
-		<!-- Jetty (for the sake of viewing it's source code) -->
-		<!--
+		<!-- Jetty (for the sake of viewing it's source code) - scope: "provided" (in parent pom.xml) -->
 		<dependency>
-			<groupId>org.eclipse.jetty.aggregate</groupId>
-			<artifactId>jetty-all</artifactId>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-quickstart</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-ant</artifactId>
+		</dependency>
+		<!--
+		<dependency>
+			<groupId>org.eclipse.jetty.aggregate</groupId>
+			<artifactId>jetty-all</artifactId>
 		</dependency>
 		-->
 	</dependencies>
