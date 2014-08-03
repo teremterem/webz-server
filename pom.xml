@@ -267,11 +267,6 @@
 					<dependencies>
 						<dependency>
 							<groupId>org.eclipse.jetty</groupId>
-							<artifactId>jetty-quickstart</artifactId>
-							<version>${jetty.version}</version>
-						</dependency>
-						<dependency>
-							<groupId>org.eclipse.jetty</groupId>
 							<artifactId>jetty-ant</artifactId>
 							<version>${jetty.version}</version>
 							<exclusions>
@@ -285,6 +280,15 @@
 								</exclusion>
 							</exclusions>
 						</dependency>
+
+						<!-- starting from Jetty 9.2.2.v20140723 metadata-complete="true" attribute in web.xml became effective -->
+						<!--
+						<dependency>
+							<groupId>org.eclipse.jetty</groupId>
+							<artifactId>jetty-quickstart</artifactId>
+							<version>${jetty.version}</version>
+						</dependency>
+						-->
 					</dependencies>
 				</plugin>
 			</plugins>
