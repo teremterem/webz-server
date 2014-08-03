@@ -52,16 +52,20 @@
 		<!-- Jetty (for the sake of viewing it's source code) - scope: "provided" (in parent pom.xml) -->
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-quickstart</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-ant</artifactId>
 		</dependency>
 		<!--
 		<dependency>
 			<groupId>org.eclipse.jetty.aggregate</groupId>
 			<artifactId>jetty-all</artifactId>
+		</dependency>
+		-->
+
+		<!-- starting from Jetty 9.2.2.v20140723 metadata-complete="true" attribute in web.xml became effective -->
+		<!--
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-quickstart</artifactId>
 		</dependency>
 		-->
 	</dependencies>
@@ -86,6 +90,8 @@
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
 
+					<!-- starting from Jetty 9.2.2.v20140723 metadata-complete="true" attribute in web.xml became effective -->
+					<!--
 					<execution>
 						<phase>prepare-package</phase>
 						<configuration>
@@ -101,6 +107,7 @@
 							<goal>run</goal>
 						</goals>
 					</execution>
+					-->
 
 					<!-- start Jetty and deploy webz-deployable.war using Ant... -->
 					<execution>
@@ -111,7 +118,11 @@
 								<taskdef classpathref="maven.plugin.classpath" resource="tasks.properties" loaderref="jetty.loader" />
 
 								<jetty.run>
+									<!-- starting from Jetty 9.2.2.v20140723 metadata-complete="true" attribute in web.xml became effective -->
+									<!--
 									<webApp contextXml="${basedir}/target/${project.build.finalName}/WEB-INF/jetty-webapp-context.xml"/>
+									-->
+									<webApp war="${basedir}/target/${project.build.finalName}.war" contextPath="/"/>
 								</jetty.run>
 
 							</target>

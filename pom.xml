@@ -26,7 +26,11 @@
 	<properties>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<!-- starting from Jetty 9.2.2.v20140723 metadata-complete="true" attribute in web.xml became effective -->
+		<!--
 		<additional.web.resources>${basedir}/target/additional-web-resources</additional.web.resources>
+		-->
 
 		<!-- versions -->
 
@@ -159,12 +163,6 @@
 			<!-- Jetty (for the sake of viewing it's source code) -->
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-quickstart</artifactId>
-				<version>${jetty.version}</version>
-				<scope>provided</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-ant</artifactId>
 				<version>${jetty.version}</version>
 				<scope>provided</scope>
@@ -173,6 +171,16 @@
 			<dependency>
 				<groupId>org.eclipse.jetty.aggregate</groupId>
 				<artifactId>jetty-all</artifactId>
+				<version>${jetty.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			-->
+
+			<!-- starting from Jetty 9.2.2.v20140723 metadata-complete="true" attribute in web.xml became effective -->
+			<!--
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-quickstart</artifactId>
 				<version>${jetty.version}</version>
 				<scope>provided</scope>
 			</dependency>
@@ -233,6 +241,9 @@
 				                    <include>**/*.xml</include>
 				                </includes>
 				            </resource>
+
+							<!-- starting from Jetty 9.2.2.v20140723 metadata-complete="true" attribute in web.xml became effective -->
+							<!--
 				            <resource>
 				                <filtering>true</filtering>
 				                <directory>${additional.web.resources}</directory>
@@ -240,6 +251,7 @@
 				                    <include>**/*.xml</include>
 				                </includes>
 				            </resource>
+							-->
 				        </webResources>
 				        <warSourceDirectory>src/main/webapp</warSourceDirectory>
 				        <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
