@@ -39,6 +39,9 @@ public class GenericWebzFile implements WebzFile {
 	/** TODO document that this method will NOT fetch metadata **/
 	@Override
 	public byte[] getFileContent(long expectedNumberOfBytes) throws IOException, WebzException {
+
+		// TODO does it make sense to serve a file when its' metadata is not accessible ? maybe throw an exception ?
+
 		ByteArrayOutputStream out = new ByteArrayOutputStream((int) expectedNumberOfBytes);
 		fileContentToOutputStream(out);
 		return out.toByteArray();
@@ -48,12 +51,17 @@ public class GenericWebzFile implements WebzFile {
 	@Override
 	public byte[] getFileContent() throws IOException, WebzException {
 
-		WebzFileMetadata.FileSpecific fileSpecific = getMetadata().getFileSpecific();
-		if (fileSpecific == null) {
-			throw new WebzException(pathName + " is not a file");
-		}
+		// TODO does it make sense to serve a file when its' metadata is not accessible ? maybe throw an exception ?
 
-		return getFileContent(fileSpecific.getNumberOfBytes());
+		WebzFileMetadata metadata = getMetadata();
+		if (metadata != null) {
+			WebzFileMetadata.FileSpecific fileSpecific = metadata.getFileSpecific();
+			if (fileSpecific != null) {
+
+				return getFileContent(fileSpecific.getNumberOfBytes());
+			}
+		}
+		return getFileContent(WebzDefaults.IO_BUFFER_SIZE_BYTES);
 	}
 
 	// TODO remove this commented out piece completely ?
