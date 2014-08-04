@@ -31,6 +31,7 @@ public class WebzEngineMain implements WebzEngine {
 
 	@Override
 	public void service(HttpServletRequest req, HttpServletResponse resp) {
+
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("\n\n\n****************************************************************************************************"
 					+ "\n***  SERVING "
@@ -38,7 +39,10 @@ public class WebzEngineMain implements WebzEngine {
 					+ "\n****************************************************************************************************\n\n");
 		}
 		try {
+			// TODO leverage from "last modified" http logic supported in parent implementation ?
+
 			rootPlugin.service(req, resp);
+
 		} catch (IOException | WebzException e) {
 			// TODO 500 error page should be displayed to the user instead
 			throw new RuntimeException(e);

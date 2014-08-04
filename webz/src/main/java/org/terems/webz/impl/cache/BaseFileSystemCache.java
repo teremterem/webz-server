@@ -179,7 +179,7 @@ public abstract class BaseFileSystemCache extends WebzFileSystemProxy {
 				traceFSMessage(LOG, "PAYLOAD for '" + pathName + "' is being fetched without being cached");
 			}
 			fileSystem.fileContentToOutputStream(pathName, out);
-			// TODO check if there is any problem with parallel payload downloading
+			// TODO should javax.servlet.AsyncContext be used ?
 		}
 	}
 

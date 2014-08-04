@@ -41,9 +41,7 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 			initWebzEngine();
 		}
 
-		// TODO leverage from "last modified" http logic supported in parent implementation ?
 		webzEngine.service(req, resp);
-
 	}
 
 	@Override
