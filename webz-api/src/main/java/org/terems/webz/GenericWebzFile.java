@@ -36,32 +36,27 @@ public class GenericWebzFile implements WebzFile {
 		return pathName;
 	}
 
-	/** TODO document that this method will NOT fetch metadata **/
-	@Override
-	public byte[] getFileContent(long expectedNumberOfBytes) throws IOException, WebzException {
-
-		// TODO does it make sense to serve a file when its' metadata is not accessible ? maybe throw an exception ?
-
-		ByteArrayOutputStream out = new ByteArrayOutputStream((int) expectedNumberOfBytes);
-		fileContentToOutputStream(out);
-		return out.toByteArray();
+	private String getFileSystemMessageSuffix() {
+		return "(file system: '" + fileSystem.getFileSystemUniqueId() + "')";
 	}
 
 	/** TODO document that this method will fetch metadata **/
 	@Override
 	public byte[] getFileContent() throws IOException, WebzException {
 
-		// TODO does it make sense to serve a file when its' metadata is not accessible ? maybe throw an exception ?
-
 		WebzFileMetadata metadata = getMetadata();
-		if (metadata != null) {
-			WebzFileMetadata.FileSpecific fileSpecific = metadata.getFileSpecific();
-			if (fileSpecific != null) {
-
-				return getFileContent(fileSpecific.getNumberOfBytes());
-			}
+		if (metadata == null) {
+			throw new WebzException(pathName + " does not exist " + getFileSystemMessageSuffix());
 		}
-		return getFileContent(WebzDefaults.IO_BUFFER_SIZE_BYTES);
+
+		WebzFileMetadata.FileSpecific fileSpecific = metadata.getFileSpecific();
+		if (fileSpecific == null) {
+			throw new WebzException(pathName + " is not a file " + getFileSystemMessageSuffix());
+		}
+
+		ByteArrayOutputStream out = new ByteArrayOutputStream((int) fileSpecific.getNumberOfBytes());
+		fileContentToOutputStream(out);
+		return out.toByteArray();
 	}
 
 	// TODO remove this commented out piece completely ?
@@ -79,6 +74,7 @@ public class GenericWebzFile implements WebzFile {
 	/** TODO !!! describe !!! **/
 	@Override
 	public WebzFileMetadata fileContentToOutputStream(OutputStream out) throws IOException, WebzException {
+		// unlike getFileContent() this method doesn't throw an exception if path name does not exist or is not a file
 		return fileSystem.fileContentToOutputStream(pathName, out);
 	}
 

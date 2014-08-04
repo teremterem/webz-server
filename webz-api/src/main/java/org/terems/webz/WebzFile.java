@@ -17,9 +17,6 @@ public interface WebzFile {
 	public WebzFileMetadata getMetadata() throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public byte[] getFileContent(long expectedNumberOfBytes) throws IOException, WebzException;
-
-	/** TODO !!! describe !!! **/
 	public byte[] getFileContent() throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
