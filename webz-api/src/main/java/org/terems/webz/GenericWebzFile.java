@@ -74,7 +74,7 @@ public class GenericWebzFile implements WebzFile {
 	/** TODO !!! describe !!! **/
 	@Override
 	public WebzFileMetadata fileContentToOutputStream(OutputStream out) throws IOException, WebzException {
-		// unlike getFileContent() this method doesn't throw an exception if path name does not exist or is not a file
+		// unlike getFileContent() this method doesn't throw WebzException if path name does not exist or is not a file
 		return fileSystem.fileContentToOutputStream(pathName, out);
 	}
 
