@@ -1,13 +1,15 @@
-package org.terems.webz;
+package org.terems.webz.plugin;
 
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-// TODO elaborate !!! (should it somewhat resemble regular Java Servlet ?)
-// TODO is it a good idea to pass file factory as a parameter every time ?
-public interface WebzPlugin {
+import org.terems.webz.WebzException;
+import org.terems.webz.WebzFileFactory;
+
+// TODO elaborate !!! (should it somewhat resemble regular Java Servlet Filter ?)
+public interface WebzFilter {
 
 	public void init(WebzFileFactory fileFactory) throws IOException, WebzException;
 

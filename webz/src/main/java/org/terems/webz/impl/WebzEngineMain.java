@@ -11,18 +11,18 @@ import org.terems.webz.WebzEngine;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFileFactory;
 import org.terems.webz.WebzFileSystem;
-import org.terems.webz.WebzPlugin;
 import org.terems.webz.impl.cache.ehcache.EhcacheFileSystemCache;
+import org.terems.webz.plugin.WebzFilter;
 
 public class WebzEngineMain implements WebzEngine {
 
 	private static Logger LOG = LoggerFactory.getLogger(WebzEngineMain.class);
 
 	private WebzFileFactory rootFileFactory;
-	private WebzPlugin rootPlugin;
+	private WebzFilter rootPlugin;
 
 	// TODO elaborate !!!
-	public WebzEngineMain(WebzFileSystem rootFileSystem, WebzPlugin rootPlugin) throws IOException, WebzException {
+	public WebzEngineMain(WebzFileSystem rootFileSystem, WebzFilter rootPlugin) throws IOException, WebzException {
 		this.rootFileFactory = new EhcacheFileSystemCache(rootFileSystem);
 		this.rootPlugin = rootPlugin;
 

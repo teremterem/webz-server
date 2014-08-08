@@ -1,9 +1,12 @@
-package org.terems.webz;
+package org.terems.webz.plugin;
 
 import java.io.IOException;
 
+import org.terems.webz.WebzException;
+import org.terems.webz.WebzFileFactory;
+
 // TODO elaborate !!!
-public abstract class BaseWebzPlugin implements WebzPlugin {
+public abstract class BaseWebzFilter implements WebzFilter {
 
 	private WebzFileFactory fileFactory;
 
