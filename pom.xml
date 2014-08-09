@@ -32,6 +32,11 @@
 		<additional.web.resources>${basedir}/target/additional-web-resources</additional.web.resources>
 		-->
 
+		<jetty.http.port>8080</jetty.http.port>
+		<jetty.stop.port>8079</jetty.stop.port>
+		<jetty.stop.key>jetty-webz</jetty.stop.key>
+		<jetty.stop.wait.milliseconds>5000</jetty.stop.wait.milliseconds>
+
 		<!-- versions -->
 
 		<jetty.version>9.2.2.v20140723</jetty.version>

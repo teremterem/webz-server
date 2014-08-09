@@ -90,16 +90,15 @@
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
 
-					<!-- starting from Jetty 9.2.2.v20140723 metadata-complete="true" attribute in web.xml became effective -->
-					<!--
 					<execution>
-						<phase>prepare-package</phase>
+						<id>jetty-stop-pre-clean</id>
+						<phase>pre-clean</phase>
 						<configuration>
 							<target>
 
-								<copy file="${basedir}/src/main/webapp/WEB-INF/web.xml"
-									tofile="${additional.web.resources}/WEB-INF/quickstart-web.xml"
-									overwrite="true"/>
+								<taskdef classpathref="maven.plugin.classpath" resource="tasks.properties" loaderref="jetty.loader" />
+
+								<jetty.stop stopPort="${jetty.stop.port}" stopKey="${jetty.stop.key}" stopWait="${jetty.stop.wait.milliseconds}"/>
 
 							</target>
 						</configuration>
@@ -107,7 +106,30 @@
 							<goal>run</goal>
 						</goals>
 					</execution>
-					-->
+
+					<execution>
+						<id>jetty-stop-prepare-package</id>
+						<phase>prepare-package</phase>
+						<configuration>
+							<target>
+
+								<taskdef classpathref="maven.plugin.classpath" resource="tasks.properties" loaderref="jetty.loader" />
+
+								<jetty.stop stopPort="${jetty.stop.port}" stopKey="${jetty.stop.key}" stopWait="${jetty.stop.wait.milliseconds}"/>
+
+								<!-- starting from Jetty 9.2.2.v20140723 metadata-complete="true" attribute in web.xml became effective -->
+								<!--
+								<copy file="${basedir}/src/main/webapp/WEB-INF/web.xml"
+									tofile="${additional.web.resources}/WEB-INF/quickstart-web.xml"
+									overwrite="true"/>
+								-->
+
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
 
 					<!-- start Jetty and deploy webz-deployable.war using Ant... -->
 					<execution>
@@ -117,7 +139,9 @@
 
 								<taskdef classpathref="maven.plugin.classpath" resource="tasks.properties" loaderref="jetty.loader" />
 
-								<jetty.run>
+								<jetty.stop stopPort="${jetty.stop.port}" stopKey="${jetty.stop.key}" stopWait="${jetty.stop.wait.milliseconds}"/>
+
+								<jetty.run jettyPort="${jetty.http.port}" stopPort="${jetty.stop.port}" stopKey="${jetty.stop.key}">
 									<!-- starting from Jetty 9.2.2.v20140723 metadata-complete="true" attribute in web.xml became effective -->
 									<!--
 									<webApp contextXml="${basedir}/target/${project.build.finalName}/WEB-INF/jetty-webapp-context.xml"/>
@@ -130,8 +154,8 @@
 						<goals>
 							<goal>run</goal>
 						</goals>
-
 					</execution>
+
 				</executions>
 			</plugin>
 		</plugins>
