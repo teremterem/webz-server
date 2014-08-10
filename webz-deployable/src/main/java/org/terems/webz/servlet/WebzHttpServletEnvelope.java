@@ -3,7 +3,6 @@ package org.terems.webz.servlet;
 import java.io.IOException;
 import java.util.Locale;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -26,12 +25,6 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 
 	private static Logger LOG = LoggerFactory.getLogger(WebzHttpServletEnvelope.class);
 
-	private String dbxBasePath;
-	private String dbxAccessToken;
-
-	private String dbxClientDisplayName;
-	private String dbxClientVersion;
-
 	private WebzEngine webzEngine;
 
 	@Override
@@ -44,17 +37,6 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 		webzEngine.service(req, resp);
 	}
 
-	@Override
-	public void init(ServletConfig config) throws ServletException {
-		super.init(config);
-
-		dbxBasePath = config.getInitParameter("dbxBasePath");
-		dbxAccessToken = config.getInitParameter("dbxAccessToken");
-
-		dbxClientDisplayName = config.getInitParameter("dbxClientDisplayName");
-		dbxClientVersion = config.getInitParameter("dbxClientVersion");
-	}
-
 	private Object webzEngineMutex = new Object();
 
 	private void initWebzEngine() throws ServletException {
@@ -63,16 +45,16 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 		synchronized (webzEngineMutex) {
 
 			if (webzEngine == null) {
-				String dbxClientId = getRidOfWhitespacesSafely(dbxClientDisplayName) + "/"
-						+ getRidOfWhitespacesSafely(dbxClientVersion);
+				String dbxClientId = getRidOfWhitespacesSafely(getServletConfig().getInitParameter("dbxClientDisplayName"))
+						+ "/" + getRidOfWhitespacesSafely(getServletConfig().getInitParameter("dbxClientVersion"));
 				DbxRequestConfig dbxConfig = new DbxRequestConfig(dbxClientId, Locale.getDefault().toString());
 
 				LOG.info("Dropbox client ID that will be used: '" + dbxConfig.clientIdentifier + "' (locale: '"
 						+ dbxConfig.userLocale + "')");
 
 				try {
-					WebzFileSystem dropboxFileSource = new DropboxFileSystem(new DbxClient(dbxConfig, dbxAccessToken),
-							dbxBasePath);
+					WebzFileSystem dropboxFileSource = new DropboxFileSystem(new DbxClient(dbxConfig, getServletConfig()
+							.getInitParameter("dbxAccessToken")), getServletConfig().getInitParameter("dbxBasePath"));
 
 					webzEngine = new WebzEngineMain(dropboxFileSource, ObsoleteWebzEngine.newFilter());
 

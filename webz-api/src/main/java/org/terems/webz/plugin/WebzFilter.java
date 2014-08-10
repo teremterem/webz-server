@@ -20,6 +20,9 @@ public interface WebzFilter {
 			WebzException;
 
 	/** TODO !!! describe !!! **/
+	public long getLastModified(HttpServletRequest req);
+
+	/** TODO !!! describe !!! **/
 	public void destroy();
 
 }
