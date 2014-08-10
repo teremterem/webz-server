@@ -3,23 +3,25 @@ package org.terems.webz.plugin;
 import java.io.IOException;
 
 import org.terems.webz.WebzException;
-import org.terems.webz.WebzFileFactory;
+import org.terems.webz.WebzFilterConfig;
 
-// TODO elaborate !!!
+/** TODO !!! describe !!! **/
 public abstract class BaseWebzFilter implements WebzFilter {
 
-	private WebzFileFactory fileFactory;
+	private WebzFilterConfig filterConfig;
 
-	@Override
-	public void init(WebzFileFactory fileFactory) throws IOException, WebzException {
-		this.fileFactory = fileFactory;
+	/** TODO !!! describe !!! **/
+	public WebzFilterConfig getFilterConfig() {
+		return filterConfig;
 	}
 
+	/** TODO !!! describe !!! **/
 	@Override
-	public WebzFileFactory getFileFactory() {
-		return fileFactory;
+	public void init(WebzFilterConfig filterConfig) throws IOException, WebzException {
+		this.filterConfig = filterConfig;
 	}
 
+	/** TODO !!! describe !!! **/
 	@Override
 	public void destroy() {
 	}

@@ -74,7 +74,7 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 					WebzFileSystem dropboxFileSource = new DropboxFileSystem(new DbxClient(dbxConfig, dbxAccessToken),
 							dbxBasePath);
 
-					webzEngine = new WebzEngineMain(dropboxFileSource, new ObsoleteWebzEngine());
+					webzEngine = new WebzEngineMain(dropboxFileSource, ObsoleteWebzEngine.newFilter());
 
 				} catch (IOException | WebzException e) {
 					throw new ServletException(e);

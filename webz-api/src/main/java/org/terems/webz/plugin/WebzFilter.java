@@ -5,18 +5,21 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.terems.webz.WebzChainContext;
 import org.terems.webz.WebzException;
-import org.terems.webz.WebzFileFactory;
+import org.terems.webz.WebzFilterConfig;
 
-// TODO elaborate !!! (should it somewhat resemble regular Java Servlet Filter ?)
+/** TODO !!! describe !!! **/
 public interface WebzFilter {
 
-	public void init(WebzFileFactory fileFactory) throws IOException, WebzException;
+	/** TODO !!! describe !!! **/
+	public void init(WebzFilterConfig filterConfig) throws IOException, WebzException;
 
-	public WebzFileFactory getFileFactory();
+	/** TODO !!! describe !!! **/
+	public void service(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException,
+			WebzException;
 
-	public void service(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException;
-
+	/** TODO !!! describe !!! **/
 	public void destroy();
 
 }

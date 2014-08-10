@@ -7,10 +7,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.terems.webz.WebzChainContext;
 import org.terems.webz.WebzEngine;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFileFactory;
 import org.terems.webz.WebzFileSystem;
+import org.terems.webz.WebzFilterConfig;
+import org.terems.webz.WebzResource;
 import org.terems.webz.impl.cache.ehcache.EhcacheFileSystemCache;
 import org.terems.webz.plugin.WebzFilter;
 
@@ -21,12 +24,45 @@ public class WebzEngineMain implements WebzEngine {
 	private WebzFileFactory rootFileFactory;
 	private WebzFilter rootPlugin;
 
+	private WebzChainContext chainContext = new WebzChainContext() {
+
+		@Override
+		public WebzFileFactory fileFactory() {
+			return rootFileFactory;
+		}
+
+		@Override
+		public void nextPlease(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException {
+			// TODO TODO TODO TODO TODO
+			// TODO TODO TODO TODO TODO
+			// TODO TODO TODO TODO TODO
+			// TODO TODO TODO TODO TODO
+			// TODO TODO TODO TODO TODO
+		}
+
+		@Override
+		public WebzResource webzGet(String uriORurl) {
+			// TODO TODO TODO TODO TODO
+			// TODO TODO TODO TODO TODO
+			// TODO TODO TODO TODO TODO
+			// TODO TODO TODO TODO TODO
+			// TODO TODO TODO TODO TODO
+			return null;
+		}
+	};
+
 	// TODO elaborate !!!
 	public WebzEngineMain(WebzFileSystem rootFileSystem, WebzFilter rootPlugin) throws IOException, WebzException {
 		this.rootFileFactory = new EhcacheFileSystemCache(rootFileSystem);
 		this.rootPlugin = rootPlugin;
 
-		this.rootPlugin.init(this.rootFileFactory);
+		this.rootPlugin.init(new WebzFilterConfig() {
+			// TODO TODO TODO TODO TODO
+			// TODO TODO TODO TODO TODO
+			// TODO TODO TODO TODO TODO
+			// TODO TODO TODO TODO TODO
+			// TODO TODO TODO TODO TODO
+		});
 	}
 
 	@Override
@@ -41,7 +77,7 @@ public class WebzEngineMain implements WebzEngine {
 		try {
 			// TODO leverage from "last modified" http logic supported in parent implementation ?
 
-			rootPlugin.service(req, resp);
+			rootPlugin.service(req, resp, chainContext);
 
 		} catch (IOException | WebzException e) {
 			// TODO 500 error page should be displayed to the user instead
