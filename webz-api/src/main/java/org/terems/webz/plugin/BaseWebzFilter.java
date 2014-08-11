@@ -24,9 +24,13 @@ public abstract class BaseWebzFilter implements WebzFilter {
 	}
 
 	/** TODO !!! describe !!! **/
-	@Override
-	public long getLastModified(HttpServletRequest req) {
+	protected long getLastModified(HttpServletRequest req) {
 		return -1;
+		// TODO TODO TODO TODO TODO
+		// TODO TODO TODO TODO TODO
+		// TODO TODO TODO TODO TODO
+		// TODO TODO TODO TODO TODO
+		// TODO TODO TODO TODO TODO
 	}
 
 	/** TODO !!! describe !!! **/
