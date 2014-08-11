@@ -19,7 +19,7 @@ public interface WebzFilter {
 	public void service(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException,
 			WebzException;
 
-	/** TODO !!! describe !!! **/
+	// TODO move from this interface to some abstract base implementation:
 	public long getLastModified(HttpServletRequest req);
 
 	/** TODO !!! describe !!! **/
