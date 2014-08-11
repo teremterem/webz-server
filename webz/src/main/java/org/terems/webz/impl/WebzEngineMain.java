@@ -57,11 +57,18 @@ public class WebzEngineMain implements WebzEngine {
 		this.rootPlugin = rootPlugin;
 
 		this.rootPlugin.init(new WebzFilterConfig() {
+
+			@Override
+			public WebzFileFactory fileFactory() {
+				return rootFileFactory;
+			}
+
 			// TODO TODO TODO TODO TODO
 			// TODO TODO TODO TODO TODO
 			// TODO TODO TODO TODO TODO
 			// TODO TODO TODO TODO TODO
 			// TODO TODO TODO TODO TODO
+
 		});
 	}
 
