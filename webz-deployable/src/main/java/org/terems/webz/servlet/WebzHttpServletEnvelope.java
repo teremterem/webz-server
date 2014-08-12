@@ -1,6 +1,7 @@
 package org.terems.webz.servlet;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Locale;
 
 import javax.servlet.ServletException;
@@ -10,10 +11,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terems.webz.WebzEngine;
+import org.terems.webz.WebzApp;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFileSystem;
-import org.terems.webz.impl.WebzEngineMain;
+import org.terems.webz.impl.WebzEngine;
 import org.terems.webz.impl.dropbox.DropboxFileSystem;
 import org.terems.webz.obsolete.ObsoleteWebzEngine;
 
@@ -25,26 +26,26 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 
 	private static Logger LOG = LoggerFactory.getLogger(WebzHttpServletEnvelope.class);
 
-	private WebzEngine webzEngine;
+	private WebzApp webzApp;
 
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
 
-		if (webzEngine == null) {
-			initWebzEngine();
+		if (webzApp == null) {
+			initWebzApp();
 		}
 
-		webzEngine.service(req, resp);
+		webzApp.service(req, resp);
 	}
 
-	private Object webzEngineMutex = new Object();
+	private Object webzAppMutex = new Object();
 
-	private void initWebzEngine() throws ServletException {
+	private void initWebzApp() throws ServletException {
 
-		LOG.info("INITIALIZING WEBZ ENGINE...");
-		synchronized (webzEngineMutex) {
+		LOG.info("INITIALIZING ROOT WEBZ APP...");
+		synchronized (webzAppMutex) {
 
-			if (webzEngine == null) {
+			if (webzApp == null) {
 				String dbxClientId = getRidOfWhitespacesSafely(getServletConfig().getInitParameter("dbxClientDisplayName"))
 						+ "/" + getRidOfWhitespacesSafely(getServletConfig().getInitParameter("dbxClientVersion"));
 				DbxRequestConfig dbxConfig = new DbxRequestConfig(dbxClientId, Locale.getDefault().toString());
@@ -56,13 +57,13 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 					WebzFileSystem dropboxFileSource = new DropboxFileSystem(new DbxClient(dbxConfig, getServletConfig()
 							.getInitParameter("dbxAccessToken")), getServletConfig().getInitParameter("dbxBasePath"));
 
-					webzEngine = new WebzEngineMain(dropboxFileSource, ObsoleteWebzEngine.newFilter());
+					webzApp = new WebzEngine(dropboxFileSource, Collections.singleton(ObsoleteWebzEngine.newFilter()));
 
 				} catch (IOException | WebzException e) {
 					throw new ServletException(e);
 				}
 
-				LOG.info("FINISHED INITIALIZING WEBZ ENGINE");
+				LOG.info("FINISHED INITIALIZING ROOT WEBZ APP");
 			} else {
 				LOG.info("WEBZ ENGINE WAS ALREADY INITIALIZED - NO NEED TO INITIALIZE AGAIN");
 			}

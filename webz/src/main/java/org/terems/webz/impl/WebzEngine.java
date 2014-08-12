@@ -1,14 +1,16 @@
 package org.terems.webz.impl;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.terems.webz.WebzApp;
 import org.terems.webz.WebzChainContext;
-import org.terems.webz.WebzEngine;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFileFactory;
 import org.terems.webz.WebzFileSystem;
@@ -17,46 +19,18 @@ import org.terems.webz.WebzResource;
 import org.terems.webz.impl.cache.ehcache.EhcacheFileSystemCache;
 import org.terems.webz.plugin.WebzFilter;
 
-public class WebzEngineMain implements WebzEngine {
+public class WebzEngine implements WebzApp {
 
-	private static Logger LOG = LoggerFactory.getLogger(WebzEngineMain.class);
+	private static Logger LOG = LoggerFactory.getLogger(WebzEngine.class);
 
 	private WebzFileFactory rootFileFactory;
-	private WebzFilter rootPlugin;
+	private Collection<WebzFilter> filterChain;
 
-	private WebzChainContext chainContext = new WebzChainContext() {
-
-		@Override
-		public WebzFileFactory fileFactory() {
-			return rootFileFactory;
-		}
-
-		@Override
-		public void nextPlease(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException {
-			// TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO
-		}
-
-		@Override
-		public WebzResource webzGet(String uriORurl) {
-			// TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO
-			return null;
-		}
-	};
-
-	// TODO elaborate !!!
-	public WebzEngineMain(WebzFileSystem rootFileSystem, WebzFilter rootPlugin) throws IOException, WebzException {
+	public WebzEngine(WebzFileSystem rootFileSystem, Collection<WebzFilter> filterChain) throws IOException, WebzException {
 		this.rootFileFactory = new EhcacheFileSystemCache(rootFileSystem);
-		this.rootPlugin = rootPlugin;
+		this.filterChain = filterChain;
 
-		this.rootPlugin.init(new WebzFilterConfig() {
+		WebzFilterConfig filterConfig = new WebzFilterConfig() {
 
 			@Override
 			public WebzFileFactory fileFactory() {
@@ -66,10 +40,12 @@ public class WebzEngineMain implements WebzEngine {
 			// TODO TODO TODO TODO TODO
 			// TODO TODO TODO TODO TODO
 			// TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO
 
-		});
+		};
+
+		for (WebzFilter filter : filterChain) {
+			filter.init(filterConfig);
+		}
 	}
 
 	@Override
@@ -81,20 +57,37 @@ public class WebzEngineMain implements WebzEngine {
 					+ getFullURL(req)
 					+ "\n****************************************************************************************************\n\n");
 		}
-		try {
-			// TODO TODO TODO TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO TODO TODO TODO
-			// TODO support last modified concept TODO
-			// TODO TODO TODO TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO TODO TODO TODO
 
-			rootPlugin.service(req, resp, chainContext);
+		try {
+			WebzChainContext chainContext = new WebzChainContext() {
+
+				private Iterator<WebzFilter> filterChainIterator = filterChain.iterator();
+
+				@Override
+				public WebzFileFactory fileFactory() {
+					return rootFileFactory;
+				}
+
+				@Override
+				public void nextPlease(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException {
+
+					if (filterChainIterator.hasNext()) {
+						filterChainIterator.next().service(req, resp, this);
+					}
+				}
+
+				@Override
+				public WebzResource webzGet(String uriORurl) {
+					// TODO TODO TODO TODO TODO
+					// TODO TODO TODO TODO TODO
+					// TODO TODO TODO TODO TODO
+					// TODO TODO TODO TODO TODO
+					// TODO TODO TODO TODO TODO
+					return null;
+				}
+			};
+
+			chainContext.nextPlease(req, resp);
 
 		} catch (IOException | WebzException e) {
 			// TODO 500 error page should be displayed to the user instead
