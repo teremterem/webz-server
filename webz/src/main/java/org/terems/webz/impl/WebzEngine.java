@@ -76,6 +76,8 @@ public class WebzEngine implements WebzApp {
 					}
 				}
 
+				// TODO reusable request wrapper in ThreadLocal
+
 				@Override
 				public WebzResource webzGet(String uriORurl) {
 					// TODO TODO TODO TODO TODO
