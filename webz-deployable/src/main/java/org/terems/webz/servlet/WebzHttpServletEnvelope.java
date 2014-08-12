@@ -65,7 +65,7 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 
 				LOG.info("FINISHED INITIALIZING ROOT WEBZ APP");
 			} else {
-				LOG.info("WEBZ ENGINE WAS ALREADY INITIALIZED - NO NEED TO INITIALIZE AGAIN");
+				LOG.info("ROOT WEBZ APP WAS ALREADY INITIALIZED - NO NEED TO INITIALIZE AGAIN");
 			}
 
 		}
