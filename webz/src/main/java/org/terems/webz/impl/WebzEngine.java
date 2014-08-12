@@ -58,37 +58,35 @@ public class WebzEngine implements WebzApp {
 					+ "\n****************************************************************************************************\n\n");
 		}
 
+		WebzChainContext chainContext = new WebzChainContext() {
+
+			private Iterator<WebzFilter> filterChainIterator = filterChain.iterator();
+
+			@Override
+			public WebzFileFactory fileFactory() {
+				return rootFileFactory;
+			}
+
+			@Override
+			public void nextPlease(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException {
+
+				if (filterChainIterator.hasNext()) {
+					filterChainIterator.next().service(req, resp, this);
+				}
+			}
+
+			@Override
+			public WebzResource webzGet(String uriORurl) {
+				// TODO TODO TODO TODO TODO
+				// TODO TODO TODO TODO TODO
+				// TODO TODO TODO TODO TODO
+				// TODO TODO TODO TODO TODO
+				// TODO TODO TODO TODO TODO
+				return null;
+			}
+		};
+
 		try {
-			WebzChainContext chainContext = new WebzChainContext() {
-
-				private Iterator<WebzFilter> filterChainIterator = filterChain.iterator();
-
-				@Override
-				public WebzFileFactory fileFactory() {
-					return rootFileFactory;
-				}
-
-				@Override
-				public void nextPlease(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException {
-
-					if (filterChainIterator.hasNext()) {
-						filterChainIterator.next().service(req, resp, this);
-					}
-				}
-
-				// TODO reusable request wrapper in ThreadLocal
-
-				@Override
-				public WebzResource webzGet(String uriORurl) {
-					// TODO TODO TODO TODO TODO
-					// TODO TODO TODO TODO TODO
-					// TODO TODO TODO TODO TODO
-					// TODO TODO TODO TODO TODO
-					// TODO TODO TODO TODO TODO
-					return null;
-				}
-			};
-
 			chainContext.nextPlease(req, resp);
 
 		} catch (IOException | WebzException e) {
