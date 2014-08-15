@@ -14,8 +14,9 @@ import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzApp;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFileSystem;
+import org.terems.webz.filter.FileFolderRedirectFilter;
 import org.terems.webz.filter.FolderPreloadFilter;
-import org.terems.webz.filter.FolderRedirectFilter;
+import org.terems.webz.filter.WelcomeFilter;
 import org.terems.webz.impl.WebzEngine;
 import org.terems.webz.impl.dropbox.DropboxFileSystem;
 import org.terems.webz.obsolete.ObsoleteWebzEngine;
@@ -59,8 +60,8 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 					WebzFileSystem dropboxFileSource = new DropboxFileSystem(new DbxClient(dbxConfig, getServletConfig()
 							.getInitParameter("dbxAccessToken")), getServletConfig().getInitParameter("dbxBasePath"));
 
-					webzApp = new WebzEngine(dropboxFileSource, Arrays.asList(new FolderPreloadFilter(),
-							new FolderRedirectFilter(), ObsoleteWebzEngine.newFilter()));
+					webzApp = new WebzEngine(dropboxFileSource, Arrays.asList(new FolderPreloadFilter(), new WelcomeFilter(),
+							new FileFolderRedirectFilter(), ObsoleteWebzEngine.newFilter()));
 
 				} catch (IOException | WebzException e) {
 					throw new ServletException(e);
