@@ -146,7 +146,7 @@
 									<!--
 									<webApp contextXml="${basedir}/target/${project.build.finalName}/WEB-INF/jetty-webapp-context.xml"/>
 									-->
-									<webApp war="${basedir}/target/${project.build.finalName}.war" contextPath="/"/>
+									<webApp war="${basedir}/target/${project.build.finalName}.war" contextPath="/webapp/"/>
 								</jetty.run>
 
 							</target>

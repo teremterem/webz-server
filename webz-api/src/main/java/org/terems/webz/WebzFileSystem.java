@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Map;
 
+// TODO split file factory and file system interfaces !!!
 /** TODO !!! describe !!! **/
 public interface WebzFileSystem extends WebzFileFactory {
 

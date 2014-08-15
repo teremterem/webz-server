@@ -27,7 +27,9 @@ public class GenericWebzFile implements WebzFile {
 	/** TODO !!! describe !!! **/
 	public GenericWebzFile(WebzFileSystem fileSystem, String pathName) {
 		this.fileSystem = fileSystem;
-		this.pathName = trimFileSeparators(pathName);
+
+		// TODO revise path normalization logic:
+		this.pathName = pathName == null ? "" : trimFileSeparators(pathName);
 	}
 
 	/** TODO !!! describe !!! **/
