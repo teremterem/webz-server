@@ -30,6 +30,7 @@ public class GenericWebzFile implements WebzFile {
 
 		// TODO revise path normalization logic:
 		this.pathName = pathName == null ? "" : trimFileSeparators(pathName);
+		// TODO + force 404(?) for cases like http://localhost:8080//////webz-pedesis.html
 	}
 
 	/** TODO !!! describe !!! **/
