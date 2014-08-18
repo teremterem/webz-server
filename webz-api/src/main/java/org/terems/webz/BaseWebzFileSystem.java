@@ -8,16 +8,9 @@ import java.util.Map;
 /** TODO !!! describe !!! **/
 public abstract class BaseWebzFileSystem implements WebzFileSystem {
 
-	/** TODO !!! describe !!! **/
-	@Override
-	public WebzFile get(String pathName) {
-		return new GenericWebzFile(this, pathName);
-	}
-
 	/**
-	 * Default implementation always returns an instance of {@link FreshParentChildrenMetadata} (never returns null) implying
-	 * that the data is always "fresh" (however {@code FreshParentChildrenMetadata.parentChildrenMetadata} field may still be
-	 * null)...
+	 * Default implementation always returns an instance of {@link FreshParentChildrenMetadata} (never returns null) implying that the data
+	 * is always "fresh" (however {@code FreshParentChildrenMetadata.parentChildrenMetadata} field may still be null)...
 	 * 
 	 * @param parentPathName
 	 * @param previousFolderHash
@@ -57,14 +50,13 @@ public abstract class BaseWebzFileSystem implements WebzFileSystem {
 	 * Default implementation...
 	 **/
 	@Override
-	public WebzFileMetadata.FileSpecific fileContentToOutputStream(String pathName, OutputStream out) throws IOException,
-			WebzException {
+	public WebzFileMetadata.FileSpecific fileContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException {
 		return fileContentToOutputStream(this, pathName, out);
 	}
 
 	/** TODO !!! describe !!! **/
-	public static WebzFileMetadata.FileSpecific fileContentToOutputStream(WebzFileSystem fileSystem, String pathName,
-			OutputStream out) throws IOException, WebzException {
+	public static WebzFileMetadata.FileSpecific fileContentToOutputStream(WebzFileSystem fileSystem, String pathName, OutputStream out)
+			throws IOException, WebzException {
 
 		WebzFileDownloader downloader = fileSystem.getFileContentDownloader(pathName);
 		if (downloader == null) {

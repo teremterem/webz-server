@@ -13,12 +13,6 @@ public abstract class WebzFileSystemProxy implements WebzFileSystem {
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public WebzFile get(String pathName) {
-		return new GenericWebzFile(this, pathName);
-	}
-
-	/** TODO !!! describe !!! **/
-	@Override
 	public String getFileSystemUniqueId() {
 		return getFileSystem().getFileSystemUniqueId();
 	}
@@ -56,8 +50,7 @@ public abstract class WebzFileSystemProxy implements WebzFileSystem {
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public WebzFileMetadata.FileSpecific fileContentToOutputStream(String pathName, OutputStream out) throws IOException,
-			WebzException {
+	public WebzFileMetadata.FileSpecific fileContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException {
 		return getFileSystem().fileContentToOutputStream(pathName, out);
 	}
 

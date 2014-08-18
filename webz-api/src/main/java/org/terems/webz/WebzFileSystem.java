@@ -5,9 +5,8 @@ import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Map;
 
-// TODO split file factory and file system interfaces !!!
 /** TODO !!! describe !!! **/
-public interface WebzFileSystem extends WebzFileFactory {
+public interface WebzFileSystem {
 
 	/** TODO !!! describe !!! **/
 	public String getFileSystemUniqueId();
@@ -29,8 +28,7 @@ public interface WebzFileSystem extends WebzFileFactory {
 	public Collection<String> getChildPathNames(String parentPathName) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzFileMetadata.FileSpecific fileContentToOutputStream(String pathName, OutputStream out) throws IOException,
-			WebzException;
+	public WebzFileMetadata.FileSpecific fileContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
 	public WebzFileDownloader getFileContentDownloader(String pathName) throws IOException, WebzException;

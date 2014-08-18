@@ -23,23 +23,22 @@ public class WebzEngine implements WebzApp {
 
 	private static Logger LOG = LoggerFactory.getLogger(WebzEngine.class);
 
-	private WebzFileFactory rootFileFactory;
+	private WebzFileFactory initialFileFactory;
 	private Collection<WebzFilter> filterChain;
 
-	public WebzEngine(WebzFileSystem rootFileSystem, Collection<WebzFilter> filterChain) throws IOException, WebzException {
-		this.rootFileFactory = new EhcacheFileSystemCache(rootFileSystem);
+	public WebzEngine(WebzFileSystem fileSystem, Collection<WebzFilter> filterChain) throws IOException, WebzException {
+		this.initialFileFactory = new GenericFileFactory(new EhcacheFileSystemCache(fileSystem));
 		this.filterChain = filterChain;
 
 		WebzFilterConfig filterConfig = new WebzFilterConfig() {
 
+			// TODO TODO TODO TODO TODO
+			// TODO TODO TODO TODO TODO
+			// TODO TODO TODO TODO TODO
 			@Override
 			public WebzFileFactory fileFactory() {
-				return rootFileFactory;
+				return initialFileFactory;
 			}
-
-			// TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO
 
 		};
 
@@ -58,7 +57,7 @@ public class WebzEngine implements WebzApp {
 		}
 
 		try {
-			new ChainContext(filterChain.iterator(), rootFileFactory).nextPlease(req, resp);
+			new ChainContext(filterChain.iterator(), initialFileFactory).nextPlease(req, resp);
 
 		} catch (IOException | WebzException e) {
 			// TODO 500 error page should be displayed to the user instead
