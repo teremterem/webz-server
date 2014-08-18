@@ -4,7 +4,7 @@ package org.terems.webz;
 public interface WebzContext extends WebzFileFactoryKeeper {
 
 	/** TODO !!! describe !!! **/
-	public WebzFile getRequestedFile();
+	public WebzFile resolveRequestedFile();
 
 	/** TODO !!! describe !!! **/
 	public WebzResource webzGet(String uriORurl);

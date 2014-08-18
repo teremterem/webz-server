@@ -50,7 +50,7 @@ public class WebzEngine implements WebzApp {
 		}
 	}
 
-	private static final WebzFileRequestResolver DEFAULT_FILE_REQUEST_RESOLVER = new DefaultWebzFileRequestResolver();
+	private static final WebzFileRequestResolver DEFAULT_FILE_RESOLVER = new DefaultWebzFileRequestResolver();
 
 	@Override
 	public void service(HttpServletRequest req, HttpServletResponse resp) {
@@ -62,7 +62,7 @@ public class WebzEngine implements WebzApp {
 		}
 
 		try {
-			new ChainContext(filterChain.iterator(), DEFAULT_FILE_REQUEST_RESOLVER).nextPlease(req, resp);
+			new ChainContext(filterChain.iterator(), DEFAULT_FILE_RESOLVER).nextPlease(req, resp);
 
 		} catch (IOException | WebzException e) {
 			// TODO 500 error page should be displayed to the user instead
@@ -101,7 +101,7 @@ public class WebzEngine implements WebzApp {
 			}
 			if (filterChainIterator.hasNext()) {
 
-				// remembering request to use it when file request resolver is invoked...
+				// remembering request to use it when resolveRequestedFile() and/or webzGet() is invoked...
 				request = req;
 
 				filterChainIterator.next().service(req, resp, this);
@@ -123,7 +123,7 @@ public class WebzEngine implements WebzApp {
 		}
 
 		@Override
-		public WebzFile getRequestedFile() {
+		public WebzFile resolveRequestedFile() {
 			return fileRequestResolver.resolve(fileFactory, request);
 		}
 

@@ -9,13 +9,20 @@ import org.terems.webz.WebzChainContext;
 import org.terems.webz.WebzException;
 import org.terems.webz.plugin.BaseWebzFilter;
 
-public class FolderPreloadFilter extends BaseWebzFilter {
+public class FolderPreloadWelcomeFilter extends BaseWebzFilter {
 
 	@Override
 	public void service(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException, WebzException {
 
+		// TODO TODO TODO
+
+		// TODO to alter the value of req.getPathInfo() in a wrapper or to maintain "current" webz file system path in an
+		// isolated manner ?
+
+		// TODO how to redirect to "main" welcome urls ? should this filter be merged with FileFolderRedirectFilter ?
+
 		// preloading "metadata with children"...
-		chainContext.getRequestedFile().getChildren();
+		chainContext.resolveRequestedFile().getChildren();
 
 		chainContext.nextPlease(req, resp);
 	}
