@@ -27,7 +27,7 @@ public class WebzEngine implements WebzApp {
 	private Collection<WebzFilter> filterChain;
 
 	public WebzEngine(WebzFileSystem fileSystem, Collection<WebzFilter> filterChain) throws IOException, WebzException {
-		this.initialFileFactory = new GenericFileFactory(new EhcacheFileSystemCache(fileSystem));
+		this.initialFileFactory = new GenericWebzFileFactory(new EhcacheFileSystemCache(fileSystem));
 		this.filterChain = filterChain;
 
 		WebzFilterConfig filterConfig = new WebzFilterConfig() {

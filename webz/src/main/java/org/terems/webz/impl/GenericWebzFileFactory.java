@@ -5,11 +5,11 @@ import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFileFactory;
 import org.terems.webz.WebzFileSystem;
 
-public class GenericFileFactory implements WebzFileFactory {
+public class GenericWebzFileFactory implements WebzFileFactory {
 
 	private WebzFileSystem fileSystem;
 
-	public GenericFileFactory(WebzFileSystem fileSystem) {
+	public GenericWebzFileFactory(WebzFileSystem fileSystem) {
 		this.fileSystem = fileSystem;
 	}
 
