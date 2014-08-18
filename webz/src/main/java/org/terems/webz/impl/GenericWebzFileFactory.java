@@ -14,10 +14,10 @@ public class GenericWebzFileFactory implements WebzFileFactory {
 	}
 
 	@Override
-	public WebzFile get(String pathName) {
+	public WebzFile get(String pathInfo) {
 		// TODO revise path normalization logic
 		// TODO + force 404(?) for cases like http://localhost:8080//////webz-pedesis.html
-		return new GenericWebzFile(pathName == null ? "" : GenericWebzFile.trimFileSeparators(pathName), fileSystem);
+		return new GenericWebzFile(pathInfo == null ? "" : GenericWebzFile.trimFileSeparators(pathInfo), fileSystem);
 	}
 
 }
