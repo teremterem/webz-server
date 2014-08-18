@@ -17,6 +17,7 @@ import org.terems.webz.WebzFileSystem;
 import org.terems.webz.filter.FileFolderRedirectFilter;
 import org.terems.webz.filter.FolderPreloadFilter;
 import org.terems.webz.filter.WelcomeFilter;
+import org.terems.webz.impl.GenericWebzFile;
 import org.terems.webz.impl.WebzEngine;
 import org.terems.webz.impl.dropbox.DropboxFileSystem;
 import org.terems.webz.obsolete.ObsoleteWebzEngine;
@@ -49,16 +50,18 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 		synchronized (webzAppMutex) {
 
 			if (webzApp == null) {
-				String dbxClientId = getRidOfWhitespacesSafely(getServletConfig().getInitParameter("dbxClientDisplayName"))
-						+ "/" + getRidOfWhitespacesSafely(getServletConfig().getInitParameter("dbxClientVersion"));
+				String dbxClientId = getRidOfWhitespacesSafely(getServletConfig().getInitParameter("dbxClientDisplayName")) + "/"
+						+ getRidOfWhitespacesSafely(getServletConfig().getInitParameter("dbxClientVersion"));
 				DbxRequestConfig dbxConfig = new DbxRequestConfig(dbxClientId, Locale.getDefault().toString());
 
-				LOG.info("Dropbox client ID that will be used: '" + dbxConfig.clientIdentifier + "' (locale: '"
-						+ dbxConfig.userLocale + "')");
+				LOG.info("Dropbox client ID that will be used: '" + dbxConfig.clientIdentifier + "' (locale: '" + dbxConfig.userLocale
+						+ "')");
 
 				try {
-					WebzFileSystem dropboxFileSource = new DropboxFileSystem(new DbxClient(dbxConfig, getServletConfig()
-							.getInitParameter("dbxAccessToken")), getServletConfig().getInitParameter("dbxBasePath"));
+					String dbxAccessToken = getServletConfig().getInitParameter("dbxAccessToken");
+					String dbxBasePath = "/" + GenericWebzFile.trimFileSeparators(getServletConfig().getInitParameter("dbxBasePath"));
+
+					WebzFileSystem dropboxFileSource = new DropboxFileSystem(new DbxClient(dbxConfig, dbxAccessToken), dbxBasePath);
 
 					webzApp = new WebzEngine(dropboxFileSource, Arrays.asList(new FolderPreloadFilter(), new WelcomeFilter(),
 							new FileFolderRedirectFilter(), ObsoleteWebzEngine.newFilter()));

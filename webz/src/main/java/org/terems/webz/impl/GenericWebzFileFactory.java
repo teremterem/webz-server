@@ -1,6 +1,5 @@
 package org.terems.webz.impl;
 
-import org.terems.webz.GenericWebzFile;
 import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFileFactory;
 import org.terems.webz.WebzFileSystem;

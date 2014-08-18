@@ -1,10 +1,16 @@
-package org.terems.webz;
+package org.terems.webz.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import org.terems.webz.WebzException;
+import org.terems.webz.WebzFile;
+import org.terems.webz.WebzFileMetadata;
+import org.terems.webz.WebzFileSystem;
+import org.terems.webz.WebzFileMetadata.FileSpecific;
 
 // TODO move to WebZ Core together with File System and related classes ?
 /** TODO !!! describe !!! **/
