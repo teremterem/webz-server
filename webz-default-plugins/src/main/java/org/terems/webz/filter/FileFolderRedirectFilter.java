@@ -13,15 +13,14 @@ import org.terems.webz.plugin.BaseWebzFilter;
 public class FileFolderRedirectFilter extends BaseWebzFilter {
 
 	@Override
-	public void service(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException,
-			WebzException {
+	public void service(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException, WebzException {
 
 		String requestMethod = req.getMethod();
 		boolean isMethodHead = "HEAD".equals(requestMethod);
 
 		if (("GET".equals(requestMethod) || isMethodHead)) {
 
-			WebzFileMetadata metadata = chainContext.fileFactory().get(req.getPathInfo()).getMetadata();
+			WebzFileMetadata metadata = chainContext.getRequestedFile().getMetadata();
 			if (metadata != null) {
 
 				boolean uriEndsWithSlash = req.getRequestURI().endsWith("/");
@@ -42,8 +41,7 @@ public class FileFolderRedirectFilter extends BaseWebzFilter {
 		chainContext.nextPlease(req, resp);
 	}
 
-	private void doRedirect(HttpServletRequest req, HttpServletResponse resp, boolean toFolder, boolean isMethodHead)
-			throws IOException {
+	private void doRedirect(HttpServletRequest req, HttpServletResponse resp, boolean toFolder, boolean isMethodHead) throws IOException {
 
 		StringBuffer urlBuffer = req.getRequestURL();
 		if (toFolder) {

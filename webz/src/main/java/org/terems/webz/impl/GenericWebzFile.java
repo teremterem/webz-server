@@ -10,24 +10,10 @@ import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFileMetadata;
 import org.terems.webz.WebzFileSystem;
-import org.terems.webz.WebzFileMetadata.FileSpecific;
 
 // TODO move to WebZ Core together with File System and related classes ?
 /** TODO !!! describe !!! **/
 public class GenericWebzFile implements WebzFile {
-
-	// TODO move this method to GenericWebzFileFactory ?
-	@Deprecated
-	public static String trimFileSeparators(String pathName) {
-		pathName = pathName.trim();
-		if (pathName.startsWith("/") || pathName.startsWith("\\")) {
-			pathName = pathName.substring(1);
-		}
-		if (pathName.endsWith("/") || pathName.endsWith("\\")) {
-			pathName = pathName.substring(0, pathName.length() - 1);
-		}
-		return pathName;
-	}
 
 	private String actualPathName;
 	private WebzFileSystem fileSystem;

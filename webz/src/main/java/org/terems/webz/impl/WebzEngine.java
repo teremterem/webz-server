@@ -9,10 +9,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.terems.webz.DefaultWebzFileRequestResolver;
 import org.terems.webz.WebzApp;
 import org.terems.webz.WebzChainContext;
 import org.terems.webz.WebzException;
+import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFileFactory;
+import org.terems.webz.WebzFileRequestResolver;
 import org.terems.webz.WebzFileSystem;
 import org.terems.webz.WebzFilterConfig;
 import org.terems.webz.WebzResource;
@@ -23,11 +26,11 @@ public class WebzEngine implements WebzApp {
 
 	private static Logger LOG = LoggerFactory.getLogger(WebzEngine.class);
 
-	private WebzFileFactory initialFileFactory;
+	private WebzFileFactory fileFactory;
 	private Collection<WebzFilter> filterChain;
 
 	public WebzEngine(WebzFileSystem fileSystem, Collection<WebzFilter> filterChain) throws IOException, WebzException {
-		this.initialFileFactory = new GenericWebzFileFactory(new EhcacheFileSystemCache(fileSystem));
+		this.fileFactory = new GenericWebzFileFactory(new EhcacheFileSystemCache(fileSystem));
 		this.filterChain = filterChain;
 
 		WebzFilterConfig filterConfig = new WebzFilterConfig() {
@@ -37,7 +40,7 @@ public class WebzEngine implements WebzApp {
 			// TODO TODO TODO TODO TODO
 			@Override
 			public WebzFileFactory fileFactory() {
-				return initialFileFactory;
+				return fileFactory;
 			}
 
 		};
@@ -46,6 +49,8 @@ public class WebzEngine implements WebzApp {
 			filter.init(filterConfig);
 		}
 	}
+
+	private static final WebzFileRequestResolver DEFAULT_FILE_REQUEST_RESOLVER = new DefaultWebzFileRequestResolver();
 
 	@Override
 	public void service(HttpServletRequest req, HttpServletResponse resp) {
@@ -57,7 +62,7 @@ public class WebzEngine implements WebzApp {
 		}
 
 		try {
-			new ChainContext(filterChain.iterator(), initialFileFactory).nextPlease(req, resp);
+			new ChainContext(filterChain.iterator(), DEFAULT_FILE_REQUEST_RESOLVER).nextPlease(req, resp);
 
 		} catch (IOException | WebzException e) {
 			// TODO 500 error page should be displayed to the user instead
@@ -76,19 +81,16 @@ public class WebzEngine implements WebzApp {
 		}
 	}
 
-	private static class ChainContext implements WebzChainContext {
+	private class ChainContext implements WebzChainContext {
 
 		private Iterator<WebzFilter> filterChainIterator;
-		private WebzFileFactory fileFactory;
+		private WebzFileRequestResolver fileRequestResolver;
 
-		public ChainContext(Iterator<WebzFilter> filterChainIterator, WebzFileFactory fileFactory) {
+		private HttpServletRequest request;
+
+		public ChainContext(Iterator<WebzFilter> filterChainIterator, WebzFileRequestResolver fileRequestResolver) {
 			this.filterChainIterator = filterChainIterator;
-			this.fileFactory = fileFactory;
-		}
-
-		@Override
-		public WebzFileFactory fileFactory() {
-			return fileFactory;
+			this.fileRequestResolver = fileRequestResolver;
 		}
 
 		@Override
@@ -96,8 +98,12 @@ public class WebzEngine implements WebzApp {
 
 			if (filterChainIterator == null) {
 				throw new WebzException("WebZ chain is already processed and cannot be invoked again");
+			}
+			if (filterChainIterator.hasNext()) {
 
-			} else if (filterChainIterator.hasNext()) {
+				// remembering request to use it when file request resolver is invoked...
+				request = req;
+
 				filterChainIterator.next().service(req, resp, this);
 
 				// invalidating iterator reference to make sure same filters don't invoke the chain for the second time...
@@ -106,14 +112,19 @@ public class WebzEngine implements WebzApp {
 		}
 
 		@Override
-		public void nextPlease(HttpServletRequest req, HttpServletResponse resp, WebzFileFactory fileFactoryWrapper) throws IOException,
-				WebzException {
+		public void nextPlease(HttpServletRequest req, HttpServletResponse resp, WebzFileRequestResolver fileRequestResolver)
+				throws IOException, WebzException {
 
-			if (fileFactoryWrapper == fileFactory) {
+			if (fileRequestResolver == this.fileRequestResolver) {
 				nextPlease(req, resp);
 			} else {
-				new ChainContext(filterChainIterator, fileFactoryWrapper).nextPlease(req, resp);
+				new ChainContext(filterChainIterator, fileRequestResolver).nextPlease(req, resp);
 			}
+		}
+
+		@Override
+		public WebzFile getRequestedFile() {
+			return fileRequestResolver.resolve(fileFactory, request);
 		}
 
 		@Override
@@ -126,6 +137,10 @@ public class WebzEngine implements WebzApp {
 			return null;
 		}
 
+		@Override
+		public WebzFileFactory fileFactory() {
+			return fileFactory;
+		}
 	};
 
 }

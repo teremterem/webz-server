@@ -12,11 +12,10 @@ import org.terems.webz.plugin.BaseWebzFilter;
 public class FolderPreloadFilter extends BaseWebzFilter {
 
 	@Override
-	public void service(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException,
-			WebzException {
+	public void service(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException, WebzException {
 
 		// preloading "metadata with children"...
-		chainContext.fileFactory().get(req.getPathInfo()).getChildren();
+		chainContext.getRequestedFile().getChildren();
 
 		chainContext.nextPlease(req, resp);
 	}

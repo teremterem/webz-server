@@ -12,7 +12,7 @@ public interface WebzChainContext extends WebzContext {
 	public void nextPlease(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public void nextPlease(HttpServletRequest req, HttpServletResponse resp, WebzFileFactory fileFactoryWrapper) throws IOException,
-			WebzException;
+	public void nextPlease(HttpServletRequest req, HttpServletResponse resp, WebzFileRequestResolver fileRequestResolver)
+			throws IOException, WebzException;
 
 }

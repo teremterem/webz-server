@@ -17,7 +17,7 @@ import org.terems.webz.WebzFileSystem;
 import org.terems.webz.filter.FileFolderRedirectFilter;
 import org.terems.webz.filter.FolderPreloadFilter;
 import org.terems.webz.filter.WelcomeFilter;
-import org.terems.webz.impl.GenericWebzFile;
+import org.terems.webz.impl.GenericWebzFileFactory;
 import org.terems.webz.impl.WebzEngine;
 import org.terems.webz.impl.dropbox.DropboxFileSystem;
 import org.terems.webz.obsolete.ObsoleteWebzEngine;
@@ -59,7 +59,8 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 
 				try {
 					String dbxAccessToken = getServletConfig().getInitParameter("dbxAccessToken");
-					String dbxBasePath = "/" + GenericWebzFile.trimFileSeparators(getServletConfig().getInitParameter("dbxBasePath"));
+					String dbxBasePath = "/"
+							+ GenericWebzFileFactory.trimFileSeparators(getServletConfig().getInitParameter("dbxBasePath"));
 
 					WebzFileSystem dropboxFileSource = new DropboxFileSystem(new DbxClient(dbxConfig, dbxAccessToken), dbxBasePath);
 
