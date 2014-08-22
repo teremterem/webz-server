@@ -12,7 +12,7 @@ public interface WebzFileSystem {
 	public String getFileSystemUniqueId();
 
 	/** TODO !!! describe !!! **/
-	public WebzFileMetadata getMetadata(String pathName) throws IOException, WebzException;
+	public WebzMetadata getMetadata(String pathName) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
 	public String getParentPathName(String pathName) throws IOException, WebzException;
@@ -25,28 +25,28 @@ public interface WebzFileSystem {
 			throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public Map<String, WebzFileMetadata> getChildPathNamesAndMetadata(String parentPathName) throws IOException, WebzException;
+	public Map<String, WebzMetadata> getChildPathNamesAndMetadata(String parentPathName) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
 	public Collection<String> getChildPathNames(String parentPathName) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzFileMetadata.FileSpecific fileContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException;
+	public WebzMetadata.FileSpecific fileContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
 	public WebzFileDownloader getFileContentDownloader(String pathName) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzFileMetadata createFolder(String pathName) throws IOException, WebzException;
+	public WebzMetadata createFolder(String pathName) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzFileMetadata.FileSpecific uploadFile(String pathName, byte[] content) throws IOException, WebzException;
+	public WebzMetadata.FileSpecific uploadFile(String pathName, byte[] content) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzFileMetadata move(String srcPathName, String destPathName) throws IOException, WebzException;
+	public WebzMetadata move(String srcPathName, String destPathName) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzFileMetadata copy(String srcPathName, String destPathName) throws IOException, WebzException;
+	public WebzMetadata copy(String srcPathName, String destPathName) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
 	public void delete(String pathName) throws IOException, WebzException;

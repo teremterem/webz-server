@@ -10,7 +10,7 @@ import java.util.Date;
  * 
  * P.P.S. should all implementations be Serializable ?
  **/
-public interface WebzFileMetadata {
+public interface WebzMetadata {
 
 	/** TODO !!! describe !!! **/
 	public String getName() throws IOException, WebzException;
@@ -25,7 +25,7 @@ public interface WebzFileMetadata {
 	public FileSpecific getFileSpecific() throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public interface FileSpecific extends WebzFileMetadata {
+	public interface FileSpecific extends WebzMetadata {
 
 		/** TODO !!! describe !!! **/
 		public long getNumberOfBytes() throws IOException, WebzException;

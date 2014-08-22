@@ -27,7 +27,7 @@ public abstract class BaseWebzFileSystem implements WebzFileSystem {
 	 * Default implementation...
 	 **/
 	@Override
-	public Map<String, WebzFileMetadata> getChildPathNamesAndMetadata(String parentPathName) throws IOException, WebzException {
+	public Map<String, WebzMetadata> getChildPathNamesAndMetadata(String parentPathName) throws IOException, WebzException {
 		ParentChildrenMetadata parentChildrenMetadata = getParentChildrenMetadata(parentPathName);
 		return parentChildrenMetadata == null ? null : parentChildrenMetadata.childPathNamesAndMetadata;
 	}
@@ -50,12 +50,12 @@ public abstract class BaseWebzFileSystem implements WebzFileSystem {
 	 * Default implementation...
 	 **/
 	@Override
-	public WebzFileMetadata.FileSpecific fileContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException {
+	public WebzMetadata.FileSpecific fileContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException {
 		return fileContentToOutputStream(this, pathName, out);
 	}
 
 	/** TODO !!! describe !!! **/
-	public static WebzFileMetadata.FileSpecific fileContentToOutputStream(WebzFileSystem fileSystem, String pathName, OutputStream out)
+	public static WebzMetadata.FileSpecific fileContentToOutputStream(WebzFileSystem fileSystem, String pathName, OutputStream out)
 			throws IOException, WebzException {
 
 		WebzFileDownloader downloader = fileSystem.getFileContentDownloader(pathName);

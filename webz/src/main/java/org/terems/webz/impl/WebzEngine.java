@@ -11,11 +11,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzApp;
 import org.terems.webz.WebzChainContext;
+import org.terems.webz.WebzConfig;
+import org.terems.webz.WebzConfigProxy;
 import org.terems.webz.WebzContext;
 import org.terems.webz.WebzContextProxy;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFileSystem;
-import org.terems.webz.WebzFilterConfig;
 import org.terems.webz.impl.cache.ehcache.EhcacheFileSystemCache;
 import org.terems.webz.plugin.WebzFilter;
 
@@ -27,10 +28,20 @@ public class WebzEngine implements WebzApp {
 	private Collection<WebzFilter> filterChain;
 
 	public WebzEngine(WebzFileSystem fileSystem, Collection<WebzFilter> filterChain) throws IOException, WebzException {
-		this.rootContext = new RootWebzContext(new GenericWebzFileFactory(new EhcacheFileSystemCache(fileSystem)));
-		this.filterChain = filterChain;
 
-		WebzFilterConfig filterConfig = new FilterConfig();
+		// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\
+		this.rootContext = new RootWebzContext(new GenericWebzFileFactory(new EhcacheFileSystemCache(fileSystem)));
+		// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ //
+
+		WebzConfig filterConfig = new WebzConfigProxy() {
+
+			@Override
+			protected WebzConfig getInnerConfig() {
+				return rootContext;
+			}
+		};
+
+		this.filterChain = filterChain;
 
 		for (WebzFilter filter : filterChain) {
 			filter.init(filterConfig);
@@ -41,9 +52,9 @@ public class WebzEngine implements WebzApp {
 	public void service(HttpServletRequest req, HttpServletResponse resp) {
 
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("\n\n\n****************************************************************************************************"
-					+ "\n***  SERVING " + getFullURL(req)
-					+ "\n****************************************************************************************************\n\n");
+			LOG.trace("\n\n\n// ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\"
+					+ "\n SERVING: " + getFullUrl(req)
+					+ "\n\\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ //\n\n");
 		}
 
 		try {
@@ -55,14 +66,14 @@ public class WebzEngine implements WebzApp {
 		}
 	}
 
-	private String getFullURL(HttpServletRequest request) {
-		StringBuffer requestURL = request.getRequestURL();
+	private String getFullUrl(HttpServletRequest request) {
+		StringBuffer requestUrl = request.getRequestURL();
 		String queryString = request.getQueryString();
 
 		if (queryString == null) {
-			return requestURL.toString();
+			return requestUrl.toString();
 		} else {
-			return requestURL.append('?').append(queryString).toString();
+			return requestUrl.append('?').append(queryString).toString();
 		}
 	}
 
@@ -108,14 +119,5 @@ public class WebzEngine implements WebzApp {
 		}
 
 	};
-
-	private class FilterConfig extends WebzContextProxy implements WebzFilterConfig {
-
-		@Override
-		protected WebzContext getInnerContext() {
-			return rootContext;
-		}
-
-	}
 
 }

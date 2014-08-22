@@ -5,21 +5,21 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.terems.webz.WebzException;
-import org.terems.webz.WebzFilterConfig;
+import org.terems.webz.WebzConfig;
 
 /** TODO !!! describe !!! **/
 public abstract class BaseWebzFilter implements WebzFilter {
 
-	private WebzFilterConfig filterConfig;
+	private WebzConfig filterConfig;
 
 	/** TODO !!! describe !!! **/
-	public WebzFilterConfig getFilterConfig() {
+	public WebzConfig getFilterConfig() {
 		return filterConfig;
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public void init(WebzFilterConfig filterConfig) throws IOException, WebzException {
+	public void init(WebzConfig filterConfig) throws IOException, WebzException {
 		this.filterConfig = filterConfig;
 	}
 

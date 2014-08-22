@@ -3,7 +3,7 @@ package org.terems.webz;
 import java.io.IOException;
 
 /** TODO !!! describe !!! **/
-public abstract class BaseWebzFileMetadata implements WebzFileMetadata, WebzFileMetadata.FileSpecific {
+public abstract class BaseWebzMetadata implements WebzMetadata, WebzMetadata.FileSpecific {
 
 	/** TODO !!! describe !!! **/
 	@Override

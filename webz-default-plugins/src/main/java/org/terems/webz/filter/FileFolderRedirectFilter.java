@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.terems.webz.WebzChainContext;
 import org.terems.webz.WebzException;
-import org.terems.webz.WebzFileMetadata;
+import org.terems.webz.WebzMetadata;
 import org.terems.webz.plugin.BaseWebzFilter;
 
 public class FileFolderRedirectFilter extends BaseWebzFilter {
@@ -21,7 +21,7 @@ public class FileFolderRedirectFilter extends BaseWebzFilter {
 		if (("GET".equals(requestMethod) || isMethodHead)) {
 
 			// resolving file using default resolver...
-			WebzFileMetadata metadata = chainContext.resolveFileFromRequest(req).getMetadata();
+			WebzMetadata metadata = chainContext.resolveFile(req).getMetadata();
 			if (metadata != null) {
 
 				boolean uriEndsWithSlash = req.getRequestURI().endsWith("/");

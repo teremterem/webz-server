@@ -11,13 +11,13 @@ public interface WebzFile {
 	public String getPathName() throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzFileMetadata getMetadata() throws IOException, WebzException;
+	public WebzMetadata getMetadata() throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
 	public byte[] getFileContent() throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzFileMetadata fileContentToOutputStream(OutputStream out) throws IOException, WebzException;
+	public WebzMetadata fileContentToOutputStream(OutputStream out) throws IOException, WebzException;
 
 	// TODO consider exposing input stream as well ?
 
@@ -28,22 +28,22 @@ public interface WebzFile {
 	public Collection<WebzFile> getChildren() throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzFileMetadata createFolder() throws IOException, WebzException;
+	public WebzMetadata createFolder() throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzFileMetadata uploadFile(byte[] content) throws IOException, WebzException;
+	public WebzMetadata uploadFile(byte[] content) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzFileMetadata move(WebzFile destFile) throws IOException, WebzException;
+	public WebzMetadata move(WebzFile destFile) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzFileMetadata copy(WebzFile destFile) throws IOException, WebzException;
+	public WebzMetadata copy(WebzFile destFile) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzFileMetadata move(String destPathName) throws IOException, WebzException;
+	public WebzMetadata move(String destPathName) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzFileMetadata copy(String destPathName) throws IOException, WebzException;
+	public WebzMetadata copy(String destPathName) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
 	public void delete() throws IOException, WebzException;

@@ -8,13 +8,13 @@ import javax.servlet.http.HttpServletResponse;
 /** TODO !!! describe !!! **/
 public interface WebzChainContext extends WebzContext {
 
+	// TODO TODO TODO
+	// public WebzResource webzGet(String pathInfo, HttpServletRequest requestAsContext);
+
 	/** TODO !!! describe !!! **/
 	public void nextPlease(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
 	public void nextPlease(HttpServletRequest req, HttpServletResponse resp, WebzContext contextWrapper) throws IOException, WebzException;
-
-	// TODO TODO TODO
-	// public WebzResource webzGet(String uriOrUrl, HttpServletRequest req);
 
 }

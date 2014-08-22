@@ -1,17 +1,21 @@
 package org.terems.webz.impl;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.terems.webz.WebzContext;
+import org.terems.webz.WebzDefaults;
+import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFileFactory;
 
-/** TODO !!! describe !!! **/
+// TODO TODO refactor this ???
 public class RootWebzContext implements WebzContext {
 
 	private WebzFileFactory fileFactory;
 
-	// TODO refactor this ?
+	// TODO refactor this ???
 	@Deprecated
 	public static String trimFileSeparators(String pathName) {
 		pathName = pathName.trim();
@@ -28,15 +32,18 @@ public class RootWebzContext implements WebzContext {
 		this.fileFactory = fileFactory;
 	}
 
-	/** TODO !!! describe !!! **/
 	@Override
-	public WebzFile resolveFileFromRequest(HttpServletRequest req) {
-		return resolveFile(req.getPathInfo());
+	public WebzFile resolveFile(HttpServletRequest req) {
+		return getFile(req.getPathInfo());
 	}
 
-	/** TODO !!! describe !!! **/
 	@Override
-	public WebzFile resolveFile(String pathInfo) {
+	public WebzFile resolveConfigFolder() throws IOException, WebzException {
+		return getFile(WebzDefaults.WEBZ_CONFIG_FOLDER);
+	}
+
+	@Override
+	public WebzFile getFile(String pathInfo) {
 
 		// TODO revise path normalization logic
 		// TODO + force 404(?) for cases like http://localhost:8080//////webz-pedesis.html

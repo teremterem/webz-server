@@ -19,7 +19,7 @@ public abstract class WebzFileSystemProxy implements WebzFileSystem {
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public WebzFileMetadata getMetadata(String pathName) throws IOException, WebzException {
+	public WebzMetadata getMetadata(String pathName) throws IOException, WebzException {
 		return getInnerFileSystem().getMetadata(pathName);
 	}
 
@@ -44,7 +44,7 @@ public abstract class WebzFileSystemProxy implements WebzFileSystem {
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public Map<String, WebzFileMetadata> getChildPathNamesAndMetadata(String parentPathName) throws IOException, WebzException {
+	public Map<String, WebzMetadata> getChildPathNamesAndMetadata(String parentPathName) throws IOException, WebzException {
 		return getInnerFileSystem().getChildPathNamesAndMetadata(parentPathName);
 	}
 
@@ -56,7 +56,7 @@ public abstract class WebzFileSystemProxy implements WebzFileSystem {
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public WebzFileMetadata.FileSpecific fileContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException {
+	public WebzMetadata.FileSpecific fileContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException {
 		return getInnerFileSystem().fileContentToOutputStream(pathName, out);
 	}
 
@@ -68,25 +68,25 @@ public abstract class WebzFileSystemProxy implements WebzFileSystem {
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public WebzFileMetadata createFolder(String pathName) throws IOException, WebzException {
+	public WebzMetadata createFolder(String pathName) throws IOException, WebzException {
 		return getInnerFileSystem().createFolder(pathName);
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public WebzFileMetadata.FileSpecific uploadFile(String pathName, byte[] content) throws IOException, WebzException {
+	public WebzMetadata.FileSpecific uploadFile(String pathName, byte[] content) throws IOException, WebzException {
 		return getInnerFileSystem().uploadFile(pathName, content);
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public WebzFileMetadata move(String srcPathName, String destPathName) throws IOException, WebzException {
+	public WebzMetadata move(String srcPathName, String destPathName) throws IOException, WebzException {
 		return getInnerFileSystem().move(srcPathName, destPathName);
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public WebzFileMetadata copy(String srcPathName, String destPathName) throws IOException, WebzException {
+	public WebzMetadata copy(String srcPathName, String destPathName) throws IOException, WebzException {
 		return getInnerFileSystem().copy(srcPathName, destPathName);
 	}
 

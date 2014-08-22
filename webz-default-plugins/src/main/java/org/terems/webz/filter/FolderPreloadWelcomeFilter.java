@@ -1,30 +1,66 @@
 package org.terems.webz.filter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.terems.webz.WebzChainContext;
+import org.terems.webz.WebzContext;
+import org.terems.webz.WebzContextProxy;
 import org.terems.webz.WebzException;
+import org.terems.webz.WebzFile;
 import org.terems.webz.plugin.BaseWebzFilter;
 
 public class FolderPreloadWelcomeFilter extends BaseWebzFilter {
 
+	private Collection<String> defaultFileExtensions = Arrays.asList(new String[] { ".html" });
+	private Collection<String> defaultFileNames = Arrays.asList(new String[] { "index" });
+
+	private boolean alwaysPreloadChildrenMetadata = true;
+
 	@Override
-	public void service(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException, WebzException {
+	public void service(HttpServletRequest req, HttpServletResponse resp, final WebzChainContext chainContext) throws IOException,
+			WebzException {
 
-		// TODO TODO TODO
+		chainContext.nextPlease(req, resp, new WebzContextProxy() {
 
-		// TODO to alter the value of req.getPathInfo() in a wrapper or to maintain "current" webz file system path in an
-		// isolated manner ?
+			@Override
+			public WebzFile resolveFile(HttpServletRequest req) throws IOException, WebzException {
 
-		// TODO how to redirect to "main" welcome urls ? should this filter be merged with FileFolderRedirectFilter ?
+				String pathInfo = req.getPathInfo();
+				WebzFile file = super.getFile(pathInfo); // TODO sure ?
 
-		// preloading "metadata with children"...
-		chainContext.resolveFileFromRequest(req).getChildren();
+				if (alwaysPreloadChildrenMetadata) {
+					// preloading "metadata with children"...
+					file.getChildren();
+				}
 
-		chainContext.nextPlease(req, resp);
+				// TODO TODO TODO
+
+				if (pathInfo != null) {
+
+					int lastSlashPos = pathInfo.lastIndexOf(pathInfo);
+					if (lastSlashPos < 0) {
+
+						// TODO TODO TODO
+
+					}
+				}
+
+				// TODO TODO TODO
+
+				return file;
+			}
+
+			@Override
+			protected WebzContext getInnerContext() {
+				return chainContext;
+			}
+		});
+
 	}
 
 }

@@ -6,10 +6,10 @@ import java.util.Map;
 public class ParentChildrenMetadata {
 
 	/** TODO !!! describe !!! **/
-	public WebzFileMetadata parentMetadata;
+	public WebzMetadata parentMetadata;
 
 	/** TODO !!! describe !!! **/
-	public Map<String, WebzFileMetadata> childPathNamesAndMetadata;
+	public Map<String, WebzMetadata> childPathNamesAndMetadata;
 
 	/** TODO !!! describe !!! **/
 	public Object folderHash;

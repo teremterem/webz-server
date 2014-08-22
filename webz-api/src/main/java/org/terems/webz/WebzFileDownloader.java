@@ -7,7 +7,7 @@ import java.io.OutputStream;
 public abstract class WebzFileDownloader {
 
 	/** TODO !!! describe !!! **/
-	public WebzFileMetadata.FileSpecific fileSpecific;
+	public WebzMetadata.FileSpecific fileSpecific;
 
 	/** TODO !!! describe !!! **/
 	public abstract void fileContentToOutputStream(OutputStream out) throws IOException, WebzException;
@@ -15,7 +15,7 @@ public abstract class WebzFileDownloader {
 	// TODO consider exposing input stream as well ?
 
 	/** TODO !!! describe !!! **/
-	public WebzFileDownloader(WebzFileMetadata.FileSpecific fileSpecific) {
+	public WebzFileDownloader(WebzMetadata.FileSpecific fileSpecific) {
 		this.fileSpecific = fileSpecific;
 	}
 

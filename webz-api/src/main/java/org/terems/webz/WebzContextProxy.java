@@ -1,20 +1,25 @@
 package org.terems.webz;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 
 /** TODO !!! describe !!! **/
-public abstract class WebzContextProxy implements WebzContext {
+public abstract class WebzContextProxy extends WebzConfigProxy implements WebzContext {
 
-	protected abstract WebzContext getInnerContext();
+	/** TODO !!! describe !!! **/
+	protected abstract WebzContext getInnerContext() throws IOException, WebzException;
 
+	/** TODO !!! describe !!! **/
 	@Override
-	public WebzFile resolveFileFromRequest(HttpServletRequest req) {
-		return getInnerContext().resolveFileFromRequest(req);
+	protected WebzConfig getInnerConfig() throws IOException, WebzException {
+		return getInnerContext();
 	}
 
+	/** TODO !!! describe !!! **/
 	@Override
-	public WebzFile resolveFile(String pathInfo) {
-		return getInnerContext().resolveFile(pathInfo);
+	public WebzFile resolveFile(HttpServletRequest req) throws IOException, WebzException {
+		return getInnerContext().resolveFile(req);
 	}
 
 }
