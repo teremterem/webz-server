@@ -22,7 +22,7 @@ public class FolderPreloadWelcomeFilter extends BaseWebzFilter {
 		// TODO how to redirect to "main" welcome urls ? should this filter be merged with FileFolderRedirectFilter ?
 
 		// preloading "metadata with children"...
-		chainContext.resolveRequestedFile().getChildren();
+		chainContext.resolveFileFromRequest(req).getChildren();
 
 		chainContext.nextPlease(req, resp);
 	}

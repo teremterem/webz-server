@@ -8,26 +8,28 @@ import java.util.Collection;
 
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
+import org.terems.webz.WebzFileFactory;
 import org.terems.webz.WebzFileMetadata;
 import org.terems.webz.WebzFileSystem;
 
-// TODO move to WebZ Core together with File System and related classes ?
 /** TODO !!! describe !!! **/
 public class GenericWebzFile implements WebzFile {
 
-	private String actualPathName;
+	private String pathName;
+	private WebzFileFactory fileFactory;
 	private WebzFileSystem fileSystem;
 
 	/** TODO !!! describe !!! **/
-	public GenericWebzFile(String actualPathName, WebzFileSystem fileSystem) {
-		this.actualPathName = actualPathName;
+	public GenericWebzFile(String pathName, WebzFileFactory fileFactory, WebzFileSystem fileSystem) {
+		this.pathName = pathName;
+		this.fileFactory = fileFactory;
 		this.fileSystem = fileSystem;
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public String getActualPathName() {
-		return actualPathName;
+	public String getPathName() {
+		return pathName;
 	}
 
 	private String getFileSystemMessageSuffix() {
@@ -40,12 +42,12 @@ public class GenericWebzFile implements WebzFile {
 
 		WebzFileMetadata metadata = getMetadata();
 		if (metadata == null) {
-			throw new WebzException(actualPathName + " does not exist " + getFileSystemMessageSuffix());
+			throw new WebzException(pathName + " does not exist " + getFileSystemMessageSuffix());
 		}
 
 		WebzFileMetadata.FileSpecific fileSpecific = metadata.getFileSpecific();
 		if (fileSpecific == null) {
-			throw new WebzException(actualPathName + " is not a file " + getFileSystemMessageSuffix());
+			throw new WebzException(pathName + " is not a file " + getFileSystemMessageSuffix());
 		}
 
 		ByteArrayOutputStream out = new ByteArrayOutputStream((int) fileSpecific.getNumberOfBytes());
@@ -56,28 +58,40 @@ public class GenericWebzFile implements WebzFile {
 	/** TODO !!! describe !!! **/
 	@Override
 	public WebzFileMetadata getMetadata() throws IOException, WebzException {
-		return fileSystem.getMetadata(actualPathName);
+		return fileSystem.getMetadata(pathName);
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public WebzFileMetadata fileContentToOutputStream(OutputStream out) throws IOException, WebzException {
 		// unlike getFileContent() this method doesn't throw WebzException if path name does not exist or is not a file
-		return fileSystem.fileContentToOutputStream(actualPathName, out);
+		return fileSystem.fileContentToOutputStream(pathName, out);
+	}
+
+	/** TODO !!! describe !!! **/
+	@Override
+	public WebzFile getParent() throws IOException, WebzException {
+
+		String parentPathName = fileSystem.getParentPathName(pathName);
+		if (parentPathName == null) {
+			return null;
+		}
+
+		return fileFactory.get(parentPathName);
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public Collection<WebzFile> getChildren() throws IOException, WebzException {
 
-		Collection<String> childPathNames = fileSystem.getChildPathNames(actualPathName);
+		Collection<String> childPathNames = fileSystem.getChildPathNames(pathName);
 		if (childPathNames == null) {
 			return null;
 		}
 
 		Collection<WebzFile> children = new ArrayList<>(childPathNames.size());
 		for (String childPathName : childPathNames) {
-			children.add(new GenericWebzFile(childPathName, fileSystem));
+			children.add(fileFactory.get(childPathName));
 		}
 		return children;
 	}
@@ -85,43 +99,43 @@ public class GenericWebzFile implements WebzFile {
 	/** TODO !!! describe !!! **/
 	@Override
 	public WebzFileMetadata createFolder() throws IOException, WebzException {
-		return fileSystem.createFolder(actualPathName);
+		return fileSystem.createFolder(pathName);
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public WebzFileMetadata uploadFile(byte[] content) throws IOException, WebzException {
-		return fileSystem.uploadFile(actualPathName, content);
+		return fileSystem.uploadFile(pathName, content);
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public WebzFileMetadata move(WebzFile destFile) throws IOException, WebzException {
-		return move(destFile.getActualPathName());
+		return move(destFile.getPathName());
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public WebzFileMetadata copy(WebzFile destFile) throws IOException, WebzException {
-		return copy(destFile.getActualPathName());
+		return copy(destFile.getPathName());
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public WebzFileMetadata move(String destPathName) throws IOException, WebzException {
-		return fileSystem.move(actualPathName, destPathName);
+		return fileSystem.move(pathName, destPathName);
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public WebzFileMetadata copy(String destPathName) throws IOException, WebzException {
-		return fileSystem.copy(actualPathName, destPathName);
+		return fileSystem.copy(pathName, destPathName);
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public void delete() throws IOException, WebzException {
-		fileSystem.delete(actualPathName);
+		fileSystem.delete(pathName);
 	}
 
 }

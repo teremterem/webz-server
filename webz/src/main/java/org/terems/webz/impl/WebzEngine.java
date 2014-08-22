@@ -9,16 +9,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terems.webz.DefaultWebzFileRequestResolver;
 import org.terems.webz.WebzApp;
 import org.terems.webz.WebzChainContext;
+import org.terems.webz.WebzContext;
+import org.terems.webz.WebzContextProxy;
 import org.terems.webz.WebzException;
-import org.terems.webz.WebzFile;
-import org.terems.webz.WebzFileFactory;
-import org.terems.webz.WebzFileRequestResolver;
 import org.terems.webz.WebzFileSystem;
 import org.terems.webz.WebzFilterConfig;
-import org.terems.webz.WebzResource;
 import org.terems.webz.impl.cache.ehcache.EhcacheFileSystemCache;
 import org.terems.webz.plugin.WebzFilter;
 
@@ -26,31 +23,19 @@ public class WebzEngine implements WebzApp {
 
 	private static Logger LOG = LoggerFactory.getLogger(WebzEngine.class);
 
-	private WebzFileFactory fileFactory;
+	private WebzContext rootContext;
 	private Collection<WebzFilter> filterChain;
 
 	public WebzEngine(WebzFileSystem fileSystem, Collection<WebzFilter> filterChain) throws IOException, WebzException {
-		this.fileFactory = new GenericWebzFileFactory(new EhcacheFileSystemCache(fileSystem));
+		this.rootContext = new RootWebzContext(new GenericWebzFileFactory(new EhcacheFileSystemCache(fileSystem)));
 		this.filterChain = filterChain;
 
-		WebzFilterConfig filterConfig = new WebzFilterConfig() {
-
-			// TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO
-			@Override
-			public WebzFileFactory fileFactory() {
-				return fileFactory;
-			}
-
-		};
+		WebzFilterConfig filterConfig = new FilterConfig();
 
 		for (WebzFilter filter : filterChain) {
 			filter.init(filterConfig);
 		}
 	}
-
-	private static final WebzFileRequestResolver DEFAULT_FILE_RESOLVER = new DefaultWebzFileRequestResolver();
 
 	@Override
 	public void service(HttpServletRequest req, HttpServletResponse resp) {
@@ -62,7 +47,7 @@ public class WebzEngine implements WebzApp {
 		}
 
 		try {
-			new ChainContext(filterChain.iterator(), DEFAULT_FILE_RESOLVER).nextPlease(req, resp);
+			new ChainContext(filterChain.iterator(), rootContext).nextPlease(req, resp);
 
 		} catch (IOException | WebzException e) {
 			// TODO 500 error page should be displayed to the user instead
@@ -81,16 +66,14 @@ public class WebzEngine implements WebzApp {
 		}
 	}
 
-	private class ChainContext implements WebzChainContext {
+	private static class ChainContext extends WebzContextProxy implements WebzChainContext {
 
 		private Iterator<WebzFilter> filterChainIterator;
-		private WebzFileRequestResolver fileRequestResolver;
+		private WebzContext context;
 
-		private HttpServletRequest request;
-
-		public ChainContext(Iterator<WebzFilter> filterChainIterator, WebzFileRequestResolver fileRequestResolver) {
+		public ChainContext(Iterator<WebzFilter> filterChainIterator, WebzContext context) {
 			this.filterChainIterator = filterChainIterator;
-			this.fileRequestResolver = fileRequestResolver;
+			this.context = context;
 		}
 
 		@Override
@@ -101,9 +84,6 @@ public class WebzEngine implements WebzApp {
 			}
 			if (filterChainIterator.hasNext()) {
 
-				// remembering request to use it when resolveRequestedFile() and/or webzGet() is invoked...
-				request = req;
-
 				filterChainIterator.next().service(req, resp, this);
 
 				// invalidating iterator reference to make sure same filters don't invoke the chain for the second time...
@@ -112,35 +92,30 @@ public class WebzEngine implements WebzApp {
 		}
 
 		@Override
-		public void nextPlease(HttpServletRequest req, HttpServletResponse resp, WebzFileRequestResolver fileRequestResolver)
-				throws IOException, WebzException {
+		public void nextPlease(HttpServletRequest req, HttpServletResponse resp, WebzContext contextWrapper) throws IOException,
+				WebzException {
 
-			if (fileRequestResolver == this.fileRequestResolver) {
+			if (contextWrapper == this || contextWrapper == this.context) {
 				nextPlease(req, resp);
 			} else {
-				new ChainContext(filterChainIterator, fileRequestResolver).nextPlease(req, resp);
+				new ChainContext(filterChainIterator, contextWrapper).nextPlease(req, resp);
 			}
 		}
 
 		@Override
-		public WebzFile resolveRequestedFile() {
-			return fileRequestResolver.resolve(fileFactory, request);
+		protected WebzContext getInnerContext() {
+			return context;
 		}
 
-		@Override
-		public WebzResource webzGet(String uriORurl) {
-			// TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO
-			// TODO TODO TODO TODO TODO
-			return null;
-		}
-
-		@Override
-		public WebzFileFactory fileFactory() {
-			return fileFactory;
-		}
 	};
+
+	private class FilterConfig extends WebzContextProxy implements WebzFilterConfig {
+
+		@Override
+		protected WebzContext getInnerContext() {
+			return rootContext;
+		}
+
+	}
 
 }

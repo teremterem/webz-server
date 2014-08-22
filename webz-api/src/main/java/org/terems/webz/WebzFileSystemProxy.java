@@ -9,85 +9,91 @@ import java.util.Map;
 public abstract class WebzFileSystemProxy implements WebzFileSystem {
 
 	/** TODO !!! describe !!! **/
-	protected abstract WebzFileSystem getFileSystem();
+	protected abstract WebzFileSystem getInnerFileSystem();
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public String getFileSystemUniqueId() {
-		return getFileSystem().getFileSystemUniqueId();
+		return getInnerFileSystem().getFileSystemUniqueId();
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public WebzFileMetadata getMetadata(String pathName) throws IOException, WebzException {
-		return getFileSystem().getMetadata(pathName);
+		return getInnerFileSystem().getMetadata(pathName);
+	}
+
+	/** TODO !!! describe !!! **/
+	@Override
+	public String getParentPathName(String pathName) throws IOException, WebzException {
+		return getInnerFileSystem().getParentPathName(pathName);
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public ParentChildrenMetadata getParentChildrenMetadata(String parentPathName) throws IOException, WebzException {
-		return getFileSystem().getParentChildrenMetadata(parentPathName);
+		return getInnerFileSystem().getParentChildrenMetadata(parentPathName);
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public FreshParentChildrenMetadata getParentChildrenMetadataIfChanged(String parentPathName, Object previousFolderHash)
 			throws IOException, WebzException {
-		return getFileSystem().getParentChildrenMetadataIfChanged(parentPathName, previousFolderHash);
+		return getInnerFileSystem().getParentChildrenMetadataIfChanged(parentPathName, previousFolderHash);
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public Map<String, WebzFileMetadata> getChildPathNamesAndMetadata(String parentPathName) throws IOException, WebzException {
-		return getFileSystem().getChildPathNamesAndMetadata(parentPathName);
+		return getInnerFileSystem().getChildPathNamesAndMetadata(parentPathName);
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public Collection<String> getChildPathNames(String parentPathName) throws IOException, WebzException {
-		return getFileSystem().getChildPathNames(parentPathName);
+		return getInnerFileSystem().getChildPathNames(parentPathName);
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public WebzFileMetadata.FileSpecific fileContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException {
-		return getFileSystem().fileContentToOutputStream(pathName, out);
+		return getInnerFileSystem().fileContentToOutputStream(pathName, out);
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public WebzFileDownloader getFileContentDownloader(String pathName) throws IOException, WebzException {
-		return getFileSystem().getFileContentDownloader(pathName);
+		return getInnerFileSystem().getFileContentDownloader(pathName);
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public WebzFileMetadata createFolder(String pathName) throws IOException, WebzException {
-		return getFileSystem().createFolder(pathName);
+		return getInnerFileSystem().createFolder(pathName);
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public WebzFileMetadata.FileSpecific uploadFile(String pathName, byte[] content) throws IOException, WebzException {
-		return getFileSystem().uploadFile(pathName, content);
+		return getInnerFileSystem().uploadFile(pathName, content);
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public WebzFileMetadata move(String srcPathName, String destPathName) throws IOException, WebzException {
-		return getFileSystem().move(srcPathName, destPathName);
+		return getInnerFileSystem().move(srcPathName, destPathName);
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public WebzFileMetadata copy(String srcPathName, String destPathName) throws IOException, WebzException {
-		return getFileSystem().copy(srcPathName, destPathName);
+		return getInnerFileSystem().copy(srcPathName, destPathName);
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public void delete(String pathName) throws IOException, WebzException {
-		getFileSystem().delete(pathName);
+		getInnerFileSystem().delete(pathName);
 	}
 
 }

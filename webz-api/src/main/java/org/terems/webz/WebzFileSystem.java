@@ -15,6 +15,9 @@ public interface WebzFileSystem {
 	public WebzFileMetadata getMetadata(String pathName) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
+	public String getParentPathName(String pathName) throws IOException, WebzException;
+
+	/** TODO !!! describe !!! **/
 	public ParentChildrenMetadata getParentChildrenMetadata(String parentPathName) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/

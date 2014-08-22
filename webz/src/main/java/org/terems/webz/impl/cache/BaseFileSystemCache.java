@@ -24,7 +24,7 @@ public abstract class BaseFileSystemCache extends WebzFileSystemProxy {
 	private static Logger LOG = LoggerFactory.getLogger(BaseFileSystemCache.class);
 
 	protected final int filePayloadSizeThreshold;
-	protected final WebzFileSystem fileSystem;
+	protected final WebzFileSystem innerFileSystem;
 
 	private final String fileSystemUniqueId;
 
@@ -62,30 +62,30 @@ public abstract class BaseFileSystemCache extends WebzFileSystemProxy {
 		this(fileSystem, WebzDefaults.PAYLOAD_CACHE_THRESHOLD_BYTES);
 	}
 
-	public BaseFileSystemCache(WebzFileSystem fileSystem, int filePayloadSizeThreshold) {
+	public BaseFileSystemCache(WebzFileSystem innerFileSystem, int filePayloadSizeThreshold) {
 		// TODO add two additional modes:
 		// 1) payload cache disabled completely
 		// 2) payload cache works for any payload sizes without the threshold
 
-		if (fileSystem instanceof BaseFileSystemCache) {
+		if (innerFileSystem instanceof BaseFileSystemCache) {
 			throw new IllegalArgumentException(
 					"an instance of BaseFileSystemCache should not be wrapped with another instance of BaseFileSystemCache - an attempt was made to wrap "
-							+ fileSystem.getFileSystemUniqueId() + " with an instance of " + getClass());
+							+ innerFileSystem.getFileSystemUniqueId() + " with an instance of " + getClass());
 		}
 
 		this.filePayloadSizeThreshold = filePayloadSizeThreshold;
-		this.fileSystem = fileSystem;
-		this.fileSystemUniqueId = getCacheTypeName() + "-for-" + fileSystem.getFileSystemUniqueId();
+		this.innerFileSystem = innerFileSystem;
+		this.fileSystemUniqueId = getCacheTypeName() + "-for-" + innerFileSystem.getFileSystemUniqueId();
 
 		initSelfPopulatingCaches();
 
 		LOG.info("'" + this.fileSystemUniqueId + "' file system cache was created to wrap '"
-				+ fileSystem.getFileSystemUniqueId() + "'");
+				+ innerFileSystem.getFileSystemUniqueId() + "'");
 	}
 
 	@Override
-	protected WebzFileSystem getFileSystem() {
-		return fileSystem;
+	protected WebzFileSystem getInnerFileSystem() {
+		return innerFileSystem;
 	}
 
 	@Override
@@ -178,7 +178,7 @@ public abstract class BaseFileSystemCache extends WebzFileSystemProxy {
 			if (LOG.isTraceEnabled()) {
 				traceFSMessage(LOG, "PAYLOAD for '" + pathName + "' is being fetched without being cached");
 			}
-			fileSystem.fileContentToOutputStream(pathName, out);
+			innerFileSystem.fileContentToOutputStream(pathName, out);
 			// TODO should javax.servlet.AsyncContext be used ?
 		}
 	}
@@ -270,7 +270,7 @@ public abstract class BaseFileSystemCache extends WebzFileSystemProxy {
 	}
 
 	protected void traceFSMessage(Logger log, String message) {
-		log.trace(message + " (file system: '" + fileSystem.getFileSystemUniqueId() + "')");
+		log.trace(message + " (file system: '" + innerFileSystem.getFileSystemUniqueId() + "')");
 	}
 
 }

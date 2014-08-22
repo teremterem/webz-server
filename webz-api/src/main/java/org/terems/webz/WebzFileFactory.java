@@ -4,6 +4,6 @@ package org.terems.webz;
 public interface WebzFileFactory {
 
 	/** TODO !!! describe !!! **/
-	public WebzFile get(String pathInfo);
+	public WebzFile get(String pathName);
 
 }

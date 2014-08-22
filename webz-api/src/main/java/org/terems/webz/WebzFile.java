@@ -8,7 +8,7 @@ import java.util.Collection;
 public interface WebzFile {
 
 	/** TODO !!! describe !!! **/
-	public String getActualPathName() throws IOException, WebzException;
+	public String getPathName() throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
 	public WebzFileMetadata getMetadata() throws IOException, WebzException;
@@ -20,6 +20,9 @@ public interface WebzFile {
 	public WebzFileMetadata fileContentToOutputStream(OutputStream out) throws IOException, WebzException;
 
 	// TODO consider exposing input stream as well ?
+
+	/** TODO !!! describe !!! **/
+	public WebzFile getParent() throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
 	public Collection<WebzFile> getChildren() throws IOException, WebzException;

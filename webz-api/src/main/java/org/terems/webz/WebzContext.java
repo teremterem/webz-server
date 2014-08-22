@@ -1,12 +1,14 @@
 package org.terems.webz;
 
+import javax.servlet.http.HttpServletRequest;
+
 /** TODO !!! describe !!! **/
-public interface WebzContext extends WebzFileFactoryKeeper {
+public interface WebzContext {
 
 	/** TODO !!! describe !!! **/
-	public WebzFile resolveRequestedFile();
+	public WebzFile resolveFileFromRequest(HttpServletRequest req);
 
 	/** TODO !!! describe !!! **/
-	public WebzResource webzGet(String uriORurl);
+	public WebzFile resolveFile(String pathInfo);
 
 }
