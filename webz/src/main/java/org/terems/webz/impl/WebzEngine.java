@@ -17,21 +17,26 @@ import org.terems.webz.WebzContext;
 import org.terems.webz.WebzContextProxy;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFileSystem;
+import org.terems.webz.impl.cache.CachedFileSystem;
 import org.terems.webz.impl.cache.ehcache.EhcacheFileSystemCache;
 import org.terems.webz.plugin.WebzFilter;
 
 public class WebzEngine implements WebzApp {
 
-	private static Logger LOG = LoggerFactory.getLogger(WebzEngine.class);
+	private static final Logger LOG = LoggerFactory.getLogger(WebzEngine.class);
 
 	private WebzContext rootContext;
 	private Collection<WebzFilter> filterChain;
 
 	public WebzEngine(WebzFileSystem fileSystem, Collection<WebzFilter> filterChain) throws IOException, WebzException {
 
-		// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\
-		this.rootContext = new RootWebzContext(new GenericWebzFileFactory(new EhcacheFileSystemCache(fileSystem)));
-		// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ //
+		// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
+		WebzFileSystem cachedFileSystem = new CachedFileSystem(fileSystem, new EhcacheFileSystemCache());
+		// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
+
+		// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
+		this.rootContext = new RootWebzContext(new DefaultWebzFileFactory(cachedFileSystem));
+		// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
 
 		WebzConfig filterConfig = new WebzConfigProxy() {
 
@@ -94,6 +99,9 @@ public class WebzEngine implements WebzApp {
 				throw new WebzException("WebZ chain is already processed and cannot be invoked again");
 			}
 			if (filterChainIterator.hasNext()) {
+				// TODO TODO TODO TODO TODO TODO TODO TODO TODO
+				// TODO TODO TODO <fileMask /> ! TODO TODO TODO
+				// TODO TODO TODO TODO TODO TODO TODO TODO TODO
 
 				filterChainIterator.next().service(req, resp, this);
 

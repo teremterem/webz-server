@@ -5,11 +5,25 @@ import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Map;
 
+import org.terems.webz.cache.WebzFileSystemCache;
+
 /** TODO !!! describe !!! **/
 public abstract class WebzFileSystemProxy implements WebzFileSystem {
 
 	/** TODO !!! describe !!! **/
 	protected abstract WebzFileSystem getInnerFileSystem();
+
+	/** TODO !!! describe !!! **/
+	@Override
+	public void inflate(WebzFile file) throws IOException, WebzException {
+		getInnerFileSystem().inflate(file);
+	}
+
+	/** TODO !!! describe !!! **/
+	@Override
+	public void inflate(WebzFileSystemCache fileSystemCache, WebzFile file) throws IOException, WebzException {
+		getInnerFileSystem().inflate(fileSystemCache, file);
+	}
 
 	/** TODO !!! describe !!! **/
 	@Override

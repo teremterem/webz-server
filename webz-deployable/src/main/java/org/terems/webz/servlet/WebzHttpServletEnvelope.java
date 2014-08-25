@@ -27,7 +27,7 @@ import com.dropbox.core.DbxRequestConfig;
 @SuppressWarnings("serial")
 public class WebzHttpServletEnvelope extends HttpServlet {
 
-	private static Logger LOG = LoggerFactory.getLogger(WebzHttpServletEnvelope.class);
+	private static final Logger LOG = LoggerFactory.getLogger(WebzHttpServletEnvelope.class);
 
 	private WebzApp webzApp;
 

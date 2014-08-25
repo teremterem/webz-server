@@ -19,8 +19,6 @@ public class FolderPreloadWelcomeFilter extends BaseWebzFilter {
 	private Collection<String> defaultFileExtensions = Arrays.asList(new String[] { ".html" });
 	private Collection<String> defaultFileNames = Arrays.asList(new String[] { "index" });
 
-	private boolean alwaysPreloadChildrenMetadata = true;
-
 	@Override
 	public void service(HttpServletRequest req, HttpServletResponse resp, final WebzChainContext chainContext) throws IOException,
 			WebzException {
@@ -33,24 +31,19 @@ public class FolderPreloadWelcomeFilter extends BaseWebzFilter {
 				String pathInfo = req.getPathInfo();
 				WebzFile file = super.getFile(pathInfo); // TODO sure ?
 
-				if (alwaysPreloadChildrenMetadata) {
-					// preloading "metadata with children"...
-					file.getChildren();
-				}
-
-				// TODO TODO TODO
+				// TODO
 
 				if (pathInfo != null) {
 
 					int lastSlashPos = pathInfo.lastIndexOf(pathInfo);
 					if (lastSlashPos < 0) {
 
-						// TODO TODO TODO
+						// TODO
 
 					}
 				}
 
-				// TODO TODO TODO
+				// TODO
 
 				return file;
 			}

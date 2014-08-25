@@ -1,4 +1,4 @@
-package org.terems.webz.impl.cache;
+package org.terems.webz.cache;
 
 import java.io.ByteArrayOutputStream;
 

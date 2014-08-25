@@ -11,6 +11,9 @@ public interface WebzFile {
 	public String getPathName() throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
+	public void inflate() throws IOException, WebzException;
+
+	/** TODO !!! describe !!! **/
 	public WebzMetadata getMetadata() throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
