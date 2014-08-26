@@ -57,8 +57,8 @@ public class WebzEngine implements WebzApp {
 	public void service(HttpServletRequest req, HttpServletResponse resp) {
 
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("\n\n\n// ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\"
-					+ "\n SERVING: " + getFullUrl(req)
+			LOG.trace("\n\n\n// ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\\n "
+					+ req.getMethod() + " " + getFullUrl(req)
 					+ "\n\\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ //\n\n");
 		}
 

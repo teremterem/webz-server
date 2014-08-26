@@ -1,19 +1,28 @@
 package org.terems.webz.filter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.terems.webz.WebzChainContext;
+import org.terems.webz.WebzContext;
+import org.terems.webz.WebzContextProxy;
 import org.terems.webz.WebzException;
+import org.terems.webz.WebzFile;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.plugin.BaseWebzFilter;
 
-public class FileFolderRedirectFilter extends BaseWebzFilter {
+public class WelcomeFilter extends BaseWebzFilter {
+
+	private Collection<String> defaultFileExtensions = Arrays.asList(new String[] { ".html" });
+	private Collection<String> defaultFileNames = Arrays.asList(new String[] { "index" });
 
 	@Override
-	public void service(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException, WebzException {
+	public void service(HttpServletRequest req, HttpServletResponse resp, final WebzChainContext chainContext) throws IOException,
+			WebzException {
 
 		String requestMethod = req.getMethod();
 		boolean isMethodHead = "HEAD".equals(requestMethod);
@@ -39,7 +48,21 @@ public class FileFolderRedirectFilter extends BaseWebzFilter {
 				}
 			}
 		}
-		chainContext.nextPlease(req, resp);
+		chainContext.nextPlease(req, resp, new WebzContextProxy() {
+
+			@Override
+			public WebzFile resolveFile(HttpServletRequest req) throws IOException, WebzException {
+
+				// TODO
+
+				return super.resolveFile(req);
+			}
+
+			@Override
+			protected WebzContext getInnerContext() {
+				return chainContext;
+			}
+		});
 	}
 
 	private void doRedirect(HttpServletRequest req, HttpServletResponse resp, boolean toFolder, boolean isMethodHead) throws IOException {
