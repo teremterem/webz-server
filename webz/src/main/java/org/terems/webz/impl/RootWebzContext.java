@@ -4,29 +4,16 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.terems.webz.WebzConfig;
 import org.terems.webz.WebzContext;
-import org.terems.webz.WebzDefaults;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFileFactory;
+import org.terems.webz.plugin.WebzConfigObject;
 
-// TODO TODO refactor this ???
-public class RootWebzContext implements WebzContext {
+public class RootWebzContext implements WebzContext, WebzConfig {
 
 	private WebzFileFactory fileFactory;
-
-	// TODO refactor this ???
-	@Deprecated
-	public static String trimFileSeparators(String pathName) {
-		pathName = pathName.trim();
-		if (pathName.startsWith("/") || pathName.startsWith("\\")) {
-			pathName = pathName.substring(1);
-		}
-		if (pathName.endsWith("/") || pathName.endsWith("\\")) {
-			pathName = pathName.substring(0, pathName.length() - 1);
-		}
-		return pathName;
-	}
 
 	public RootWebzContext(WebzFileFactory fileFactory) {
 		this.fileFactory = fileFactory;
@@ -38,18 +25,18 @@ public class RootWebzContext implements WebzContext {
 	}
 
 	@Override
-	public WebzFile resolveConfigFolder() throws IOException, WebzException {
-		return getFile(WebzDefaults.WEBZ_CONFIG_FOLDER);
+	public WebzFile getFile(String pathInfo) {
+		// TODO make sure WEBZ_CONFIG_FOLDER is not accessible from here
+		return fileFactory.get(pathInfo == null ? "" : pathInfo);
 	}
 
 	@Override
-	public WebzFile getFile(String pathInfo) {
-
-		// TODO revise path normalization logic
-		// TODO + force 404(?) for cases like http://localhost:8080//////webz-pedesis.html
-		String pathName = pathInfo == null ? "" : trimFileSeparators(pathInfo);
-
-		return fileFactory.get(pathName);
+	public <T extends WebzConfigObject> T getConfigObject(Class<T> configObjectClass) throws IOException, WebzException {
+		// TODO TODO TODO
+		// T configObject = new BlaBlaConfigObject();
+		// configObject.init(fileFactory.get(WebzDefaults.WEBZ_CONFIG_FOLDER));
+		// TODO TODO TODO
+		return null;
 	}
 
 }

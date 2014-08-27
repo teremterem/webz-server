@@ -9,20 +9,29 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.terems.webz.WebzChainContext;
 import org.terems.webz.WebzContext;
-import org.terems.webz.WebzContextProxy;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
 import org.terems.webz.WebzMetadata;
-import org.terems.webz.plugin.BaseWebzFilter;
+import org.terems.webz.base.WebzContextProxy;
+import org.terems.webz.plugin.base.BaseWebzFilter;
 
 public class WelcomeFilter extends BaseWebzFilter {
 
+	// TODO move it to config folder
 	private Collection<String> defaultFileExtensions = Arrays.asList(new String[] { ".html" });
 	private Collection<String> defaultFileNames = Arrays.asList(new String[] { "index" });
 
 	@Override
 	public void service(HttpServletRequest req, HttpServletResponse resp, final WebzChainContext chainContext) throws IOException,
 			WebzException {
+
+		// TODO
+
+		redirectFileFolder(req, resp, chainContext);
+	}
+
+	public void redirectFileFolder(HttpServletRequest req, HttpServletResponse resp, final WebzChainContext chainContext)
+			throws IOException, WebzException {
 
 		String requestMethod = req.getMethod();
 		boolean isMethodHead = "HEAD".equals(requestMethod);

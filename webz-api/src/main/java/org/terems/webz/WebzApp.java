@@ -1,5 +1,7 @@
 package org.terems.webz;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -7,6 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 public interface WebzApp {
 
 	/** TODO !!! describe !!! **/
-	public void service(HttpServletRequest req, HttpServletResponse resp);
+	public void service(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException;
 
 }

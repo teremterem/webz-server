@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terems.webz.BaseWebzFileSystem;
 import org.terems.webz.ParentChildrenMetadata;
 import org.terems.webz.WebzDefaults;
 import org.terems.webz.WebzException;
@@ -15,6 +14,7 @@ import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzFileSystem;
 import org.terems.webz.WebzMetadata;
+import org.terems.webz.base.BaseWebzFileSystem;
 import org.terems.webz.cache.ChildPathNamesHolder;
 import org.terems.webz.cache.FilePayloadHolder;
 import org.terems.webz.cache.WebzFileSystemCache;
@@ -64,6 +64,16 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 	}
 
 	@Override
+	public String normalizePathName(String pathName) {
+		return innerFileSystem.normalizePathName(pathName);
+	}
+
+	@Override
+	public String getParentPathName(String pathName) {
+		return innerFileSystem.getParentPathName(pathName);
+	}
+
+	@Override
 	public void inflate(WebzFile file) throws IOException, WebzException {
 		innerFileSystem.inflate(cache, file);
 	}
@@ -91,11 +101,6 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 
 			dropFilePayloadAndChildPathNames(pathName);
 		}
-	}
-
-	@Override
-	public String getParentPathName(String pathName) throws IOException, WebzException {
-		return innerFileSystem.getParentPathName(pathName);
 	}
 
 	@Override

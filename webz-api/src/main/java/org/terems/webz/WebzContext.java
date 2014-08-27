@@ -5,9 +5,12 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 
 /** TODO !!! describe !!! **/
-public interface WebzContext extends WebzConfig {
+public interface WebzContext {
 
 	/** TODO !!! describe !!! **/
 	public WebzFile resolveFile(HttpServletRequest req) throws IOException, WebzException;
+
+	/** TODO !!! describe !!! **/
+	public WebzFile getFile(String pathInfo) throws IOException, WebzException;
 
 }

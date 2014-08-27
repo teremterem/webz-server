@@ -12,11 +12,11 @@ import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzApp;
 import org.terems.webz.WebzChainContext;
 import org.terems.webz.WebzConfig;
-import org.terems.webz.WebzConfigProxy;
 import org.terems.webz.WebzContext;
-import org.terems.webz.WebzContextProxy;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFileSystem;
+import org.terems.webz.base.WebzConfigProxy;
+import org.terems.webz.base.WebzContextProxy;
 import org.terems.webz.impl.cache.CachedFileSystem;
 import org.terems.webz.impl.cache.ehcache.EhcacheFileSystemCache;
 import org.terems.webz.plugin.WebzFilter;
@@ -25,7 +25,7 @@ public class WebzEngine implements WebzApp {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WebzEngine.class);
 
-	private WebzContext rootContext;
+	private RootWebzContext rootContext;
 	private Collection<WebzFilter> filterChain;
 
 	public WebzEngine(WebzFileSystem fileSystem, Collection<WebzFilter> filterChain) throws IOException, WebzException {
@@ -54,7 +54,7 @@ public class WebzEngine implements WebzApp {
 	}
 
 	@Override
-	public void service(HttpServletRequest req, HttpServletResponse resp) {
+	public void service(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("\n\n\n// ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\\n "
@@ -62,13 +62,7 @@ public class WebzEngine implements WebzApp {
 					+ "\n\\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ //\n\n");
 		}
 
-		try {
-			new ChainContext(filterChain.iterator(), rootContext).nextPlease(req, resp);
-
-		} catch (IOException | WebzException e) {
-			// TODO 500 error page should be displayed to the user instead
-			throw new RuntimeException(e);
-		}
+		new ChainContext(filterChain.iterator(), rootContext).nextPlease(req, resp);
 	}
 
 	private String getFullUrl(HttpServletRequest request) {

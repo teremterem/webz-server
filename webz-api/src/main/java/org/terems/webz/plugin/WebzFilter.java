@@ -6,20 +6,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.terems.webz.WebzChainContext;
-import org.terems.webz.WebzException;
 import org.terems.webz.WebzConfig;
+import org.terems.webz.WebzDestroyable;
+import org.terems.webz.WebzException;
 
 /** TODO !!! describe !!! **/
-public interface WebzFilter {
+public interface WebzFilter extends WebzDestroyable {
 
 	/** TODO !!! describe !!! **/
-	public void init(WebzConfig filterConfig) throws IOException, WebzException;
+	public void init(WebzConfig appConfig) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public void service(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException,
-			WebzException;
-
-	/** TODO !!! describe !!! **/
-	public void destroy();
+	public void service(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException, WebzException;
 
 }

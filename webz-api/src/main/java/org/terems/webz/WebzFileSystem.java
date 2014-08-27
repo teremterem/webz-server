@@ -14,7 +14,10 @@ public interface WebzFileSystem {
 	public String getFileSystemUniqueId();
 
 	/** TODO !!! describe !!! **/
-	public String getParentPathName(String pathName) throws IOException, WebzException;
+	public String normalizePathName(String pathName);
+
+	/** TODO !!! describe !!! **/
+	public String getParentPathName(String pathName);
 
 	/** TODO !!! describe !!! **/
 	public void inflate(WebzFile file) throws IOException, WebzException;

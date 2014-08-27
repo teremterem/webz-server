@@ -3,13 +3,7 @@ package org.terems.webz;
 import java.io.IOException;
 import java.util.Date;
 
-/**
- * TODO !!! describe !!!
- * 
- * P.S. implementations should be immutable ?
- * 
- * P.P.S. should all implementations be Serializable ?
- **/
+/** TODO !!! describe !!! **/
 public interface WebzMetadata {
 
 	/** TODO !!! describe !!! **/

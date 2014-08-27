@@ -1,7 +1,10 @@
-package org.terems.webz;
+package org.terems.webz.base;
 
 import java.io.IOException;
 import java.util.Date;
+
+import org.terems.webz.WebzException;
+import org.terems.webz.WebzMetadata;
 
 /** TODO !!! describe !!! **/
 public abstract class WebzMetadataProxy extends BaseWebzMetadata {

@@ -1,10 +1,17 @@
-package org.terems.webz;
+package org.terems.webz.base;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Map;
 
+import org.terems.webz.FreshParentChildrenMetadata;
+import org.terems.webz.ParentChildrenMetadata;
+import org.terems.webz.WebzException;
+import org.terems.webz.WebzFile;
+import org.terems.webz.WebzFileDownloader;
+import org.terems.webz.WebzFileSystem;
+import org.terems.webz.WebzMetadata;
 import org.terems.webz.cache.WebzFileSystemCache;
 
 /** TODO !!! describe !!! **/
@@ -12,6 +19,18 @@ public abstract class WebzFileSystemProxy implements WebzFileSystem {
 
 	/** TODO !!! describe !!! **/
 	protected abstract WebzFileSystem getInnerFileSystem();
+
+	/** TODO !!! describe !!! **/
+	@Override
+	public String normalizePathName(String pathName) {
+		return getInnerFileSystem().normalizePathName(pathName);
+	}
+
+	/** TODO !!! describe !!! **/
+	@Override
+	public String getParentPathName(String pathName) {
+		return getInnerFileSystem().getParentPathName(pathName);
+	}
 
 	/** TODO !!! describe !!! **/
 	@Override
@@ -35,12 +54,6 @@ public abstract class WebzFileSystemProxy implements WebzFileSystem {
 	@Override
 	public WebzMetadata getMetadata(String pathName) throws IOException, WebzException {
 		return getInnerFileSystem().getMetadata(pathName);
-	}
-
-	/** TODO !!! describe !!! **/
-	@Override
-	public String getParentPathName(String pathName) throws IOException, WebzException {
-		return getInnerFileSystem().getParentPathName(pathName);
 	}
 
 	/** TODO !!! describe !!! **/

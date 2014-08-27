@@ -14,11 +14,13 @@ import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzApp;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFileSystem;
+import org.terems.webz.filter.ErrorFilter;
+import org.terems.webz.filter.NotFoundFilter;
+import org.terems.webz.filter.StaticContentFilter;
 import org.terems.webz.filter.WelcomeFilter;
-import org.terems.webz.impl.RootWebzContext;
 import org.terems.webz.impl.WebzEngine;
 import org.terems.webz.impl.dropbox.DropboxFileSystem;
-import org.terems.webz.obsolete.ObsoleteWebzEngine;
+import org.terems.webz.plugin.WebzFilter;
 
 import com.dropbox.core.DbxClient;
 import com.dropbox.core.DbxRequestConfig;
@@ -31,13 +33,18 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 	private WebzApp webzApp;
 
 	@Override
-	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
+	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
 		if (webzApp == null) {
 			initWebzApp();
 		}
 
-		webzApp.service(req, resp);
+		try {
+			webzApp.service(req, resp);
+
+		} catch (WebzException e) {
+			throw new ServletException(e);
+		}
 	}
 
 	private Object webzAppMutex = new Object();
@@ -48,6 +55,14 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 		synchronized (webzAppMutex) {
 
 			if (webzApp == null) {
+
+				String dbxAccessToken = getServletConfig().getInitParameter("dbxAccessToken");
+				String dbxBasePath = getServletConfig().getInitParameter("dbxBasePath");
+
+				// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
+				WebzFilter[] filters = { new ErrorFilter(), new WelcomeFilter(), new StaticContentFilter(), new NotFoundFilter() };
+				// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
+
 				String dbxClientId = getRidOfWhitespacesSafely(getServletConfig().getInitParameter("dbxClientDisplayName")) + "/"
 						+ getRidOfWhitespacesSafely(getServletConfig().getInitParameter("dbxClientVersion"));
 				DbxRequestConfig dbxConfig = new DbxRequestConfig(dbxClientId, Locale.getDefault().toString());
@@ -56,12 +71,11 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 						+ "')");
 
 				try {
-					String dbxAccessToken = getServletConfig().getInitParameter("dbxAccessToken");
-					String dbxBasePath = "/" + RootWebzContext.trimFileSeparators(getServletConfig().getInitParameter("dbxBasePath"));
-
 					WebzFileSystem dropboxFileSource = new DropboxFileSystem(new DbxClient(dbxConfig, dbxAccessToken), dbxBasePath);
 
-					webzApp = new WebzEngine(dropboxFileSource, Arrays.asList(new WelcomeFilter(), ObsoleteWebzEngine.newFilter()));
+					// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
+					webzApp = new WebzEngine(dropboxFileSource, Arrays.asList(filters));
+					// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
 
 				} catch (IOException | WebzException e) {
 					throw new ServletException(e);
