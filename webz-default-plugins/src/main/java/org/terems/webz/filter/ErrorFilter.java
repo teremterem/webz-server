@@ -8,11 +8,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzChainContext;
-import org.terems.webz.WebzConfig;
 import org.terems.webz.WebzException;
-import org.terems.webz.plugin.WebzFilter;
+import org.terems.webz.plugin.base.BaseWebzFilter;
 
-public class ErrorFilter implements WebzFilter {
+public class ErrorFilter extends BaseWebzFilter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ErrorFilter.class);
 
@@ -37,12 +36,13 @@ public class ErrorFilter implements WebzFilter {
 				}
 			} else {
 				try {
+					resp.reset();
 					resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 					chainContext.getFile(pathTo500html).fileContentToOutputStream(resp.getOutputStream());
 
 				} catch (Throwable th2) {
 
-					LOG.error(th2.getMessage(), th2);
+					LOG.error("FAILED TO DISPLAY AN ERROR PAGE: " + th2.getMessage(), th2);
 
 					if (rethrowIfCannotHandle) {
 						throw th;
@@ -50,14 +50,6 @@ public class ErrorFilter implements WebzFilter {
 				}
 			}
 		}
-	}
-
-	@Override
-	public void init(WebzConfig appConfig) throws IOException, WebzException {
-	}
-
-	@Override
-	public void destroy() {
 	}
 
 }
