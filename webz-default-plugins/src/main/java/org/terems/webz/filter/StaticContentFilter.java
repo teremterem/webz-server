@@ -14,7 +14,7 @@ import org.terems.webz.plugin.base.BaseLastModifiedWebzFilter;
 public class StaticContentFilter extends BaseLastModifiedWebzFilter {
 
 	@Override
-	public void service(HttpServletRequest req, HttpServletResponse resp, final WebzChainContext chainContext) throws IOException,
+	public void serve(HttpServletRequest req, HttpServletResponse resp, final WebzChainContext chainContext) throws IOException,
 			WebzException {
 
 		WebzFile file = chainContext.resolveFile(req);

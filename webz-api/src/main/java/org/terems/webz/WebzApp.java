@@ -9,6 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 public interface WebzApp {
 
 	/** TODO !!! describe !!! **/
-	public void service(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException;
+	public void serve(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException;
 
 }

@@ -54,7 +54,7 @@ public class WebzEngine implements WebzApp {
 	}
 
 	@Override
-	public void service(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException {
+	public void serve(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("\n\n\n// ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\\n "
@@ -97,7 +97,7 @@ public class WebzEngine implements WebzApp {
 				// TODO TODO TODO <fileMask /> ! TODO TODO TODO
 				// TODO TODO TODO TODO TODO TODO TODO TODO TODO
 
-				filterChainIterator.next().service(req, resp, this);
+				filterChainIterator.next().serve(req, resp, this);
 
 				// invalidating iterator reference to make sure same filters don't invoke the chain for the second time...
 				filterChainIterator = null;

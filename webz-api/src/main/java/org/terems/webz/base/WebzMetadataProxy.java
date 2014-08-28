@@ -35,20 +35,6 @@ public abstract class WebzMetadataProxy extends BaseWebzMetadata {
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public FileSpecific getFileSpecific() throws IOException, WebzException {
-		WebzMetadata metadata = getInnerMetadata();
-		return metadata == null ? null : metadata.getFileSpecific();
-	}
-
-	/** TODO !!! describe !!! **/
-	@Override
-	public String _getNativePathName() throws IOException, WebzException {
-		WebzMetadata metadata = getInnerMetadata();
-		return metadata == null ? null : metadata._getNativePathName();
-	}
-
-	/** TODO !!! describe !!! **/
-	@Override
 	public long getNumberOfBytes() throws IOException, WebzException {
 		WebzMetadata.FileSpecific fileSpecific = getInnerMetadata().getFileSpecific();
 		return fileSpecific == null ? 0 : fileSpecific.getNumberOfBytes();

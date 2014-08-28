@@ -15,7 +15,7 @@ public class NotFoundFilter extends BaseWebzFilter {
 	private String pathTo404html = "404.html";
 
 	@Override
-	public void service(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException, WebzException {
+	public void serve(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException, WebzException {
 
 		resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 		chainContext.getFile(pathTo404html).fileContentToOutputStream(resp.getOutputStream());

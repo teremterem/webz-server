@@ -17,10 +17,10 @@ public class ErrorFilter extends BaseWebzFilter {
 
 	// TODO move it to config folder
 	private String pathTo500html = "500.html";
-	private boolean rethrowIfCannotHandle = true;
+	private boolean rethrowIfCannotHandle = false;
 
 	@Override
-	public void service(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException, WebzException {
+	public void serve(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException, WebzException {
 
 		try {
 			chainContext.nextPlease(req, resp);

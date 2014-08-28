@@ -17,6 +17,6 @@ public interface WebzFilter extends WebzDestroyable {
 	public void init(WebzConfig appConfig) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public void service(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException, WebzException;
+	public void serve(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException, WebzException;
 
 }

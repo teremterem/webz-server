@@ -40,7 +40,7 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 		}
 
 		try {
-			webzApp.service(req, resp);
+			webzApp.serve(req, resp);
 
 		} catch (WebzException e) {
 			throw new ServletException(e);
@@ -71,10 +71,10 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 						+ "')");
 
 				try {
-					WebzFileSystem dropboxFileSource = new DropboxFileSystem(new DbxClient(dbxConfig, dbxAccessToken), dbxBasePath);
+					WebzFileSystem dbxFileSystem = new DropboxFileSystem(new DbxClient(dbxConfig, dbxAccessToken), dbxBasePath);
 
 					// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
-					webzApp = new WebzEngine(dropboxFileSource, Arrays.asList(filters));
+					webzApp = new WebzEngine(dbxFileSystem, Arrays.asList(filters));
 					// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
 
 				} catch (IOException | WebzException e) {

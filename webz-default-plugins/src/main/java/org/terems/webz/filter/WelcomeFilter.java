@@ -21,8 +21,11 @@ public class WelcomeFilter extends BaseWebzFilter {
 	private Collection<String> defaultFileExtensions = Arrays.asList(new String[] { ".html" });
 	private Collection<String> defaultFileNames = Arrays.asList(new String[] { "index" });
 
+	// dilemma: 301 (permanent) redirect is more SEO friendly but some browsers and crawlers may treat it as "eternal"
+	private boolean permanentRedirect = false;
+
 	@Override
-	public void service(HttpServletRequest req, HttpServletResponse resp, final WebzChainContext chainContext) throws IOException,
+	public void serve(HttpServletRequest req, HttpServletResponse resp, final WebzChainContext chainContext) throws IOException,
 			WebzException {
 
 		// TODO
@@ -90,8 +93,7 @@ public class WelcomeFilter extends BaseWebzFilter {
 
 		String redirectUrl = urlBuffer.toString();
 
-		// TODO dilemma: 301 (permanent) redirect is more SEO friendly but some browsers and crawlers may treat it as "eternal"
-		resp.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+		resp.setStatus(permanentRedirect ? HttpServletResponse.SC_MOVED_PERMANENTLY : HttpServletResponse.SC_MOVED_TEMPORARILY);
 		resp.setHeader("Location", redirectUrl);
 
 		if (!isMethodHead) {

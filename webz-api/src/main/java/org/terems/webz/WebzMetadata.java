@@ -29,9 +29,7 @@ public interface WebzMetadata {
 
 		/** TODO !!! describe !!! **/
 		public String getRevision() throws IOException, WebzException;
-	}
 
-	// TODO either get rid of this method if it brings no value for the abstraction layer or describe !!!
-	public String _getNativePathName() throws IOException, WebzException;
+	}
 
 }
