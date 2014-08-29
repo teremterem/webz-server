@@ -8,6 +8,7 @@ import java.util.Collection;
 
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
+import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzFileFactory;
 import org.terems.webz.WebzFileSystem;
 import org.terems.webz.WebzMetadata;
@@ -39,8 +40,19 @@ public class GenericWebzFile implements WebzFile {
 		}
 	}
 
-	private String getFileSystemMessageSuffix() {
-		return "(file system: '" + fileSystem.getFileSystemUniqueId() + "')";
+	@Override
+	public WebzMetadata getMetadata() throws IOException, WebzException {
+		return fileSystem.getMetadata(pathName);
+	}
+
+	@Override
+	public WebzFileDownloader getFileDownloader() throws IOException, WebzException {
+		return fileSystem.getFileDownloader(pathName);
+	}
+
+	@Override
+	public WebzMetadata copyContentToOutputStream(OutputStream out) throws IOException, WebzException {
+		return fileSystem.copyContentToOutputStream(pathName, out);
 	}
 
 	/**
@@ -51,31 +63,17 @@ public class GenericWebzFile implements WebzFile {
 
 		WebzMetadata metadata = getMetadata();
 		if (metadata == null) {
-			throw new WebzException(pathName + " does not exist " + getFileSystemMessageSuffix());
+			return null;
 		}
 
 		WebzMetadata.FileSpecific fileSpecific = metadata.getFileSpecific();
 		if (fileSpecific == null) {
-			throw new WebzException(pathName + " is not a file " + getFileSystemMessageSuffix());
+			return null;
 		}
 
 		ByteArrayOutputStream out = new ByteArrayOutputStream((int) fileSpecific.getNumberOfBytes());
 		copyContentToOutputStream(out);
 		return out.toByteArray();
-	}
-
-	@Override
-	public WebzMetadata getMetadata() throws IOException, WebzException {
-
-		return fileSystem.getMetadata(pathName);
-	}
-
-	/**
-	 * Unlike getFileContent() this method doesn't throw WebzException if path name does not exist or is not a file...
-	 **/
-	@Override
-	public WebzMetadata copyContentToOutputStream(OutputStream out) throws IOException, WebzException {
-		return fileSystem.copyContentToOutputStream(pathName, out);
 	}
 
 	@Override

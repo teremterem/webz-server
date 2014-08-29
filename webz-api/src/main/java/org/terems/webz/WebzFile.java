@@ -17,12 +17,13 @@ public interface WebzFile {
 	public WebzMetadata getMetadata() throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public byte[] getFileContent() throws IOException, WebzException;
+	public WebzFileDownloader getFileDownloader() throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
 	public WebzMetadata copyContentToOutputStream(OutputStream out) throws IOException, WebzException;
 
-	// TODO consider exposing input stream as well ?
+	/** TODO !!! describe !!! **/
+	public byte[] getFileContent() throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
 	public WebzFile getParent() throws IOException, WebzException;
