@@ -15,43 +15,37 @@ public abstract class WebzMetadataProxy extends BaseWebzMetadata {
 	/** TODO !!! describe !!! **/
 	@Override
 	public String getName() throws IOException, WebzException {
-		WebzMetadata metadata = getInnerMetadata();
-		return metadata == null ? null : metadata.getName();
+		return getInnerMetadata().getName();
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public boolean isFile() throws IOException, WebzException {
-		WebzMetadata metadata = getInnerMetadata();
-		return metadata == null ? false : metadata.isFile();
+		return getInnerMetadata().isFile();
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public boolean isFolder() throws IOException, WebzException {
-		WebzMetadata metadata = getInnerMetadata();
-		return metadata == null ? false : metadata.isFolder();
+		return getInnerMetadata().isFolder();
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public long getNumberOfBytes() throws IOException, WebzException {
-		WebzMetadata.FileSpecific fileSpecific = getInnerMetadata().getFileSpecific();
-		return fileSpecific == null ? 0 : fileSpecific.getNumberOfBytes();
+		return getInnerMetadata().getFileSpecific().getNumberOfBytes();
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public Date getLastModified() throws IOException, WebzException {
-		WebzMetadata.FileSpecific fileSpecific = getInnerMetadata().getFileSpecific();
-		return fileSpecific == null ? null : fileSpecific.getLastModified();
+		return getInnerMetadata().getFileSpecific().getLastModified();
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public String getRevision() throws IOException, WebzException {
-		WebzMetadata.FileSpecific fileSpecific = getInnerMetadata().getFileSpecific();
-		return fileSpecific == null ? null : fileSpecific.getRevision();
+		return getInnerMetadata().getFileSpecific().getRevision();
 	}
 
 }

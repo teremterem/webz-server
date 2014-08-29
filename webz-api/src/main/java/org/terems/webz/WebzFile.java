@@ -20,7 +20,7 @@ public interface WebzFile {
 	public byte[] getFileContent() throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzMetadata fileContentToOutputStream(OutputStream out) throws IOException, WebzException;
+	public WebzMetadata copyContentToOutputStream(OutputStream out) throws IOException, WebzException;
 
 	// TODO consider exposing input stream as well ?
 

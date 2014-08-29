@@ -146,7 +146,7 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 			if (LOG.isTraceEnabled()) {
 				WebzUtils.traceFSMessage(LOG, "PAYLOAD for '" + pathName + "' is being fetched without being cached", this);
 			}
-			innerFileSystem.fileContentToOutputStream(pathName, out);
+			innerFileSystem.copyContentToOutputStream(pathName, out);
 			// TODO should javax.servlet.AsyncContext be used ?
 		}
 	}
@@ -162,7 +162,7 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 	}
 
 	@Override
-	public WebzMetadata.FileSpecific fileContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException {
+	public WebzMetadata.FileSpecific copyContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException {
 
 		FilePayloadHolder payloadHolder = cache.fetchFilePayloadHolder(pathName);
 		if (payloadHolder == null) {
@@ -175,7 +175,7 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 	}
 
 	@Override
-	public WebzFileDownloader getFileContentDownloader(final String pathName) throws IOException, WebzException {
+	public WebzFileDownloader getFileDownloader(final String pathName) throws IOException, WebzException {
 
 		final FilePayloadHolder payloadHolder = cache.fetchFilePayloadHolder(pathName);
 		if (payloadHolder == null) {
@@ -185,7 +185,7 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 		return new WebzFileDownloader(fetchFileSpecific(pathName)) {
 
 			@Override
-			public void fileContentToOutputStream(OutputStream out) throws IOException, WebzException {
+			public void copyContentAndClose(OutputStream out) throws IOException, WebzException {
 				writeFilePayload(payloadHolder, pathName, out);
 			}
 		};
@@ -234,6 +234,11 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 		innerFileSystem.delete(pathName);
 
 		dropPathNameInCaches(pathName);
+	}
+
+	@Override
+	public void destroy() {
+		cache.destroy();
 	}
 
 }

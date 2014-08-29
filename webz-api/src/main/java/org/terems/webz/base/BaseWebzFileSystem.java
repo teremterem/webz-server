@@ -114,22 +114,21 @@ public abstract class BaseWebzFileSystem implements WebzFileSystem {
 
 	/** Default implementation... **/
 	@Override
-	public WebzMetadata.FileSpecific fileContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException {
-		return fileDownloaderToOutputStream(this, pathName, out);
-	}
+	public WebzMetadata.FileSpecific copyContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException {
 
-	/** TODO !!! describe !!! **/
-	public static WebzMetadata.FileSpecific fileDownloaderToOutputStream(WebzFileSystem fileSystem, String pathName, OutputStream out)
-			throws IOException, WebzException {
-
-		WebzFileDownloader downloader = fileSystem.getFileContentDownloader(pathName);
+		WebzFileDownloader downloader = getFileDownloader(pathName);
 		if (downloader == null) {
 			return null;
 		}
 
-		downloader.fileContentToOutputStream(out);
+		downloader.copyContentAndClose(out);
 
 		return downloader.fileSpecific;
+	}
+
+	/** Do nothing by default... **/
+	@Override
+	public void destroy() {
 	}
 
 }

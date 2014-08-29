@@ -47,11 +47,21 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 		}
 	}
 
+	@Override
+	public void destroy() {
+
+		if (webzApp != null) {
+			webzApp.destroy();
+		}
+	}
+
 	private Object webzAppMutex = new Object();
 
 	private void initWebzApp() throws ServletException {
 
-		LOG.info("INITIALIZING ROOT WEBZ APP...");
+		String webzAppName = getServletConfig().getInitParameter("webzAppName");
+
+		LOG.info("INITIALIZING '" + webzAppName + "'...");
 		synchronized (webzAppMutex) {
 
 			if (webzApp == null) {
@@ -73,17 +83,17 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 				try {
 					WebzFileSystem dbxFileSystem = new DropboxFileSystem(new DbxClient(dbxConfig, dbxAccessToken), dbxBasePath);
 
-					// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
-					webzApp = new WebzEngine(dbxFileSystem, Arrays.asList(filters));
-					// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
+					// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
+					webzApp = new WebzEngine(webzAppName, dbxFileSystem, Arrays.asList(filters));
+					// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
 
 				} catch (IOException | WebzException e) {
 					throw new ServletException(e);
 				}
 
-				LOG.info("FINISHED INITIALIZING ROOT WEBZ APP");
+				LOG.info("FINISHED INITIALIZING '" + webzAppName + "'");
 			} else {
-				LOG.info("ROOT WEBZ APP WAS ALREADY INITIALIZED - NO NEED TO INITIALIZE AGAIN");
+				LOG.info("'" + webzAppName + "' WAS ALREADY INITIALIZED - NO NEED TO INITIALIZE AGAIN");
 			}
 
 		}

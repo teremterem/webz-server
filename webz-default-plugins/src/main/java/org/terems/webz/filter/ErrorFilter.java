@@ -38,7 +38,7 @@ public class ErrorFilter extends BaseWebzFilter {
 				try {
 					resp.reset();
 					resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-					chainContext.getFile(pathTo500html).fileContentToOutputStream(resp.getOutputStream());
+					chainContext.getFile(pathTo500html).copyContentToOutputStream(resp.getOutputStream());
 
 				} catch (Throwable th2) {
 

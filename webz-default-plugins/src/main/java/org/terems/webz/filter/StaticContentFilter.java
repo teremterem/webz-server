@@ -19,7 +19,7 @@ public class StaticContentFilter extends BaseLastModifiedWebzFilter {
 
 		WebzFile file = chainContext.resolveFile(req);
 
-		WebzMetadata metadata = file.fileContentToOutputStream(resp.getOutputStream());
+		WebzMetadata metadata = file.copyContentToOutputStream(resp.getOutputStream());
 
 		if (metadata == null || !metadata.isFile()) {
 			// file does not exist or is not a file - invoke the next filter in the chain (filter chain usually ends with NotFoundFilter)

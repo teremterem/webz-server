@@ -8,7 +8,7 @@ import java.util.Map;
 import org.terems.webz.cache.WebzFileSystemCache;
 
 /** TODO !!! describe !!! **/
-public interface WebzFileSystem {
+public interface WebzFileSystem extends WebzDestroyable {
 
 	/** TODO !!! describe !!! **/
 	public String getFileSystemUniqueId();
@@ -45,10 +45,10 @@ public interface WebzFileSystem {
 	public Collection<String> getChildPathNames(String parentPathName) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzMetadata.FileSpecific fileContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException;
+	public WebzMetadata.FileSpecific copyContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzFileDownloader getFileContentDownloader(String pathName) throws IOException, WebzException;
+	public WebzFileDownloader getFileDownloader(String pathName) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
 	public WebzMetadata createFolder(String pathName) throws IOException, WebzException;

@@ -60,7 +60,7 @@ public class GenericWebzFile implements WebzFile {
 		}
 
 		ByteArrayOutputStream out = new ByteArrayOutputStream((int) fileSpecific.getNumberOfBytes());
-		fileContentToOutputStream(out);
+		copyContentToOutputStream(out);
 		return out.toByteArray();
 	}
 
@@ -74,8 +74,8 @@ public class GenericWebzFile implements WebzFile {
 	 * Unlike getFileContent() this method doesn't throw WebzException if path name does not exist or is not a file...
 	 **/
 	@Override
-	public WebzMetadata fileContentToOutputStream(OutputStream out) throws IOException, WebzException {
-		return fileSystem.fileContentToOutputStream(pathName, out);
+	public WebzMetadata copyContentToOutputStream(OutputStream out) throws IOException, WebzException {
+		return fileSystem.copyContentToOutputStream(pathName, out);
 	}
 
 	@Override

@@ -10,7 +10,7 @@ public abstract class WebzFileDownloader {
 	public WebzMetadata.FileSpecific fileSpecific;
 
 	/** TODO !!! describe !!! **/
-	public abstract void fileContentToOutputStream(OutputStream out) throws IOException, WebzException;
+	public abstract void copyContentAndClose(OutputStream out) throws IOException, WebzException;
 
 	// TODO consider exposing input stream as well ?
 

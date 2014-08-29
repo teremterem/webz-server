@@ -25,10 +25,14 @@ public class WebzEngine implements WebzApp {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WebzEngine.class);
 
+	private String appName;
+
 	private RootWebzContext rootContext;
 	private Collection<WebzFilter> filterChain;
 
-	public WebzEngine(WebzFileSystem fileSystem, Collection<WebzFilter> filterChain) throws IOException, WebzException {
+	public WebzEngine(String appName, WebzFileSystem fileSystem, Collection<WebzFilter> filterChain) throws IOException, WebzException {
+
+		this.appName = appName;
 
 		// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
 		WebzFileSystem cachedFileSystem = new CachedFileSystem(fileSystem, new EhcacheFileSystemCache());
@@ -120,6 +124,24 @@ public class WebzEngine implements WebzApp {
 			return context;
 		}
 
+	}
+
+	@Override
+	public String getAppName() {
+		return appName;
+	}
+
+	@Override
+	public void destroy() {
+
+		// TODO destroy all filters, config objects, cached file system(s) and underlying file system(s) through WebzDestroyableFactory
+
+		LOG.info("WebzApp '" + getAppName() + "' destroyed");
 	};
+
+	@Override
+	public String toString() {
+		return getAppName() + " - " + super.toString();
+	}
 
 }

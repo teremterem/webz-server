@@ -83,14 +83,14 @@ public abstract class WebzFileSystemProxy implements WebzFileSystem {
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public WebzMetadata.FileSpecific fileContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException {
-		return getInnerFileSystem().fileContentToOutputStream(pathName, out);
+	public WebzMetadata.FileSpecific copyContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException {
+		return getInnerFileSystem().copyContentToOutputStream(pathName, out);
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public WebzFileDownloader getFileContentDownloader(String pathName) throws IOException, WebzException {
-		return getInnerFileSystem().getFileContentDownloader(pathName);
+	public WebzFileDownloader getFileDownloader(String pathName) throws IOException, WebzException {
+		return getInnerFileSystem().getFileDownloader(pathName);
 	}
 
 	/** TODO !!! describe !!! **/
@@ -121,6 +121,12 @@ public abstract class WebzFileSystemProxy implements WebzFileSystem {
 	@Override
 	public void delete(String pathName) throws IOException, WebzException {
 		getInnerFileSystem().delete(pathName);
+	}
+
+	/** TODO !!! describe !!! **/
+	@Override
+	public void destroy() {
+		getInnerFileSystem().destroy();
 	}
 
 }

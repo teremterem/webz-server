@@ -18,7 +18,7 @@ public class NotFoundFilter extends BaseWebzFilter {
 	public void serve(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException, WebzException {
 
 		resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-		chainContext.getFile(pathTo404html).fileContentToOutputStream(resp.getOutputStream());
+		chainContext.getFile(pathTo404html).copyContentToOutputStream(resp.getOutputStream());
 	}
 
 }

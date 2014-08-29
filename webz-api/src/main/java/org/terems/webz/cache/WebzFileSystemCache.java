@@ -3,11 +3,12 @@ package org.terems.webz.cache;
 import java.util.Collection;
 import java.util.Map;
 
+import org.terems.webz.WebzDestroyable;
 import org.terems.webz.WebzFileSystem;
 import org.terems.webz.WebzMetadata;
 
 /** TODO !!! describe !!! **/
-public interface WebzFileSystemCache {
+public interface WebzFileSystemCache extends WebzDestroyable {
 
 	/** TODO !!! describe !!! **/
 	public void init(WebzFileSystem innerFileSystem, int filePayloadSizeThreshold);

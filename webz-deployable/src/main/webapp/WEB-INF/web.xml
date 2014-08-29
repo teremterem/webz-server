@@ -22,6 +22,10 @@
 		<servlet-class>org.terems.webz.servlet.WebzHttpServletEnvelope</servlet-class>
 
 		<init-param>
+			<param-name>webzAppName</param-name>
+			<param-value>ROOT WEBZ APP</param-value>
+		</init-param>
+		<init-param>
 			<param-name>dbxBasePath</param-name>
 			<param-value>/terems.org/terems-org/webz-pedesis/</param-value>
 		</init-param>
