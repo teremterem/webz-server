@@ -142,13 +142,8 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 	}
 
 	private WebzMetadata.FileSpecific fetchFileSpecific(String pathName) throws IOException, WebzException {
-
-		WebzMetadata.FileSpecific fileSpecific = cacheImpl.fetchMetadata(pathName).getFileSpecific();
-		if (fileSpecific == null) {
-			throw new WebzException("'" + pathName + "' is not a file");
-		}
-
-		return fileSpecific;
+		WebzMetadata metadata = cacheImpl.fetchMetadata(pathName);
+		return metadata == null ? null : metadata.getFileSpecific();
 	}
 
 	@Override
@@ -178,8 +173,14 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 				// TODO think if all caches should be dropped in such a case
 			}
 
+			WebzMetadata.FileSpecific fileSpecific = fetchFileSpecific(pathName);
+			if (fileSpecific == null) {
+				// TODO think if all caches (or this particular entry ?) should be dropped in such a case
+				return null;
+			}
+
 			final WebzByteArrayInputStream webzIn = payloadHolder.content.createInputStream();
-			return new WebzFileDownloader(fetchFileSpecific(pathName), webzIn) {
+			return new WebzFileDownloader(fileSpecific, webzIn) {
 
 				@Override
 				protected long copyContent(OutputStream out) throws IOException {
