@@ -16,7 +16,8 @@ import org.terems.webz.WebzFileSystem;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.base.BaseWebzFileSystem;
 import org.terems.webz.cache.ChildPathNamesHolder;
-import org.terems.webz.cache.FilePayloadHolder;
+import org.terems.webz.cache.FileContentHolder;
+import org.terems.webz.cache.WebzByteArrayInputStream;
 import org.terems.webz.cache.WebzFileSystemCache;
 import org.terems.webz.util.WebzUtils;
 
@@ -27,8 +28,10 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CachedFileSystem.class);
 
-	private WebzFileSystemCache cache;
 	private WebzFileSystem innerFileSystem;
+	private WebzFileSystemCache cacheImpl;
+
+	private final int filePayloadSizeThreshold;
 
 	private final String fileSystemUniqueId;
 
@@ -36,7 +39,7 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 		this(innerFileSystem, cacheImplementation, WebzDefaults.PAYLOAD_CACHE_THRESHOLD_BYTES);
 	}
 
-	public CachedFileSystem(WebzFileSystem innerFileSystem, WebzFileSystemCache cacheImplementation, int filePayloadSizeThreshold) {
+	public CachedFileSystem(WebzFileSystem innerFileSystem, WebzFileSystemCache cacheImpl, int filePayloadSizeThreshold) {
 		// TODO add two additional modes:
 		// 1) payload cache disabled completely
 		// 2) payload cache works for any payload sizes without the threshold
@@ -46,13 +49,14 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 					"an instance of BaseFileSystemCache should not be wrapped with another instance of BaseFileSystemCache - an attempt was made to wrap "
 							+ innerFileSystem.getFileSystemUniqueId() + " with an instance of " + getClass());
 		}
-
-		cacheImplementation.init(innerFileSystem, filePayloadSizeThreshold);
-
-		this.cache = cacheImplementation;
 		this.innerFileSystem = innerFileSystem;
 
-		this.fileSystemUniqueId = cacheImplementation.getCacheTypeName() + "-for-" + innerFileSystem.getFileSystemUniqueId();
+		cacheImpl.init(innerFileSystem, filePayloadSizeThreshold);
+		this.cacheImpl = cacheImpl;
+
+		this.filePayloadSizeThreshold = filePayloadSizeThreshold;
+
+		this.fileSystemUniqueId = cacheImpl.getCacheTypeName() + "-for-" + innerFileSystem.getFileSystemUniqueId();
 
 		LOG.info("'" + this.fileSystemUniqueId + "' file system cache was created to wrap '" + innerFileSystem.getFileSystemUniqueId()
 				+ "'");
@@ -75,21 +79,21 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 
 	@Override
 	public void inflate(WebzFile file) throws IOException, WebzException {
-		innerFileSystem.inflate(cache, file);
+		innerFileSystem.inflate(cacheImpl, file);
 	}
 
-	private void dropFilePayloadAndChildPathNames(String pathName) {
+	private void dropFileContentAndChildPathNames(String pathName) {
 
-		cache.dropChildPathNamesHolderFromCache(pathName);
+		cacheImpl.dropChildPathNamesHolderFromCache(pathName);
 		// TODO drop whole sub-tree (mind possible gaps in cache caused by evictions - maybe configure child path names cache to
 		// not evict anything ever at all?) - think in which cases this operation should be done
 
-		cache.dropFilePayloadHolderFromCache(pathName);
+		cacheImpl.dropFileContentHolderFromCache(pathName);
 	}
 
 	private void dropPathNameInCaches(String pathName) {
-		cache.dropMetadataFromCache(pathName);
-		dropFilePayloadAndChildPathNames(pathName);
+		cacheImpl.dropMetadataFromCache(pathName);
+		dropFileContentAndChildPathNames(pathName);
 	}
 
 	private void dropPathNameInCachesAndUpdateMetadata(String pathName, WebzMetadata metadata) {
@@ -97,21 +101,21 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 		if (metadata == null) {
 			dropPathNameInCaches(pathName);
 		} else {
-			cache.putMetadataIntoCache(pathName, metadata);
+			cacheImpl.putMetadataIntoCache(pathName, metadata);
 
-			dropFilePayloadAndChildPathNames(pathName);
+			dropFileContentAndChildPathNames(pathName);
 		}
 	}
 
 	@Override
-	public WebzMetadata getMetadata(String pathName) throws IOException, WebzException {
-		return cache.fetchMetadata(pathName);
+	public WebzMetadata getMetadata(String pathName) {
+		return cacheImpl.fetchMetadata(pathName);
 	}
 
 	@Override
-	public ParentChildrenMetadata getParentChildrenMetadata(String parentPathName) throws IOException, WebzException {
+	public ParentChildrenMetadata getParentChildrenMetadata(String parentPathName) {
 
-		ChildPathNamesHolder childPathNamesHolder = cache.fetchChildPathNamesHolder(parentPathName);
+		ChildPathNamesHolder childPathNamesHolder = cacheImpl.fetchChildPathNamesHolder(parentPathName);
 		if (childPathNamesHolder == null) {
 			return null;
 		}
@@ -119,41 +123,27 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 		ParentChildrenMetadata parentChildrenMetadata = new ParentChildrenMetadata();
 		parentChildrenMetadata.folderHash = childPathNamesHolder.folderHash;
 
-		parentChildrenMetadata.parentMetadata = cache.fetchMetadata(parentPathName);
-		parentChildrenMetadata.childPathNamesAndMetadata = cache.fetchMetadata(childPathNamesHolder.childPathNames);
+		parentChildrenMetadata.parentMetadata = cacheImpl.fetchMetadata(parentPathName);
+		parentChildrenMetadata.childPathNamesAndMetadata = cacheImpl.fetchMetadata(childPathNamesHolder.childPathNames);
 
 		return parentChildrenMetadata;
 	}
 
 	@Override
-	public Map<String, WebzMetadata> getChildPathNamesAndMetadata(String parentPathName) throws IOException, WebzException {
-		ChildPathNamesHolder childPathNamesHolder = cache.fetchChildPathNamesHolder(parentPathName);
-		return childPathNamesHolder == null ? null : cache.fetchMetadata(childPathNamesHolder.childPathNames);
+	public Map<String, WebzMetadata> getChildPathNamesAndMetadata(String parentPathName) {
+		ChildPathNamesHolder childPathNamesHolder = cacheImpl.fetchChildPathNamesHolder(parentPathName);
+		return childPathNamesHolder == null ? null : cacheImpl.fetchMetadata(childPathNamesHolder.childPathNames);
 	}
 
 	@Override
-	public Collection<String> getChildPathNames(String parentPathName) throws IOException, WebzException {
-		ChildPathNamesHolder childPathNamesHolder = cache.fetchChildPathNamesHolder(parentPathName);
+	public Collection<String> getChildPathNames(String parentPathName) {
+		ChildPathNamesHolder childPathNamesHolder = cacheImpl.fetchChildPathNamesHolder(parentPathName);
 		return childPathNamesHolder == null ? null : childPathNamesHolder.childPathNames;
 	}
 
-	private void writeFilePayload(FilePayloadHolder payloadHolder, String pathName, OutputStream out) throws IOException, WebzException {
-		if (payloadHolder.payload != null) {
-			payloadHolder.payload.writeTo(out);
-			// TODO drop payload in a thread-safe manner if it is bigger than the threshold + log-warn? about this + think if
-			// all caches should be dropped in such a case
-		} else {
-			if (LOG.isTraceEnabled()) {
-				WebzUtils.traceFSMessage(LOG, "PAYLOAD for '" + pathName + "' is being fetched without being cached", this);
-			}
-			innerFileSystem.copyContentToOutputStream(pathName, out);
-			// TODO should javax.servlet.AsyncContext be used ?
-		}
-	}
+	private WebzMetadata.FileSpecific fetchFileSpecific(String pathName) throws IOException, WebzException {
 
-	private WebzMetadata.FileSpecific fetchFileSpecific(final String pathName) throws IOException, WebzException {
-
-		WebzMetadata.FileSpecific fileSpecific = cache.fetchMetadata(pathName).getFileSpecific();
+		WebzMetadata.FileSpecific fileSpecific = cacheImpl.fetchMetadata(pathName).getFileSpecific();
 		if (fileSpecific == null) {
 			throw new WebzException("'" + pathName + "' is not a file");
 		}
@@ -162,33 +152,41 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 	}
 
 	@Override
-	public WebzMetadata.FileSpecific copyContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException {
+	public WebzFileDownloader getFileDownloader(String pathName) throws IOException, WebzException {
 
-		FilePayloadHolder payloadHolder = cache.fetchFilePayloadHolder(pathName);
+		FileContentHolder payloadHolder = cacheImpl.fetchFileContentHolder(pathName);
 		if (payloadHolder == null) {
 			return null;
 		}
 
-		WebzMetadata.FileSpecific fileSpecific = fetchFileSpecific(pathName);
-		writeFilePayload(payloadHolder, pathName, out);
-		return fileSpecific;
-	}
+		if (payloadHolder.content == null) {
 
-	@Override
-	public WebzFileDownloader getFileDownloader(final String pathName) throws IOException, WebzException {
-
-		final FilePayloadHolder payloadHolder = cache.fetchFilePayloadHolder(pathName);
-		if (payloadHolder == null) {
-			return null;
-		}
-
-		return new WebzFileDownloader(fetchFileSpecific(pathName)) {
-
-			@Override
-			public void copyContentAndClose(OutputStream out) throws IOException, WebzException {
-				writeFilePayload(payloadHolder, pathName, out);
+			if (LOG.isTraceEnabled()) {
+				LOG.trace(WebzUtils.formatFileSystemMessage("PAYLOAD for '" + pathName + "' is being fetched without being cached", this));
 			}
-		};
+			return innerFileSystem.getFileDownloader(pathName);
+		} else {
+
+			if (payloadHolder.content.size() > filePayloadSizeThreshold) {
+				if (LOG.isWarnEnabled()) {
+					LOG.warn(WebzUtils.formatFileSystemMessage("payload for '" + pathName
+							+ "' was cached even though it is bigger than the threshold - payload threshold (bytes): "
+							+ filePayloadSizeThreshold + "; actual file size (bytes): " + payloadHolder.content.size()
+							+ " - removing it from cache...", this));
+				}
+				cacheImpl.putFileContentHolderIntoCache(pathName, new FileContentHolder()); // putting empty content holder instead...
+				// TODO think if all caches should be dropped in such a case
+			}
+
+			final WebzByteArrayInputStream webzIn = payloadHolder.content.createInputStream();
+			return new WebzFileDownloader(fetchFileSpecific(pathName), webzIn) {
+
+				@Override
+				protected long copyContent(OutputStream out) throws IOException {
+					return webzIn.writeAvailableToOutputStream(out);
+				}
+			};
+		}
 	}
 
 	@Override
@@ -238,7 +236,7 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 
 	@Override
 	public void destroy() {
-		cache.destroy();
+		cacheImpl.destroy();
 	}
 
 }

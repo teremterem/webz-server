@@ -276,7 +276,7 @@
     <defaultCache
             maxElementsInMemory="10000"
             eternal="false"
-            timeToIdleSeconds="15"
+            timeToIdleSeconds="30"
             timeToLiveSeconds="180"
             memoryStoreEvictionPolicy="LFU">
             <!--

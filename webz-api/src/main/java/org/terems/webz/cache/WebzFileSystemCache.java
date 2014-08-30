@@ -17,9 +17,6 @@ public interface WebzFileSystemCache extends WebzDestroyable {
 	public String getCacheTypeName();
 
 	/** TODO !!! describe !!! **/
-	public void putMetadataIntoCache(String pathName, WebzMetadata metadata);
-
-	/** TODO !!! describe !!! **/
 	public WebzMetadata fetchMetadata(String pathName);
 
 	/** TODO !!! describe !!! **/
@@ -29,7 +26,16 @@ public interface WebzFileSystemCache extends WebzDestroyable {
 	public ChildPathNamesHolder fetchChildPathNamesHolder(String parentPathName);
 
 	/** TODO !!! describe !!! **/
-	public FilePayloadHolder fetchFilePayloadHolder(String pathName);
+	public FileContentHolder fetchFileContentHolder(String pathName);
+
+	/** TODO !!! describe !!! **/
+	public void putMetadataIntoCache(String pathName, WebzMetadata metadata);
+
+	/** TODO !!! describe !!! **/
+	public void putChildPathNamesHolderIntoCache(String pathName, ChildPathNamesHolder childPathNamesHolder);
+
+	/** TODO !!! describe !!! **/
+	public void putFileContentHolderIntoCache(String pathName, FileContentHolder fileContentHolder);
 
 	/** TODO !!! describe !!! **/
 	public void dropMetadataFromCache(String pathName);
@@ -38,6 +44,6 @@ public interface WebzFileSystemCache extends WebzDestroyable {
 	public void dropChildPathNamesHolderFromCache(String parentPathName);
 
 	/** TODO !!! describe !!! **/
-	public void dropFilePayloadHolderFromCache(String pathName);
+	public void dropFileContentHolderFromCache(String pathName);
 
 }
