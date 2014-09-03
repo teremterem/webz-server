@@ -14,7 +14,7 @@ import org.terems.webz.WebzException;
 public interface WebzFilter extends WebzDestroyable {
 
 	/** TODO !!! describe !!! **/
-	public void init(WebzConfig appConfig) throws IOException, WebzException;
+	public void init(WebzConfig appConfig) throws WebzException;
 
 	/** TODO !!! describe !!! **/
 	public void serve(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException, WebzException;

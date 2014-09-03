@@ -1,7 +1,5 @@
 package org.terems.webz.plugin.base;
 
-import java.io.IOException;
-
 import org.terems.webz.WebzConfig;
 import org.terems.webz.WebzException;
 import org.terems.webz.plugin.WebzFilter;
@@ -17,12 +15,17 @@ public abstract class BaseWebzFilter implements WebzFilter {
 	}
 
 	/** TODO !!! describe !!! **/
-	@Override
-	public void init(WebzConfig appConfig) throws IOException, WebzException {
-		this.appConfig = appConfig;
+	public void init() throws WebzException {
 	}
 
-	/** Do nothing by default... **/
+	/** TODO !!! describe !!! **/
+	@Override
+	public void init(WebzConfig appConfig) throws WebzException {
+		this.appConfig = appConfig;
+		init();
+	}
+
+	/** TODO !!! describe !!! **/
 	@Override
 	public void destroy() {
 	}

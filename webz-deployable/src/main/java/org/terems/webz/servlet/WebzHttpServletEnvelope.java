@@ -27,6 +27,7 @@ import com.dropbox.core.DbxRequestConfig;
 
 @SuppressWarnings("serial")
 public class WebzHttpServletEnvelope extends HttpServlet {
+	// TODO concurrency unit tests ?
 
 	private static final Logger LOG = LoggerFactory.getLogger(WebzHttpServletEnvelope.class);
 

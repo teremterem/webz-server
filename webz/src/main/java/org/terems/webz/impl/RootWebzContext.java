@@ -1,7 +1,5 @@
 package org.terems.webz.impl;
 
-import java.io.IOException;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.terems.webz.WebzConfig;
@@ -31,7 +29,7 @@ public class RootWebzContext implements WebzContext, WebzConfig {
 	}
 
 	@Override
-	public <T extends WebzConfigObject> T getConfigObject(Class<T> configObjectClass) throws IOException, WebzException {
+	public <T extends WebzConfigObject> T getConfigObject(Class<T> configObjectClass) throws WebzException {
 		// TODO TODO TODO
 		// T configObject = new BlaBlaConfigObject();
 		// configObject.init(fileFactory.get(WebzDefaults.WEBZ_CONFIG_FOLDER));
