@@ -14,7 +14,6 @@ import org.terems.webz.WebzDestroyable;
 import org.terems.webz.WebzException;
 
 public class WebzDestroyableFactory implements WebzDestroyable {
-	// TODO concurrency unit tests ?
 
 	private static final Logger LOG = LoggerFactory.getLogger(WebzDestroyableFactory.class);
 
