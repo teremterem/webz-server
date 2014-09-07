@@ -16,6 +16,7 @@
     </parent>
 
 	<dependencies>
+
 		<!-- Servlet API -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -31,6 +32,12 @@
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>webz-test-utils</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>

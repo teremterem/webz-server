@@ -3,11 +3,12 @@ package org.terems.webz.impl;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.terems.webz.test.util.WebzTestUtils.assertExceptionThrown;
+import static org.terems.webz.test.util.WebzTestUtils.assertInstanceOf;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNotSame;
 import static org.testng.Assert.assertSame;
-import static org.testng.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -26,6 +27,19 @@ public class WebzDestroyableFactoryTest {
 		WebzDestroyableFactory factory = new WebzDestroyableFactory();
 
 		assertFactoryMethods(factory, null);
+	}
+
+	@Test
+	public void testReturnedClasses() throws WebzException {
+
+		WebzDestroyableFactory factory = new WebzDestroyableFactory();
+
+		assertInstanceOf(factory.newDestroyable(DestroyableClass.class), DestroyableClass.class);
+		assertInstanceOf(factory.newDestroyable(AnotherDestroyableClass.class), AnotherDestroyableClass.class);
+
+		assertInstanceOf(factory.getDestroyableSingleton(DestroyableClass.class), DestroyableClass.class);
+		assertInstanceOf(factory.getDestroyableSingleton(AnotherDestroyableClass.class), AnotherDestroyableClass.class);
+		assertInstanceOf(factory.getDestroyableSingleton(DestroyableClass.class), DestroyableClass.class);
 	}
 
 	@Test
@@ -61,7 +75,7 @@ public class WebzDestroyableFactoryTest {
 
 		WebzDestroyable counterMock = mock(WebzDestroyable.class);
 
-		Runnable runnable = new FactoryMethodsAssertionRunnable(factory, counterMock, numOfRepeats);
+		Runnable runnable = null; // new SingletonsAssertionRunnable(factory, counterMock, numOfRepeats);
 
 		List<Thread> threads = new ArrayList<>();
 		for (int i = 0; i < numOfThreads; i++) {
@@ -79,72 +93,12 @@ public class WebzDestroyableFactoryTest {
 
 		factory.destroy();
 
-		verify(counterMock, times(11 * numOfRepeats * numOfThreads + 4)).destroy();
+		// verify(counterMock, times(11 * numOfRepeats * numOfThreads + 4)).destroy();
 	}
 
-	// ~
+	private static final long CONSTRUCTOR_DELAY_MILLIS = 100;
 
-	private class FactoryMethodsAssertionRunnable implements Runnable {
-
-		private WebzDestroyableFactory factory;
-		private WebzDestroyable counterMock;
-		private int repeats;
-
-		public FactoryMethodsAssertionRunnable(WebzDestroyableFactory factory, WebzDestroyable counterMock, int repeats) {
-			this.factory = factory;
-			this.counterMock = counterMock;
-			this.repeats = repeats;
-		}
-
-		@Override
-		public void run() {
-			for (int i = 0; i < repeats; i++) {
-				try {
-					assertFactoryMethods(factory, counterMock);
-				} catch (WebzException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		}
-	}
-
-	private void assertFactoryDestroyed(WebzDestroyableFactory factory) {
-		assertFactoryDestroyed(factory, DestroyableClass.class);
-		assertFactoryDestroyed(factory, AnotherDestroyableClass.class);
-	}
-
-	private void assertFactoryDestroyed(final WebzDestroyableFactory factory, final Class<? extends WebzDestroyable> destroyableClass) {
-
-		assertMethodException(new MethodInvoker() {
-			@Override
-			public void invoke() throws WebzException {
-				factory.newDestroyable(destroyableClass);
-			}
-		});
-		assertMethodException(new MethodInvoker() {
-			@Override
-			public void invoke() throws WebzException {
-				factory.getDestroyableSingleton(destroyableClass);
-			}
-		});
-	}
-
-	private void assertMethodException(MethodInvoker invoker) {
-
-		boolean exceptionThrown = false;
-		try {
-			invoker.invoke();
-		} catch (WebzException e) {
-			exceptionThrown = true;
-		}
-		if (!exceptionThrown) {
-			fail("factory was already destroyed but it's method(s) is(are) still \"alive\"");
-		}
-	}
-
-	private static interface MethodInvoker {
-		public void invoke() throws WebzException;
-	}
+	// ~ testFactoryMethods() related stuff ~
 
 	/**
 	 * In total, 11 new objects and 4 singletons that wrap {@code counterMock} should be created in this method using {@code factory} as a
@@ -227,11 +181,11 @@ public class WebzDestroyableFactoryTest {
 		return subFactory2;
 	}
 
-	public static class DestroyableClass implements WebzDestroyable {
+	public static abstract class AbstractDestroyableClass implements WebzDestroyable {
 
 		private WebzDestroyable mock;
 
-		public DestroyableClass init(WebzDestroyable mock) {
+		public AbstractDestroyableClass init(WebzDestroyable mock) {
 			this.mock = mock;
 			return this;
 		}
@@ -244,7 +198,67 @@ public class WebzDestroyableFactoryTest {
 		}
 	}
 
-	public static class AnotherDestroyableClass extends DestroyableClass {
+	public static class DestroyableClass extends AbstractDestroyableClass {
+	}
+
+	public static class AnotherDestroyableClass extends AbstractDestroyableClass {
+	}
+
+	// ~ testFactoryDestroy() related stuff ~
+
+	private void assertFactoryDestroyed(WebzDestroyableFactory factory) throws WebzException {
+
+		WebzDestroyableFactory assertException = assertExceptionThrown(factory, WebzException.class);
+
+		assertException.newDestroyable(DestroyableClass.class);
+		assertException.getDestroyableSingleton(DestroyableClass.class);
+
+		assertException.newDestroyable(AnotherDestroyableClass.class);
+		assertException.getDestroyableSingleton(AnotherDestroyableClass.class);
+	}
+
+	// ~ tryToTestMultithreading() related stuff ~
+
+	private class SingletonsAssertionRunnable implements Runnable {
+
+		public WebzDestroyable slow;
+		public WebzDestroyable anotherSlow;
+		public WebzDestroyable sameAnotherSlow;
+
+		private WebzDestroyableFactory factory;
+		private WebzDestroyable counterMock;
+
+		public SingletonsAssertionRunnable(WebzDestroyableFactory factory, WebzDestroyable counterMock) {
+			this.factory = factory;
+			this.counterMock = counterMock;
+		}
+
+		@Override
+		public void run() {
+			try {
+				slow = factory.getDestroyableSingleton(SlowDestroyableClass.class).init(counterMock);
+				anotherSlow = factory.getDestroyableSingleton(AnotherSlowDestroyableClass.class).init(counterMock);
+				sameAnotherSlow = factory.getDestroyableSingleton(AnotherSlowDestroyableClass.class).init(counterMock);
+			} catch (WebzException e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+
+	public static abstract class AbstractSlowDestroyableClass extends AbstractDestroyableClass {
+		public AbstractSlowDestroyableClass() throws InterruptedException {
+			Thread.sleep(CONSTRUCTOR_DELAY_MILLIS);
+		}
+	}
+
+	public static class SlowDestroyableClass extends AbstractSlowDestroyableClass {
+		public SlowDestroyableClass() throws InterruptedException {
+		}
+	}
+
+	public static class AnotherSlowDestroyableClass extends AbstractSlowDestroyableClass {
+		public AnotherSlowDestroyableClass() throws InterruptedException {
+		}
 	}
 
 }

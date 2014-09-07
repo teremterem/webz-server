@@ -4,10 +4,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>webz</artifactId>
+	<artifactId>webz-test-utils</artifactId>
 	<packaging>jar</packaging>
-	<name>WebZ (Engine)</name>
-	<description>WebZ platform for web sites, core module (the engine)</description>
+	<name>WebZ Test Utils</name>
+	<description>WebZ utilities for unit testing</description>
 
 	<parent>
 		<groupId>org.terems</groupId>
@@ -17,46 +17,27 @@
 
 	<dependencies>
 
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>webz-api</artifactId>
-		</dependency>
-
-		<!-- Servlet API -->
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-		</dependency>
-
-		<!-- Ehcache -->
-		<dependency>
-			<groupId>net.sf.ehcache</groupId>
-			<artifactId>ehcache</artifactId>
-		</dependency>
-
-		<!-- Logging -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-		</dependency>
-
 		<!-- Testing -->
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
+			<scope>compile</scope>
 		</dependency>
+		<!--
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
+			<scope>compile</scope>
 		</dependency>
+		-->
 
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>webz-test-utils</artifactId>
+			<groupId>org.javassist</groupId>
+			<artifactId>javassist</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.objenesis</groupId>
+			<artifactId>objenesis</artifactId>
 		</dependency>
 
 	</dependencies>

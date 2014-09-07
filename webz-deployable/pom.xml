@@ -16,25 +16,22 @@
     </parent>
 
 	<dependencies>
+
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>webz-api</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>webz-dropbox</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>webz-default-plugins</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>webz</artifactId>
-			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>webz-default-plugins</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>webz-dropbox</artifactId>
 		</dependency>
 
 		<!-- Servlet API -->
@@ -78,6 +75,12 @@
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>webz-test-utils</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>
