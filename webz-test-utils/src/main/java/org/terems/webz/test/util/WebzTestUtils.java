@@ -14,6 +14,19 @@ import org.testng.Assert;
 public class WebzTestUtils {
 
 	/** TODO !!! describe !!! **/
+	public static <T> T assertNotNull(T object) {
+		return assertNotNull(object, null);
+	}
+
+	/** TODO !!! describe !!! **/
+	public static <T> T assertNotNull(T object, String message) {
+
+		Assert.assertNotNull(object, message);
+
+		return object;
+	}
+
+	/** TODO !!! describe !!! **/
 	public static void assertInstanceOf(Object object, Class<?> expectedClass) {
 		assertInstanceOf(object, expectedClass, null);
 	}
@@ -21,9 +34,8 @@ public class WebzTestUtils {
 	/** TODO !!! describe !!! **/
 	public static void assertInstanceOf(Object object, Class<?> expectedClass, String message) {
 
-		Assert.assertNotNull(object, message);
+		Class<?> objectClass = assertNotNull(object, message).getClass();
 
-		Class<?> objectClass = object.getClass();
 		if (!expectedClass.isAssignableFrom(objectClass)) {
 			fail(object, objectClass + " is not assignable from " + expectedClass, message);
 		}
@@ -37,7 +49,7 @@ public class WebzTestUtils {
 	/** TODO !!! describe !!! **/
 	public static <T> T assertExceptionThrown(final T object, final Class<? extends Throwable> expectedExceptionClass, final String message) {
 
-		Assert.assertNotNull(object, message);
+		assertNotNull(object, message);
 
 		return createProxy(object.getClass(), new MethodHandler() {
 
