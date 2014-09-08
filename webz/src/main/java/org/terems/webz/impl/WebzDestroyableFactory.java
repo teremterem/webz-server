@@ -163,7 +163,6 @@ public class WebzDestroyableFactory implements WebzDestroyable {
 	}
 
 	private void throwFactoryDestroyed() throws WebzException {
-
 		throw new WebzException(ALREADY_DESTROYED_MSG);
 	}
 

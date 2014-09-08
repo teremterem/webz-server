@@ -337,17 +337,20 @@ public class WebzDestroyableFactoryTest {
 	}
 
 	public static abstract class AbstractSlowDestroyableClass extends AbstractDestroyableClass {
+
 		public AbstractSlowDestroyableClass() throws InterruptedException {
 			Thread.sleep(SLOW_SINGLETON_CONSTRUCTOR_DELAY_MILLIS);
 		}
 	}
 
 	public static class SlowDestroyableClass extends AbstractSlowDestroyableClass {
+
 		public SlowDestroyableClass() throws InterruptedException {
 		}
 	}
 
 	public static class AnotherSlowDestroyableClass extends AbstractSlowDestroyableClass {
+
 		public AnotherSlowDestroyableClass() throws InterruptedException {
 		}
 	}
