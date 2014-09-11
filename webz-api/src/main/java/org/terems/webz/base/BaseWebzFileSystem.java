@@ -19,6 +19,7 @@ import org.terems.webz.cache.WebzFileSystemCache;
  * Basic implementation of WebzFileSystem to be extended by concrete implementations...
  **/
 public abstract class BaseWebzFileSystem implements WebzFileSystem {
+	// TODO transform into BaseLowerCasedFileSystem ?
 
 	/** TODO !!! describe !!! **/
 	@Override

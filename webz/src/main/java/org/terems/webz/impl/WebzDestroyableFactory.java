@@ -53,6 +53,11 @@ public class WebzDestroyableFactory implements WebzDestroyable {
 
 	}
 
+	@SuppressWarnings("unchecked")
+	public <T extends WebzDestroyable> T newDestroyable(String destroyableClassName) throws WebzException {
+		return newDestroyable((Class<T>) findDestroyableClassByName(destroyableClassName));
+	}
+
 	/**
 	 * <a
 	 * href="http://stackoverflow.com/questions/17112504/with-double-checked-locking-does-a-put-to-a-volatile-concurrenthashmap-have-hap">
@@ -85,6 +90,11 @@ public class WebzDestroyableFactory implements WebzDestroyable {
 		} finally {
 			readLock.unlock();
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends WebzDestroyable> T getDestroyableSingleton(String destroyableClassName) throws WebzException {
+		return getDestroyableSingleton((Class<T>) findDestroyableClassByName(destroyableClassName));
 	}
 
 	@Override
@@ -143,6 +153,22 @@ public class WebzDestroyableFactory implements WebzDestroyable {
 			return destroyableClass.newInstance();
 
 		} catch (InstantiationException | IllegalAccessException e) {
+			throw new WebzException(e);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private Class<? extends WebzDestroyable> findDestroyableClassByName(String destroyableClassName) throws WebzException {
+
+		try {
+			Class<?> resolvedClass = Class.forName(destroyableClassName);
+			if (!WebzDestroyable.class.isAssignableFrom(resolvedClass)) {
+				throw new WebzException(resolvedClass + " is not implementing " + WebzDestroyable.class);
+			}
+
+			return (Class<WebzDestroyable>) resolvedClass;
+
+		} catch (ClassNotFoundException e) {
 			throw new WebzException(e);
 		}
 	}

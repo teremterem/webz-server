@@ -18,7 +18,7 @@
 	<description>${project.description}</description>
 
 	<servlet>
-		<servlet-name>WebzHttpServletEnvelope</servlet-name>
+		<servlet-name>WebzDropbox</servlet-name>
 		<servlet-class>org.terems.webz.servlet.WebzHttpServletEnvelope</servlet-class>
 
 		<init-param>
@@ -49,8 +49,8 @@
 	</servlet>
 
 	<servlet-mapping>
-		<servlet-name>WebzHttpServletEnvelope</servlet-name>
-		<url-pattern>/servlet/*</url-pattern>
+		<servlet-name>WebzDropbox</servlet-name>
+		<url-pattern>/dropbox/*</url-pattern>
 	</servlet-mapping>
 
 </web-app>
