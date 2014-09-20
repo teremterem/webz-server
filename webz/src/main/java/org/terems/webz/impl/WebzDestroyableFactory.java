@@ -183,7 +183,7 @@ public class WebzDestroyableFactory implements WebzDestroyable {
 				destroyable.destroy();
 
 			} catch (Throwable th) {
-				LOG.warn(th.getMessage(), th);
+				LOG.error(th.getMessage(), th);
 			}
 		}
 	}

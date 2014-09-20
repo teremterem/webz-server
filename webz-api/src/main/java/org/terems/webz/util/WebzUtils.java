@@ -4,7 +4,9 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Properties;
 
+import org.terems.webz.WebzException;
 import org.terems.webz.WebzFileSystem;
 
 /** TODO !!! describe !!! **/
@@ -38,6 +40,69 @@ public class WebzUtils {
 				// ignoring...
 			}
 		}
+	}
+
+	/** TODO !!! describe !!! **/
+	public static boolean containsUpperCaseLetters(String value) {
+
+		int len = value.length();
+		for (int i = 0; i < len;) {
+
+			int codePoint = value.codePointAt(i);
+			if (Character.isUpperCase(codePoint)) {
+				return true;
+			}
+
+			i += Character.charCount(codePoint);
+		}
+
+		return false;
+	}
+
+	private static final ClassLoader DEFAULT_CLASS_LOADER = WebzUtils.class.getClassLoader();
+
+	/** TODO !!! describe !!! **/
+	public static Properties loadPropertiesFromClasspath(String name) throws WebzException {
+		return loadPropertiesFromClasspath(name, DEFAULT_CLASS_LOADER);
+	}
+
+	/** TODO !!! describe !!! **/
+	public static void loadPropertiesFromClasspath(String name, Properties properties) throws WebzException {
+		loadPropertiesFromClasspath(name, properties, DEFAULT_CLASS_LOADER);
+	}
+
+	/** TODO !!! describe !!! **/
+	public static Properties loadPropertiesFromClasspath(String name, ClassLoader classLoader) throws WebzException {
+
+		Properties properties = new Properties();
+		loadPropertiesFromClasspath(name, properties, classLoader);
+
+		return properties;
+	}
+
+	/** TODO !!! describe !!! **/
+	public static void loadPropertiesFromClasspath(String name, Properties properties, ClassLoader classLoader) throws WebzException {
+
+		if (name == null) {
+			throw new WebzException("null pathname was supplied - properties cannot be read");
+		}
+
+		InputStream in = classLoader.getResourceAsStream(name);
+		if (in == null) {
+			throw new WebzException("'" + name + "' was not found on classpath");
+		}
+
+		try {
+			properties.load(in);
+
+		} catch (IOException e) {
+			throw new WebzException("failed to read '" + name + "' from classpath: " + e.getMessage(), e);
+		}
+	}
+
+	/** TODO !!! describe !!! **/
+	public static String replaceWhitespacesWithDashesSafely(String value) {
+		return value == null ? null : value.trim().replaceAll("\\s+", "-");
 	}
 
 	/** TODO !!! describe !!! **/

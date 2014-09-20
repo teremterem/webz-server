@@ -1,6 +1,7 @@
 package org.terems.webz;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
 
@@ -8,7 +9,16 @@ import java.util.Collection;
 public interface WebzFile {
 
 	/** TODO !!! describe !!! **/
-	public String getPathName() throws IOException, WebzException;
+	public String getPathName();
+
+	/** TODO !!! describe !!! **/
+	public boolean isPathNameInvalid();
+
+	/** TODO !!! describe !!! **/
+	public WebzFile getParent() throws WebzPathNameException;
+
+	/** TODO !!! describe !!! **/
+	public WebzFile getDescendant(String relativePathName) throws WebzPathNameException;
 
 	/** TODO !!! describe !!! **/
 	public void inflate() throws IOException, WebzException;
@@ -26,13 +36,16 @@ public interface WebzFile {
 	public byte[] getFileContent() throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzFile getParent() throws IOException, WebzException;
-
-	/** TODO !!! describe !!! **/
-	public Collection<WebzFile> getChildren() throws IOException, WebzException;
+	public Collection<WebzFile> listChildren() throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
 	public WebzMetadata createFolder() throws IOException, WebzException;
+
+	/** TODO !!! describe !!! **/
+	public WebzMetadata uploadFile(InputStream content, long numBytes) throws IOException, WebzException;
+
+	/** TODO !!! describe !!! **/
+	public WebzMetadata uploadFile(InputStream content) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
 	public WebzMetadata uploadFile(byte[] content) throws IOException, WebzException;

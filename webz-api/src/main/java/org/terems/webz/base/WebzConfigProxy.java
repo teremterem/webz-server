@@ -12,8 +12,8 @@ public abstract class WebzConfigProxy implements WebzConfig {
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public <T extends WebzConfigObject> T getConfigObject(Class<T> configObjectClass) throws WebzException {
-		return getInnerConfig().getConfigObject(configObjectClass);
+	public <T extends WebzConfigObject> T getAppConfigObject(Class<T> configObjectClass) throws WebzException {
+		return getInnerConfig().getAppConfigObject(configObjectClass);
 	}
 
 }

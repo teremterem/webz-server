@@ -6,6 +6,8 @@ import org.terems.webz.WebzFileSystem;
 
 public class DefaultWebzFileFactory implements WebzFileFactory {
 
+	// TODO make this factory a first level cache ? (for the sake of file inflation concept)
+
 	private WebzFileSystem fileSystem;
 
 	public DefaultWebzFileFactory(WebzFileSystem fileSystem) {
@@ -14,7 +16,7 @@ public class DefaultWebzFileFactory implements WebzFileFactory {
 
 	@Override
 	public WebzFile get(String pathName) {
-		return new MetadataInflatableWebzFile(fileSystem.normalizePathName(pathName), this, fileSystem);
+		return new MetadataInflatableWebzFile(pathName, this, fileSystem);
 	}
 
 }

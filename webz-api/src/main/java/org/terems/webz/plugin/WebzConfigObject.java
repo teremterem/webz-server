@@ -10,6 +10,6 @@ import org.terems.webz.WebzFile;
 public interface WebzConfigObject extends WebzDestroyable {
 
 	/** TODO !!! describe !!! **/
-	public void init(WebzFile appConfigFolder) throws IOException, WebzException;
+	public void init(WebzFile configFolder) throws IOException, WebzException;
 
 }

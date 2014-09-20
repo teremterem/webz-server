@@ -6,6 +6,6 @@ import org.terems.webz.plugin.WebzConfigObject;
 public interface WebzConfig {
 
 	/** TODO !!! describe !!! **/
-	public <T extends WebzConfigObject> T getConfigObject(Class<T> configObjectClass) throws WebzException;
+	public <T extends WebzConfigObject> T getAppConfigObject(Class<T> configObjectClass) throws WebzException;
 
 }

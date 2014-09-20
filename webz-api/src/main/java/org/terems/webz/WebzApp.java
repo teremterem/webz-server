@@ -1,17 +1,16 @@
 package org.terems.webz;
 
-import java.io.IOException;
+import java.util.Collection;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.terems.webz.plugin.WebzFilter;
 
 /** TODO !!! describe !!! **/
-public interface WebzApp extends WebzDestroyable {
+public interface WebzApp extends WebzServletContainerBridge {
 
 	/** TODO !!! describe !!! **/
-	public void serve(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException;
+	public void init(WebzFileSystem fileSystem, Collection<Class<? extends WebzFilter>> filterClassesList) throws WebzException;
 
 	/** TODO !!! describe !!! **/
-	public String getAppName();
+	public String getDisplayName();
 
 }

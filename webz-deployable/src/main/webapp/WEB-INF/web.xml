@@ -22,25 +22,8 @@
 		<servlet-class>org.terems.webz.servlet.WebzHttpServletEnvelope</servlet-class>
 
 		<init-param>
-			<param-name>webzAppName</param-name>
-			<param-value>ROOT WEBZ APP</param-value>
-		</init-param>
-		<init-param>
-			<param-name>dbxBasePath</param-name>
-			<param-value>/terems.org/terems-org/webz-pedesis/</param-value>
-		</init-param>
-		<init-param>
-			<param-name>dbxAccessToken</param-name>
-			<param-value>QHNtgtFLQ8cAAAAAAAAAAUil0YtewX0DYd6LLu4vt5hbATbaiWkjLrbqBwbdfbl5</param-value>
-		</init-param>
-
-		<init-param>
-			<param-name>dbxClientDisplayName</param-name>
-			<param-value>${project.name}</param-value>
-		</init-param>
-		<init-param>
-			<param-name>dbxClientVersion</param-name>
-			<param-value>${project.version}</param-value>
+			<param-name>rootFileSystemProperties</param-name>
+			<param-value>dbx-webz-pedesis.properties</param-value>
 		</init-param>
 
 		<!--

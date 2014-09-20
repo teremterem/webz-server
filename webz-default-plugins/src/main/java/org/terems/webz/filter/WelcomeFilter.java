@@ -28,7 +28,7 @@ public class WelcomeFilter extends BaseWebzFilter {
 	public void serve(HttpServletRequest req, HttpServletResponse resp, final WebzChainContext chainContext) throws IOException,
 			WebzException {
 
-		// TODO
+		// TODO support welcome files
 
 		redirectFileFolder(req, resp, chainContext);
 	}
@@ -65,7 +65,7 @@ public class WelcomeFilter extends BaseWebzFilter {
 			@Override
 			public WebzFile resolveFile(HttpServletRequest req) throws IOException, WebzException {
 
-				// TODO
+				// TODO support "invisible" redirects to welcome files
 
 				return super.resolveFile(req);
 			}

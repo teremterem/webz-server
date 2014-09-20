@@ -7,8 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 /** TODO !!! describe !!! **/
 public interface WebzContext {
 
-	// TODO TODO TODO
-	// public WebzResponse webzGet(HttpServletRequest requestAsContext, String alternativePathInfo);
+	// TODO public WebzResponse webzGet(HttpServletRequest requestAsContext, String alternativePathInfo);
 
 	/** TODO !!! describe !!! **/
 	public WebzFile resolveFile(HttpServletRequest req) throws IOException, WebzException;

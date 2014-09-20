@@ -1,14 +1,15 @@
 package org.terems.webz.impl.cache;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terems.webz.ParentChildrenMetadata;
-import org.terems.webz.WebzDefaults;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFileDownloader;
@@ -35,10 +36,6 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 
 	private final String fileSystemUniqueId;
 
-	public CachedFileSystem(WebzFileSystem innerFileSystem, WebzFileSystemCache cacheImplementation) {
-		this(innerFileSystem, cacheImplementation, WebzDefaults.PAYLOAD_CACHE_THRESHOLD_BYTES);
-	}
-
 	public CachedFileSystem(WebzFileSystem innerFileSystem, WebzFileSystemCache cacheImpl, int filePayloadSizeThreshold) {
 		// TODO add two additional modes:
 		// 1) payload cache disabled completely
@@ -63,6 +60,11 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 	}
 
 	@Override
+	public void init(Properties properties) {
+		// do nothing - all the initialization happens in constructor
+	}
+
+	@Override
 	public String getFileSystemUniqueId() {
 		return fileSystemUniqueId;
 	}
@@ -73,8 +75,18 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 	}
 
 	@Override
+	public boolean isNormalizedPathNameInvalid(String pathName) {
+		return innerFileSystem.isNormalizedPathNameInvalid(pathName);
+	}
+
+	@Override
 	public String getParentPathName(String pathName) {
 		return innerFileSystem.getParentPathName(pathName);
+	}
+
+	@Override
+	public String concatPathName(String basePathName, String relativePathName) {
+		return innerFileSystem.concatPathName(basePathName, relativePathName);
 	}
 
 	@Override
@@ -200,7 +212,16 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 	}
 
 	@Override
-	public WebzMetadata.FileSpecific uploadFile(String pathName, byte[] content) throws IOException, WebzException {
+	public WebzMetadata.FileSpecific uploadFile(String pathName, InputStream content, long numBytes) throws IOException, WebzException {
+
+		WebzMetadata.FileSpecific fileSpecific = innerFileSystem.uploadFile(pathName, content, numBytes);
+
+		dropPathNameInCachesAndUpdateMetadata(pathName, fileSpecific);
+		return fileSpecific;
+	}
+
+	@Override
+	public WebzMetadata.FileSpecific uploadFile(String pathName, InputStream content) throws IOException, WebzException {
 
 		WebzMetadata.FileSpecific fileSpecific = innerFileSystem.uploadFile(pathName, content);
 
@@ -233,11 +254,6 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 		innerFileSystem.delete(pathName);
 
 		dropPathNameInCaches(pathName);
-	}
-
-	@Override
-	public void destroy() {
-		cacheImpl.destroy();
 	}
 
 }

@@ -38,19 +38,19 @@ public class WebzDestroyableFactoryTest {
 
 		WebzDestroyableFactory factory = new WebzDestroyableFactory();
 
-		assertInstanceOf(factory.newDestroyable(DestroyableClass.class), DestroyableClass.class);
-		assertInstanceOf(factory.newDestroyable(DestroyableClass.class.getName()), DestroyableClass.class);
+		assertInstanceOf(factory.newDestroyable(DestroyableTestClass.class), DestroyableTestClass.class);
+		assertInstanceOf(factory.newDestroyable(DestroyableTestClass.class.getName()), DestroyableTestClass.class);
 
-		assertInstanceOf(factory.newDestroyable(AnotherDestroyableClass.class), AnotherDestroyableClass.class);
-		assertInstanceOf(factory.newDestroyable(AnotherDestroyableClass.class.getName()), AnotherDestroyableClass.class);
+		assertInstanceOf(factory.newDestroyable(AnotherDestroyableTestClass.class), AnotherDestroyableTestClass.class);
+		assertInstanceOf(factory.newDestroyable(AnotherDestroyableTestClass.class.getName()), AnotherDestroyableTestClass.class);
 
-		assertInstanceOf(factory.getDestroyableSingleton(DestroyableClass.class), DestroyableClass.class);
-		assertInstanceOf(factory.getDestroyableSingleton(AnotherDestroyableClass.class), AnotherDestroyableClass.class);
-		assertInstanceOf(factory.getDestroyableSingleton(DestroyableClass.class), DestroyableClass.class);
+		assertInstanceOf(factory.getDestroyableSingleton(DestroyableTestClass.class), DestroyableTestClass.class);
+		assertInstanceOf(factory.getDestroyableSingleton(AnotherDestroyableTestClass.class), AnotherDestroyableTestClass.class);
+		assertInstanceOf(factory.getDestroyableSingleton(DestroyableTestClass.class), DestroyableTestClass.class);
 
-		assertInstanceOf(factory.getDestroyableSingleton(AnotherDestroyableClass.class.getName()), AnotherDestroyableClass.class);
-		assertInstanceOf(factory.getDestroyableSingleton(DestroyableClass.class.getName()), DestroyableClass.class);
-		assertInstanceOf(factory.getDestroyableSingleton(AnotherDestroyableClass.class.getName()), AnotherDestroyableClass.class);
+		assertInstanceOf(factory.getDestroyableSingleton(AnotherDestroyableTestClass.class.getName()), AnotherDestroyableTestClass.class);
+		assertInstanceOf(factory.getDestroyableSingleton(DestroyableTestClass.class.getName()), DestroyableTestClass.class);
+		assertInstanceOf(factory.getDestroyableSingleton(AnotherDestroyableTestClass.class.getName()), AnotherDestroyableTestClass.class);
 	}
 
 	@Test
@@ -104,6 +104,30 @@ public class WebzDestroyableFactoryTest {
 		assertFactoryDestroyed(factory);
 	}
 
+	@Test
+	public void testExceptionDuringDestroy() throws WebzException {
+
+		WebzDestroyableFactory factory = new WebzDestroyableFactory();
+
+		WebzDestroyable counterMock = mock(WebzDestroyable.class);
+
+		assertNotNull(factory.newDestroyable(ExceptionDuringDestroyTestClass.class)).init(counterMock);
+		assertNotNull((AbstractDestroyableTestClass) factory.newDestroyable(ExceptionDuringDestroyTestClass.class.getName())).init(
+				counterMock);
+
+		assertNotNull(
+				(AbstractDestroyableTestClass) factory.getDestroyableSingleton(AnotherExceptionDuringDestroyTestClass.class.getName()))
+				.init(counterMock);
+		assertNotNull(factory.getDestroyableSingleton(AnotherExceptionDuringDestroyTestClass.class)).init(counterMock);
+		assertNotNull(factory.getDestroyableSingleton(ExceptionDuringDestroyTestClass.class)).init(counterMock);
+		assertNotNull((AbstractDestroyableTestClass) factory.getDestroyableSingleton(ExceptionDuringDestroyTestClass.class.getName()))
+				.init(counterMock);
+
+		factory.destroy();
+
+		verify(counterMock, times(4)).destroy();
+	}
+
 	private static final long SLOW_SINGLETON_CONSTRUCTOR_DELAY_MILLIS = 55;
 
 	@Test
@@ -151,8 +175,8 @@ public class WebzDestroyableFactoryTest {
 
 		int expectedNumberOfUniqueObjecta = 2 + 4 * numOfNonSingletonRepeats * numOfNonSingletonThreads;
 
-		WebzDestroyable slowSingleton = assertNotNull(factory.getDestroyableSingleton(SlowDestroyableClass.class));
-		WebzDestroyable anotherSlowSingleton = assertNotNull(factory.getDestroyableSingleton(AnotherSlowDestroyableClass.class));
+		WebzDestroyable slowSingleton = assertNotNull(factory.getDestroyableSingleton(SlowDestroyableTestClass.class));
+		WebzDestroyable anotherSlowSingleton = assertNotNull(factory.getDestroyableSingleton(AnotherSlowDestroyableTestClass.class));
 
 		assertNotSame(anotherSlowSingleton, slowSingleton);
 		for (SingletonsTestRunnable runnable : singletonRunnables) {
@@ -198,34 +222,37 @@ public class WebzDestroyableFactoryTest {
 		assertNotNull(subFactory2);
 		assertNotSame(subFactory2, subFactory1_singleton);
 
-		WebzDestroyable top1 = assertNotNull(factory.newDestroyable(DestroyableClass.class)).init(counterMock);
-		WebzDestroyable top2_singleton = assertNotNull(factory.getDestroyableSingleton(DestroyableClass.class)).init(counterMock);
+		WebzDestroyable top1 = assertNotNull(factory.newDestroyable(DestroyableTestClass.class)).init(counterMock);
+		WebzDestroyable top2_singleton = assertNotNull(factory.getDestroyableSingleton(DestroyableTestClass.class)).init(counterMock);
 		// 1 new object + 1 new DestroyableClass singleton created
 
-		WebzDestroyable top3 = assertNotNull(factory.newDestroyable(DestroyableClass.class)).init(counterMock);
-		WebzDestroyable top2_sameSingleton = assertNotNull(factory.getDestroyableSingleton(DestroyableClass.class)).init(counterMock);
+		WebzDestroyable top3 = assertNotNull(factory.newDestroyable(DestroyableTestClass.class)).init(counterMock);
+		WebzDestroyable top2_sameSingleton = assertNotNull(factory.getDestroyableSingleton(DestroyableTestClass.class)).init(counterMock);
 		// 1 new object created
 		assertSame(top2_sameSingleton, top2_singleton);
 
-		WebzDestroyable top4 = assertNotNull(factory.newDestroyable(DestroyableClass.class)).init(counterMock);
-		WebzDestroyable top5_singleton = assertNotNull(factory.getDestroyableSingleton(AnotherDestroyableClass.class)).init(counterMock);
+		WebzDestroyable top4 = assertNotNull(factory.newDestroyable(DestroyableTestClass.class)).init(counterMock);
+		WebzDestroyable top5_singleton = assertNotNull(factory.getDestroyableSingleton(AnotherDestroyableTestClass.class))
+				.init(counterMock);
 		// 1 new object + 1 new AnotherDestroyableClass singleton created
 
-		WebzDestroyable sub6 = assertNotNull(subFactory2.newDestroyable(DestroyableClass.class)).init(counterMock);
-		WebzDestroyable sub7 = assertNotNull(subFactory2.newDestroyable(DestroyableClass.class)).init(counterMock);
-		WebzDestroyable sub8 = assertNotNull(subFactory2.newDestroyable(AnotherDestroyableClass.class)).init(counterMock);
-		WebzDestroyable sub9_singleton = assertNotNull(subFactory2.getDestroyableSingleton(DestroyableClass.class)).init(counterMock);
-		WebzDestroyable sub9_sameSingleton = assertNotNull(subFactory2.getDestroyableSingleton(DestroyableClass.class)).init(counterMock);
-		WebzDestroyable sub10_singleton = assertNotNull(subFactory2.getDestroyableSingleton(AnotherDestroyableClass.class)).init(
+		WebzDestroyable sub6 = assertNotNull(subFactory2.newDestroyable(DestroyableTestClass.class)).init(counterMock);
+		WebzDestroyable sub7 = assertNotNull(subFactory2.newDestroyable(DestroyableTestClass.class)).init(counterMock);
+		WebzDestroyable sub8 = assertNotNull(subFactory2.newDestroyable(AnotherDestroyableTestClass.class)).init(counterMock);
+		WebzDestroyable sub9_singleton = assertNotNull(subFactory2.getDestroyableSingleton(DestroyableTestClass.class)).init(counterMock);
+		WebzDestroyable sub9_sameSingleton = assertNotNull(subFactory2.getDestroyableSingleton(DestroyableTestClass.class)).init(
+				counterMock);
+		WebzDestroyable sub10_singleton = assertNotNull(subFactory2.getDestroyableSingleton(AnotherDestroyableTestClass.class)).init(
 				counterMock);
 		// 5 new objects created (NON-SINGLETON sub-factory was used here!)
 		assertSame(sub9_sameSingleton, sub9_singleton);
 
-		WebzDestroyable sub11 = assertNotNull(subFactory1_singleton.newDestroyable(DestroyableClass.class)).init(counterMock);
-		WebzDestroyable sub12 = assertNotNull(subFactory1_singleton.newDestroyable(DestroyableClass.class)).init(counterMock);
+		WebzDestroyable sub11 = assertNotNull(subFactory1_singleton.newDestroyable(DestroyableTestClass.class)).init(counterMock);
+		WebzDestroyable sub12 = assertNotNull(subFactory1_singleton.newDestroyable(DestroyableTestClass.class)).init(counterMock);
 		WebzDestroyable sub13 = assertNotNull(
-				(AbstractDestroyableClass) subFactory1_singleton.newDestroyable(AnotherDestroyableClass.class.getName())).init(counterMock);
-		WebzDestroyable sub14_singleton = assertNotNull(subFactory1_singleton.getDestroyableSingleton(DestroyableClass.class)).init(
+				(AbstractDestroyableTestClass) subFactory1_singleton.newDestroyable(AnotherDestroyableTestClass.class.getName())).init(
+				counterMock);
+		WebzDestroyable sub14_singleton = assertNotNull(subFactory1_singleton.getDestroyableSingleton(DestroyableTestClass.class)).init(
 				counterMock);
 		// 3 new objects + 1 new DestroyableClass singleton created (using singleton sub-factory)
 
@@ -233,11 +260,11 @@ public class WebzDestroyableFactoryTest {
 		// this singleton sub-factory exists already
 		assertSame(subFactory1_sameSingleton, subFactory1_singleton);
 
-		WebzDestroyable sub14_sameSingleton = assertNotNull(subFactory1_sameSingleton.getDestroyableSingleton(DestroyableClass.class))
+		WebzDestroyable sub14_sameSingleton = assertNotNull(subFactory1_sameSingleton.getDestroyableSingleton(DestroyableTestClass.class))
 				.init(counterMock);
 		WebzDestroyable sub15_singleton = assertNotNull(
-				(AbstractDestroyableClass) subFactory1_sameSingleton.getDestroyableSingleton(AnotherDestroyableClass.class.getName()))
-				.init(counterMock);
+				(AbstractDestroyableTestClass) subFactory1_sameSingleton.getDestroyableSingleton(AnotherDestroyableTestClass.class
+						.getName())).init(counterMock);
 		// 1 new DestroyableClass singleton created (using singleton sub-factory)
 		assertSame(sub14_sameSingleton, sub14_singleton);
 
@@ -266,11 +293,11 @@ public class WebzDestroyableFactoryTest {
 		return subFactory2;
 	}
 
-	public static abstract class AbstractDestroyableClass implements WebzDestroyable {
+	public static abstract class AbstractDestroyableTestClass implements WebzDestroyable {
 
 		private WebzDestroyable mock;
 
-		public AbstractDestroyableClass init(WebzDestroyable mock) {
+		public AbstractDestroyableTestClass init(WebzDestroyable mock) {
 			this.mock = mock;
 			return this;
 		}
@@ -283,10 +310,10 @@ public class WebzDestroyableFactoryTest {
 		}
 	}
 
-	public static class DestroyableClass extends AbstractDestroyableClass {
+	public static class DestroyableTestClass extends AbstractDestroyableTestClass {
 	}
 
-	public static class AnotherDestroyableClass extends AbstractDestroyableClass {
+	public static class AnotherDestroyableTestClass extends AbstractDestroyableTestClass {
 	}
 
 	// ~ testFactoryDestroy() related stuff ~
@@ -295,17 +322,31 @@ public class WebzDestroyableFactoryTest {
 
 		WebzDestroyableFactory assertException = assertExceptionThrown(factory, WebzException.class);
 
-		assertException.newDestroyable(DestroyableClass.class.getName());
-		assertException.newDestroyable(DestroyableClass.class);
+		assertException.newDestroyable(DestroyableTestClass.class.getName());
+		assertException.newDestroyable(DestroyableTestClass.class);
 
-		assertException.getDestroyableSingleton(DestroyableClass.class.getName());
-		assertException.getDestroyableSingleton(DestroyableClass.class);
+		assertException.getDestroyableSingleton(DestroyableTestClass.class.getName());
+		assertException.getDestroyableSingleton(DestroyableTestClass.class);
 
-		assertException.newDestroyable(AnotherDestroyableClass.class);
-		assertException.newDestroyable(AnotherDestroyableClass.class.getName());
+		assertException.newDestroyable(AnotherDestroyableTestClass.class);
+		assertException.newDestroyable(AnotherDestroyableTestClass.class.getName());
 
-		assertException.getDestroyableSingleton(AnotherDestroyableClass.class);
-		assertException.getDestroyableSingleton(AnotherDestroyableClass.class.getName());
+		assertException.getDestroyableSingleton(AnotherDestroyableTestClass.class);
+		assertException.getDestroyableSingleton(AnotherDestroyableTestClass.class.getName());
+	}
+
+	// ~ testExceptionDuringDestroy() related stuff ~
+
+	public static class ExceptionDuringDestroyTestClass extends AbstractDestroyableTestClass {
+		@Override
+		public void destroy() {
+			super.destroy();
+
+			throw new RuntimeException();
+		}
+	}
+
+	public static class AnotherExceptionDuringDestroyTestClass extends ExceptionDuringDestroyTestClass {
 	}
 
 	// ~ tryToTestMultithreading() related stuff ~
@@ -359,14 +400,15 @@ public class WebzDestroyableFactoryTest {
 		@Override
 		public void runTest() throws WebzException {
 
-			slow = assertNotNull(factory.getDestroyableSingleton(SlowDestroyableClass.class)).init(counterMock);
+			slow = assertNotNull(factory.getDestroyableSingleton(SlowDestroyableTestClass.class)).init(counterMock);
 			anotherSlow = assertNotNull(
-					(AbstractDestroyableClass) factory.getDestroyableSingleton(AnotherSlowDestroyableClass.class.getName())).init(
+					(AbstractDestroyableTestClass) factory.getDestroyableSingleton(AnotherSlowDestroyableTestClass.class.getName())).init(
 					counterMock);
 
-			sameSlow = assertNotNull((AbstractDestroyableClass) factory.getDestroyableSingleton(SlowDestroyableClass.class.getName()))
-					.init(counterMock);
-			sameAnotherSlow = assertNotNull(factory.getDestroyableSingleton(AnotherSlowDestroyableClass.class)).init(counterMock);
+			sameSlow = assertNotNull(
+					(AbstractDestroyableTestClass) factory.getDestroyableSingleton(SlowDestroyableTestClass.class.getName())).init(
+					counterMock);
+			sameAnotherSlow = assertNotNull(factory.getDestroyableSingleton(AnotherSlowDestroyableTestClass.class)).init(counterMock);
 		}
 	}
 
@@ -389,33 +431,34 @@ public class WebzDestroyableFactoryTest {
 
 			for (int i = 0; i < numOfRepeats; i++) {
 
-				destroyables.add(assertNotNull((AbstractDestroyableClass) factory.newDestroyable(AnotherDestroyableClass.class.getName()))
-						.init(counterMock));
-				destroyables.add(assertNotNull(factory.newDestroyable(AnotherDestroyableClass.class)).init(counterMock));
-
-				destroyables.add(assertNotNull(factory.newDestroyable(DestroyableClass.class)).init(counterMock));
-				destroyables.add(assertNotNull((AbstractDestroyableClass) factory.newDestroyable(DestroyableClass.class.getName())).init(
+				destroyables.add(assertNotNull(
+						(AbstractDestroyableTestClass) factory.newDestroyable(AnotherDestroyableTestClass.class.getName())).init(
 						counterMock));
+				destroyables.add(assertNotNull(factory.newDestroyable(AnotherDestroyableTestClass.class)).init(counterMock));
+
+				destroyables.add(assertNotNull(factory.newDestroyable(DestroyableTestClass.class)).init(counterMock));
+				destroyables.add(assertNotNull((AbstractDestroyableTestClass) factory.newDestroyable(DestroyableTestClass.class.getName()))
+						.init(counterMock));
 			}
 		}
 	}
 
-	public static abstract class AbstractSlowDestroyableClass extends AbstractDestroyableClass {
+	public static abstract class AbstractSlowDestroyableTestClass extends AbstractDestroyableTestClass {
 
-		public AbstractSlowDestroyableClass() throws InterruptedException {
+		public AbstractSlowDestroyableTestClass() throws InterruptedException {
 			Thread.sleep(SLOW_SINGLETON_CONSTRUCTOR_DELAY_MILLIS);
 		}
 	}
 
-	public static class SlowDestroyableClass extends AbstractSlowDestroyableClass {
+	public static class SlowDestroyableTestClass extends AbstractSlowDestroyableTestClass {
 
-		public SlowDestroyableClass() throws InterruptedException {
+		public SlowDestroyableTestClass() throws InterruptedException {
 		}
 	}
 
-	public static class AnotherSlowDestroyableClass extends AbstractSlowDestroyableClass {
+	public static class AnotherSlowDestroyableTestClass extends AbstractSlowDestroyableTestClass {
 
-		public AnotherSlowDestroyableClass() throws InterruptedException {
+		public AnotherSlowDestroyableTestClass() throws InterruptedException {
 		}
 	}
 

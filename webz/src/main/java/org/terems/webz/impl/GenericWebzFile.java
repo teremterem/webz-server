@@ -1,7 +1,9 @@
 package org.terems.webz.impl;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,17 +14,19 @@ import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzFileFactory;
 import org.terems.webz.WebzFileSystem;
 import org.terems.webz.WebzMetadata;
+import org.terems.webz.WebzPathNameException;
 
 public class GenericWebzFile implements WebzFile {
 
-	private String pathName;
-	private WebzFileFactory fileFactory;
-	private WebzFileSystem fileSystem;
+	protected final String pathName;
+	protected WebzFileFactory fileFactory;
+	protected WebzFileSystem fileSystem;
 
+	private Boolean pathNameInvalid = null;
 	private boolean inflated = false;
 
 	public GenericWebzFile(String pathName, WebzFileFactory fileFactory, WebzFileSystem fileSystem) {
-		this.pathName = pathName;
+		this.pathName = fileSystem.normalizePathName(pathName);
 		this.fileFactory = fileFactory;
 		this.fileSystem = fileSystem;
 	}
@@ -33,25 +37,74 @@ public class GenericWebzFile implements WebzFile {
 	}
 
 	@Override
+	public boolean isPathNameInvalid() {
+
+		if (pathNameInvalid == null) {
+			pathNameInvalid = fileSystem.isNormalizedPathNameInvalid(this.pathName);
+		}
+		return pathNameInvalid;
+	}
+
+	@Override
+	public WebzFile getParent() throws WebzPathNameException {
+
+		assertPathNameNotInvalid();
+
+		String parentPathName = fileSystem.getParentPathName(pathName);
+		if (parentPathName == null) {
+			return null;
+		}
+
+		return fileFactory.get(parentPathName);
+	}
+
+	@Override
+	public WebzFile getDescendant(String relativePathName) throws WebzPathNameException {
+
+		assertPathNameNotInvalid();
+
+		return fileFactory.get(fileSystem.concatPathName(pathName, fileSystem.normalizePathName(relativePathName)));
+	}
+
+	@Override
 	public void inflate() throws IOException, WebzException {
+
 		if (!inflated) {
-			fileSystem.inflate(this);
+
+			if (!isPathNameInvalid()) {
+				fileSystem.inflate(this);
+			}
 			inflated = true;
 		}
 	}
 
 	@Override
 	public WebzMetadata getMetadata() throws IOException, WebzException {
+
+		if (isPathNameInvalid()) {
+			return null;
+		}
+
 		return fileSystem.getMetadata(pathName);
 	}
 
 	@Override
 	public WebzFileDownloader getFileDownloader() throws IOException, WebzException {
+
+		if (isPathNameInvalid()) {
+			return null;
+		}
+
 		return fileSystem.getFileDownloader(pathName);
 	}
 
 	@Override
 	public WebzMetadata copyContentToOutputStream(OutputStream out) throws IOException, WebzException {
+
+		if (isPathNameInvalid()) {
+			return null;
+		}
+
 		return fileSystem.copyContentToOutputStream(pathName, out);
 	}
 
@@ -77,18 +130,11 @@ public class GenericWebzFile implements WebzFile {
 	}
 
 	@Override
-	public WebzFile getParent() throws IOException, WebzException {
+	public Collection<WebzFile> listChildren() throws IOException, WebzException {
 
-		String parentPathName = fileSystem.getParentPathName(pathName);
-		if (parentPathName == null) {
+		if (isPathNameInvalid()) {
 			return null;
 		}
-
-		return fileFactory.get(parentPathName);
-	}
-
-	@Override
-	public Collection<WebzFile> getChildren() throws IOException, WebzException {
 
 		Collection<String> childPathNames = fileSystem.getChildPathNames(pathName);
 		if (childPathNames == null) {
@@ -104,37 +150,79 @@ public class GenericWebzFile implements WebzFile {
 
 	@Override
 	public WebzMetadata createFolder() throws IOException, WebzException {
+
+		assertPathNameNotInvalid();
+
 		return fileSystem.createFolder(pathName);
 	}
 
 	@Override
-	public WebzMetadata uploadFile(byte[] content) throws IOException, WebzException {
+	public WebzMetadata uploadFile(InputStream content, long numBytes) throws IOException, WebzException {
+
+		assertPathNameNotInvalid();
+
+		return fileSystem.uploadFile(pathName, content, numBytes);
+	}
+
+	@Override
+	public WebzMetadata uploadFile(InputStream content) throws IOException, WebzException {
+
+		assertPathNameNotInvalid();
+
 		return fileSystem.uploadFile(pathName, content);
 	}
 
 	@Override
+	public WebzMetadata uploadFile(byte[] content) throws IOException, WebzException {
+		return uploadFile(new ByteArrayInputStream(content), content.length);
+	}
+
+	@Override
 	public WebzMetadata move(WebzFile destFile) throws IOException, WebzException {
-		return move(destFile.getPathName());
+
+		assertPathNameNotInvalid();
+		assertPathNameNotInvalid(destFile);
+
+		return fileSystem.move(pathName, destFile.getPathName());
 	}
 
 	@Override
 	public WebzMetadata copy(WebzFile destFile) throws IOException, WebzException {
-		return copy(destFile.getPathName());
+
+		assertPathNameNotInvalid();
+		assertPathNameNotInvalid(destFile);
+
+		return fileSystem.copy(pathName, destFile.getPathName());
 	}
 
 	@Override
 	public WebzMetadata move(String destPathName) throws IOException, WebzException {
-		return fileSystem.move(pathName, destPathName);
+		return move(fileFactory.get(destPathName));
 	}
 
 	@Override
 	public WebzMetadata copy(String destPathName) throws IOException, WebzException {
-		return fileSystem.copy(pathName, destPathName);
+		return copy(fileFactory.get(destPathName));
 	}
 
 	@Override
 	public void delete() throws IOException, WebzException {
+
+		assertPathNameNotInvalid();
+
 		fileSystem.delete(pathName);
+	}
+
+	protected void assertPathNameNotInvalid() throws WebzPathNameException {
+		assertPathNameNotInvalid(this);
+	}
+
+	protected static void assertPathNameNotInvalid(WebzFile file) throws WebzPathNameException {
+
+		if (file.isPathNameInvalid()) {
+
+			throw new WebzPathNameException("'" + file.getPathName() + "' is not a valid path name");
+		}
 	}
 
 }

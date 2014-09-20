@@ -29,11 +29,9 @@ public class RootWebzContext implements WebzContext, WebzConfig {
 	}
 
 	@Override
-	public <T extends WebzConfigObject> T getConfigObject(Class<T> configObjectClass) throws WebzException {
-		// TODO TODO TODO
-		// T configObject = new BlaBlaConfigObject();
+	public <T extends WebzConfigObject> T getAppConfigObject(Class<T> configObjectClass) throws WebzException {
+		// TODO T configObject = new BlaBlaConfigObject();
 		// configObject.init(fileFactory.get(WebzDefaults.WEBZ_CONFIG_FOLDER));
-		// TODO TODO TODO
 		return null;
 	}
 
