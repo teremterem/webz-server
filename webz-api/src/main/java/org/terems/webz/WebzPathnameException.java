@@ -2,30 +2,30 @@ package org.terems.webz;
 
 /** TODO !!! describe !!! **/
 @SuppressWarnings("serial")
-public class WebzPathNameException extends WebzException {
+public class WebzPathnameException extends WebzException {
 
 	/** TODO !!! describe !!! **/
-	public WebzPathNameException() {
+	public WebzPathnameException() {
 		super();
 	}
 
 	/** TODO !!! describe !!! **/
-	public WebzPathNameException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+	public WebzPathnameException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 	}
 
 	/** TODO !!! describe !!! **/
-	public WebzPathNameException(String message, Throwable cause) {
+	public WebzPathnameException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
 	/** TODO !!! describe !!! **/
-	public WebzPathNameException(String message) {
+	public WebzPathnameException(String message) {
 		super(message);
 	}
 
 	/** TODO !!! describe !!! **/
-	public WebzPathNameException(Throwable cause) {
+	public WebzPathnameException(Throwable cause) {
 		super(cause);
 	}
 

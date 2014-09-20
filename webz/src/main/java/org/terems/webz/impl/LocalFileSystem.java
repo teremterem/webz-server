@@ -27,55 +27,55 @@ public class LocalFileSystem extends BaseForwardSlashFileSystem {
 	}
 
 	@Override
-	public WebzMetadata getMetadata(String pathName) throws IOException, WebzException {
+	public WebzMetadata getMetadata(String pathname) throws IOException, WebzException {
 		// Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public ParentChildrenMetadata getParentChildrenMetadata(String parentPathName) throws IOException, WebzException {
+	public ParentChildrenMetadata getParentChildrenMetadata(String parentPathname) throws IOException, WebzException {
 		// Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public WebzFileDownloader getFileDownloader(String pathName) throws IOException, WebzException {
+	public WebzFileDownloader getFileDownloader(String pathname) throws IOException, WebzException {
 		// Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public WebzMetadata createFolder(String pathName) throws IOException, WebzException {
+	public WebzMetadata createFolder(String pathname) throws IOException, WebzException {
 		// Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public FileSpecific uploadFile(String pathName, InputStream content, long numBytes) throws IOException, WebzException {
+	public FileSpecific uploadFile(String pathname, InputStream content, long numBytes) throws IOException, WebzException {
 		// Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public FileSpecific uploadFile(String pathName, InputStream content) throws IOException, WebzException {
+	public FileSpecific uploadFile(String pathname, InputStream content) throws IOException, WebzException {
 		// Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public WebzMetadata move(String srcPathName, String destPathName) throws IOException, WebzException {
+	public WebzMetadata move(String srcPathname, String destPathname) throws IOException, WebzException {
 		// Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public WebzMetadata copy(String srcPathName, String destPathName) throws IOException, WebzException {
+	public WebzMetadata copy(String srcPathname, String destPathname) throws IOException, WebzException {
 		// Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void delete(String pathName) throws IOException, WebzException {
+	public void delete(String pathname) throws IOException, WebzException {
 		// Auto-generated method stub
 	}
 

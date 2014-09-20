@@ -31,6 +31,7 @@ public class WelcomeFilter extends BaseWebzFilter {
 		// TODO support welcome files
 
 		redirectFileFolder(req, resp, chainContext);
+		// TODO also consider redirecting from upper-cased paths to lower-cased ones ?
 	}
 
 	public void redirectFileFolder(HttpServletRequest req, HttpServletResponse resp, final WebzChainContext chainContext)

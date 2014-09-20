@@ -31,10 +31,10 @@ public abstract class BaseWebzFileSystem implements WebzFileSystem {
 
 	/** Default implementation... **/
 	@Override
-	public FreshParentChildrenMetadata getParentChildrenMetadataIfChanged(String parentPathName, Object previousFolderHash)
+	public FreshParentChildrenMetadata getParentChildrenMetadataIfChanged(String parentPathname, Object previousFolderHash)
 			throws IOException, WebzException {
 
-		ParentChildrenMetadata parentChildrenMetadata = getParentChildrenMetadata(parentPathName);
+		ParentChildrenMetadata parentChildrenMetadata = getParentChildrenMetadata(parentPathname);
 		if (previousFolderHash != null && parentChildrenMetadata != null && previousFolderHash.equals(parentChildrenMetadata.folderHash)) {
 			return null;
 		}
@@ -44,28 +44,28 @@ public abstract class BaseWebzFileSystem implements WebzFileSystem {
 
 	/** Default implementation... **/
 	@Override
-	public Map<String, WebzMetadata> getChildPathNamesAndMetadata(String parentPathName) throws IOException, WebzException {
-		ParentChildrenMetadata parentChildrenMetadata = getParentChildrenMetadata(parentPathName);
-		return parentChildrenMetadata == null ? null : parentChildrenMetadata.childPathNamesAndMetadata;
+	public Map<String, WebzMetadata> getChildPathnamesAndMetadata(String parentPathname) throws IOException, WebzException {
+		ParentChildrenMetadata parentChildrenMetadata = getParentChildrenMetadata(parentPathname);
+		return parentChildrenMetadata == null ? null : parentChildrenMetadata.childPathnamesAndMetadata;
 	}
 
 	/** Default implementation... **/
 	@Override
-	public Collection<String> getChildPathNames(String parentPathName) throws IOException, WebzException {
+	public Collection<String> getChildPathnames(String parentPathname) throws IOException, WebzException {
 
-		ParentChildrenMetadata parentChildrenMetadata = getParentChildrenMetadata(parentPathName);
-		if (parentChildrenMetadata == null || parentChildrenMetadata.childPathNamesAndMetadata == null) {
+		ParentChildrenMetadata parentChildrenMetadata = getParentChildrenMetadata(parentPathname);
+		if (parentChildrenMetadata == null || parentChildrenMetadata.childPathnamesAndMetadata == null) {
 			return null;
 		}
 
-		return parentChildrenMetadata.childPathNamesAndMetadata.keySet();
+		return parentChildrenMetadata.childPathnamesAndMetadata.keySet();
 	}
 
 	/** Default implementation... **/
 	@Override
-	public WebzMetadata.FileSpecific copyContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException {
+	public WebzMetadata.FileSpecific copyContentToOutputStream(String pathname, OutputStream out) throws IOException, WebzException {
 
-		WebzFileDownloader downloader = getFileDownloader(pathName);
+		WebzFileDownloader downloader = getFileDownloader(pathname);
 		if (downloader == null) {
 			return null;
 		}

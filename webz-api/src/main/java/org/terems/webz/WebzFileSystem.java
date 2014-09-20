@@ -12,7 +12,7 @@ import org.terems.webz.cache.WebzFileSystemCache;
 /** TODO !!! describe !!! **/
 public interface WebzFileSystem extends WebzDestroyable {
 
-	// TODO rename pathName to pathname everywhere !
+	// TODO rename pathname to pathname everywhere !
 
 	/** TODO !!! describe !!! **/
 	public void init(Properties properties) throws WebzException;
@@ -21,16 +21,16 @@ public interface WebzFileSystem extends WebzDestroyable {
 	public String getFileSystemUniqueId();
 
 	/** TODO !!! describe !!! **/
-	public String normalizePathName(String nonNormalizedPathName);
+	public String normalizePathname(String nonNormalizedPathname);
 
 	/** TODO !!! describe !!! **/
-	public boolean isNormalizedPathNameInvalid(String pathName);
+	public boolean isNormalizedPathnameInvalid(String pathname);
 
 	/** TODO !!! describe !!! **/
-	public String getParentPathName(String pathName);
+	public String getParentPathname(String pathname);
 
 	/** TODO !!! describe !!! **/
-	public String concatPathName(String basePathName, String relativePathName);
+	public String concatPathname(String basePathname, String relativePathname);
 
 	/** TODO !!! describe !!! **/
 	public void inflate(WebzFile file) throws IOException, WebzException;
@@ -39,46 +39,46 @@ public interface WebzFileSystem extends WebzDestroyable {
 	public void inflate(WebzFileSystemCache fileSystemCache, WebzFile file) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzMetadata getMetadata(String pathName) throws IOException, WebzException;
+	public WebzMetadata getMetadata(String pathname) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public ParentChildrenMetadata getParentChildrenMetadata(String parentPathName) throws IOException, WebzException;
+	public ParentChildrenMetadata getParentChildrenMetadata(String parentPathname) throws IOException, WebzException;
 
 	/**
 	 * @return null if folder hash has not changed, otherwise - FreshParentChildrenMetadata object that encapsulates ParentChildrenMetadata;
 	 *         however encapsulated ParentChildrenMetadata may be null if there is no such file or folder...
 	 **/
-	public FreshParentChildrenMetadata getParentChildrenMetadataIfChanged(String parentPathName, Object previousFolderHash)
+	public FreshParentChildrenMetadata getParentChildrenMetadataIfChanged(String parentPathname, Object previousFolderHash)
 			throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public Map<String, WebzMetadata> getChildPathNamesAndMetadata(String parentPathName) throws IOException, WebzException;
+	public Map<String, WebzMetadata> getChildPathnamesAndMetadata(String parentPathname) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public Collection<String> getChildPathNames(String parentPathName) throws IOException, WebzException;
+	public Collection<String> getChildPathnames(String parentPathname) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzMetadata.FileSpecific copyContentToOutputStream(String pathName, OutputStream out) throws IOException, WebzException;
+	public WebzMetadata.FileSpecific copyContentToOutputStream(String pathname, OutputStream out) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzFileDownloader getFileDownloader(String pathName) throws IOException, WebzException;
+	public WebzFileDownloader getFileDownloader(String pathname) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzMetadata createFolder(String pathName) throws IOException, WebzException;
+	public WebzMetadata createFolder(String pathname) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzMetadata.FileSpecific uploadFile(String pathName, InputStream content, long numBytes) throws IOException, WebzException;
+	public WebzMetadata.FileSpecific uploadFile(String pathname, InputStream content, long numBytes) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzMetadata.FileSpecific uploadFile(String pathName, InputStream content) throws IOException, WebzException;
+	public WebzMetadata.FileSpecific uploadFile(String pathname, InputStream content) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzMetadata move(String srcPathName, String destPathName) throws IOException, WebzException;
+	public WebzMetadata move(String srcPathname, String destPathname) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzMetadata copy(String srcPathName, String destPathName) throws IOException, WebzException;
+	public WebzMetadata copy(String srcPathname, String destPathname) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public void delete(String pathName) throws IOException, WebzException;
+	public void delete(String pathname) throws IOException, WebzException;
 
 }

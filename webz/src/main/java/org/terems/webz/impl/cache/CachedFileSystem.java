@@ -16,13 +16,13 @@ import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzFileSystem;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.base.BaseWebzFileSystem;
-import org.terems.webz.cache.ChildPathNamesHolder;
+import org.terems.webz.cache.ChildPathnamesHolder;
 import org.terems.webz.cache.FileContentHolder;
 import org.terems.webz.cache.WebzByteArrayInputStream;
 import org.terems.webz.cache.WebzFileSystemCache;
 import org.terems.webz.util.WebzUtils;
 
-// TODO background thread should periodically check certain number of pathNames against Dropbox to drop the whole FS cache if necessary
+// TODO background thread should periodically check certain number of pathnames against Dropbox to drop the whole FS cache if necessary
 // TODO also do similar check when some metadata is being fetched as a "side-effect" in cache implementations to drop the whole FS cache if necessary
 /** TODO !!! describe !!! **/
 public class CachedFileSystem extends BaseWebzFileSystem {
@@ -70,23 +70,23 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 	}
 
 	@Override
-	public String normalizePathName(String pathName) {
-		return innerFileSystem.normalizePathName(pathName);
+	public String normalizePathname(String pathname) {
+		return innerFileSystem.normalizePathname(pathname);
 	}
 
 	@Override
-	public boolean isNormalizedPathNameInvalid(String pathName) {
-		return innerFileSystem.isNormalizedPathNameInvalid(pathName);
+	public boolean isNormalizedPathnameInvalid(String pathname) {
+		return innerFileSystem.isNormalizedPathnameInvalid(pathname);
 	}
 
 	@Override
-	public String getParentPathName(String pathName) {
-		return innerFileSystem.getParentPathName(pathName);
+	public String getParentPathname(String pathname) {
+		return innerFileSystem.getParentPathname(pathname);
 	}
 
 	@Override
-	public String concatPathName(String basePathName, String relativePathName) {
-		return innerFileSystem.concatPathName(basePathName, relativePathName);
+	public String concatPathname(String basePathname, String relativePathname) {
+		return innerFileSystem.concatPathname(basePathname, relativePathname);
 	}
 
 	@Override
@@ -94,74 +94,74 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 		innerFileSystem.inflate(cacheImpl, file);
 	}
 
-	private void dropFileContentAndChildPathNames(String pathName) {
+	private void dropFileContentAndChildPathnames(String pathname) {
 
-		cacheImpl.dropChildPathNamesHolderFromCache(pathName);
+		cacheImpl.dropChildPathnamesHolderFromCache(pathname);
 		// TODO drop whole sub-tree (mind possible gaps in cache caused by evictions - maybe configure child path names cache to
 		// not evict anything ever at all?) - think in which cases this operation should be done
 
-		cacheImpl.dropFileContentHolderFromCache(pathName);
+		cacheImpl.dropFileContentHolderFromCache(pathname);
 	}
 
-	private void dropPathNameInCaches(String pathName) {
-		cacheImpl.dropMetadataFromCache(pathName);
-		dropFileContentAndChildPathNames(pathName);
+	private void dropPathnameInCaches(String pathname) {
+		cacheImpl.dropMetadataFromCache(pathname);
+		dropFileContentAndChildPathnames(pathname);
 	}
 
-	private void dropPathNameInCachesAndUpdateMetadata(String pathName, WebzMetadata metadata) {
+	private void dropPathnameInCachesAndUpdateMetadata(String pathname, WebzMetadata metadata) {
 
 		if (metadata == null) {
-			dropPathNameInCaches(pathName);
+			dropPathnameInCaches(pathname);
 		} else {
-			cacheImpl.putMetadataIntoCache(pathName, metadata);
+			cacheImpl.putMetadataIntoCache(pathname, metadata);
 
-			dropFileContentAndChildPathNames(pathName);
+			dropFileContentAndChildPathnames(pathname);
 		}
 	}
 
 	@Override
-	public WebzMetadata getMetadata(String pathName) {
-		return cacheImpl.fetchMetadata(pathName);
+	public WebzMetadata getMetadata(String pathname) {
+		return cacheImpl.fetchMetadata(pathname);
 	}
 
 	@Override
-	public ParentChildrenMetadata getParentChildrenMetadata(String parentPathName) {
+	public ParentChildrenMetadata getParentChildrenMetadata(String parentPathname) {
 
-		ChildPathNamesHolder childPathNamesHolder = cacheImpl.fetchChildPathNamesHolder(parentPathName);
-		if (childPathNamesHolder == null) {
+		ChildPathnamesHolder childPathnamesHolder = cacheImpl.fetchChildPathnamesHolder(parentPathname);
+		if (childPathnamesHolder == null) {
 			return null;
 		}
 
 		ParentChildrenMetadata parentChildrenMetadata = new ParentChildrenMetadata();
-		parentChildrenMetadata.folderHash = childPathNamesHolder.folderHash;
+		parentChildrenMetadata.folderHash = childPathnamesHolder.folderHash;
 
-		parentChildrenMetadata.parentMetadata = cacheImpl.fetchMetadata(parentPathName);
-		parentChildrenMetadata.childPathNamesAndMetadata = cacheImpl.fetchMetadata(childPathNamesHolder.childPathNames);
+		parentChildrenMetadata.parentMetadata = cacheImpl.fetchMetadata(parentPathname);
+		parentChildrenMetadata.childPathnamesAndMetadata = cacheImpl.fetchMetadata(childPathnamesHolder.childPathnames);
 
 		return parentChildrenMetadata;
 	}
 
 	@Override
-	public Map<String, WebzMetadata> getChildPathNamesAndMetadata(String parentPathName) {
-		ChildPathNamesHolder childPathNamesHolder = cacheImpl.fetchChildPathNamesHolder(parentPathName);
-		return childPathNamesHolder == null ? null : cacheImpl.fetchMetadata(childPathNamesHolder.childPathNames);
+	public Map<String, WebzMetadata> getChildPathnamesAndMetadata(String parentPathname) {
+		ChildPathnamesHolder childPathnamesHolder = cacheImpl.fetchChildPathnamesHolder(parentPathname);
+		return childPathnamesHolder == null ? null : cacheImpl.fetchMetadata(childPathnamesHolder.childPathnames);
 	}
 
 	@Override
-	public Collection<String> getChildPathNames(String parentPathName) {
-		ChildPathNamesHolder childPathNamesHolder = cacheImpl.fetchChildPathNamesHolder(parentPathName);
-		return childPathNamesHolder == null ? null : childPathNamesHolder.childPathNames;
+	public Collection<String> getChildPathnames(String parentPathname) {
+		ChildPathnamesHolder childPathnamesHolder = cacheImpl.fetchChildPathnamesHolder(parentPathname);
+		return childPathnamesHolder == null ? null : childPathnamesHolder.childPathnames;
 	}
 
-	private WebzMetadata.FileSpecific fetchFileSpecific(String pathName) throws IOException, WebzException {
-		WebzMetadata metadata = cacheImpl.fetchMetadata(pathName);
+	private WebzMetadata.FileSpecific fetchFileSpecific(String pathname) throws IOException, WebzException {
+		WebzMetadata metadata = cacheImpl.fetchMetadata(pathname);
 		return metadata == null ? null : metadata.getFileSpecific();
 	}
 
 	@Override
-	public WebzFileDownloader getFileDownloader(String pathName) throws IOException, WebzException {
+	public WebzFileDownloader getFileDownloader(String pathname) throws IOException, WebzException {
 
-		FileContentHolder payloadHolder = cacheImpl.fetchFileContentHolder(pathName);
+		FileContentHolder payloadHolder = cacheImpl.fetchFileContentHolder(pathname);
 		if (payloadHolder == null) {
 			return null;
 		}
@@ -169,23 +169,23 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 		if (payloadHolder.content == null) {
 
 			if (LOG.isTraceEnabled()) {
-				LOG.trace(WebzUtils.formatFileSystemMessage("PAYLOAD for '" + pathName + "' is being fetched without being cached", this));
+				LOG.trace(WebzUtils.formatFileSystemMessage("PAYLOAD for '" + pathname + "' is being fetched without being cached", this));
 			}
-			return innerFileSystem.getFileDownloader(pathName);
+			return innerFileSystem.getFileDownloader(pathname);
 		} else {
 
 			if (payloadHolder.content.size() > filePayloadSizeThreshold) {
 				if (LOG.isWarnEnabled()) {
-					LOG.warn(WebzUtils.formatFileSystemMessage("payload for '" + pathName
+					LOG.warn(WebzUtils.formatFileSystemMessage("payload for '" + pathname
 							+ "' was cached even though it is bigger than the threshold - payload threshold (bytes): "
 							+ filePayloadSizeThreshold + "; actual file size (bytes): " + payloadHolder.content.size()
 							+ " - removing it from cache...", this));
 				}
-				cacheImpl.putFileContentHolderIntoCache(pathName, new FileContentHolder()); // putting empty content holder instead...
+				cacheImpl.putFileContentHolderIntoCache(pathname, new FileContentHolder()); // putting empty content holder instead...
 				// TODO think if all caches should be dropped in such a case
 			}
 
-			WebzMetadata.FileSpecific fileSpecific = fetchFileSpecific(pathName);
+			WebzMetadata.FileSpecific fileSpecific = fetchFileSpecific(pathname);
 			if (fileSpecific == null) {
 				// TODO think if all caches (or this particular entry ?) should be dropped in such a case
 				return null;
@@ -203,57 +203,57 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 	}
 
 	@Override
-	public WebzMetadata createFolder(String pathName) throws IOException, WebzException {
+	public WebzMetadata createFolder(String pathname) throws IOException, WebzException {
 
-		WebzMetadata metadata = innerFileSystem.createFolder(pathName);
+		WebzMetadata metadata = innerFileSystem.createFolder(pathname);
 
-		dropPathNameInCachesAndUpdateMetadata(pathName, metadata);
+		dropPathnameInCachesAndUpdateMetadata(pathname, metadata);
 		return metadata;
 	}
 
 	@Override
-	public WebzMetadata.FileSpecific uploadFile(String pathName, InputStream content, long numBytes) throws IOException, WebzException {
+	public WebzMetadata.FileSpecific uploadFile(String pathname, InputStream content, long numBytes) throws IOException, WebzException {
 
-		WebzMetadata.FileSpecific fileSpecific = innerFileSystem.uploadFile(pathName, content, numBytes);
+		WebzMetadata.FileSpecific fileSpecific = innerFileSystem.uploadFile(pathname, content, numBytes);
 
-		dropPathNameInCachesAndUpdateMetadata(pathName, fileSpecific);
+		dropPathnameInCachesAndUpdateMetadata(pathname, fileSpecific);
 		return fileSpecific;
 	}
 
 	@Override
-	public WebzMetadata.FileSpecific uploadFile(String pathName, InputStream content) throws IOException, WebzException {
+	public WebzMetadata.FileSpecific uploadFile(String pathname, InputStream content) throws IOException, WebzException {
 
-		WebzMetadata.FileSpecific fileSpecific = innerFileSystem.uploadFile(pathName, content);
+		WebzMetadata.FileSpecific fileSpecific = innerFileSystem.uploadFile(pathname, content);
 
-		dropPathNameInCachesAndUpdateMetadata(pathName, fileSpecific);
+		dropPathnameInCachesAndUpdateMetadata(pathname, fileSpecific);
 		return fileSpecific;
 	}
 
 	@Override
-	public WebzMetadata move(String srcPathName, String destPathName) throws IOException, WebzException {
+	public WebzMetadata move(String srcPathname, String destPathname) throws IOException, WebzException {
 
-		WebzMetadata metadata = innerFileSystem.move(srcPathName, destPathName);
+		WebzMetadata metadata = innerFileSystem.move(srcPathname, destPathname);
 
-		dropPathNameInCaches(srcPathName);
-		dropPathNameInCachesAndUpdateMetadata(destPathName, metadata);
+		dropPathnameInCaches(srcPathname);
+		dropPathnameInCachesAndUpdateMetadata(destPathname, metadata);
 		return metadata;
 	}
 
 	@Override
-	public WebzMetadata copy(String srcPathName, String destPathName) throws IOException, WebzException {
+	public WebzMetadata copy(String srcPathname, String destPathname) throws IOException, WebzException {
 
-		WebzMetadata metadata = innerFileSystem.copy(srcPathName, destPathName);
+		WebzMetadata metadata = innerFileSystem.copy(srcPathname, destPathname);
 
-		dropPathNameInCachesAndUpdateMetadata(destPathName, metadata);
+		dropPathnameInCachesAndUpdateMetadata(destPathname, metadata);
 		return metadata;
 	}
 
 	@Override
-	public void delete(String pathName) throws IOException, WebzException {
+	public void delete(String pathname) throws IOException, WebzException {
 
-		innerFileSystem.delete(pathName);
+		innerFileSystem.delete(pathname);
 
-		dropPathNameInCaches(pathName);
+		dropPathnameInCaches(pathname);
 	}
 
 }

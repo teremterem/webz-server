@@ -9,8 +9,8 @@ import org.terems.webz.WebzMetadata;
 
 public class MetadataInflatableWebzFile extends GenericWebzFile {
 
-	public MetadataInflatableWebzFile(String pathName, WebzFileFactory fileFactory, WebzFileSystem fileSystem) {
-		super(pathName, fileFactory, fileSystem);
+	public MetadataInflatableWebzFile(String pathname, WebzFileFactory fileFactory, WebzFileSystem fileSystem) {
+		super(pathname, fileFactory, fileSystem);
 	}
 
 	@Override

@@ -17,33 +17,33 @@ public interface WebzFileSystemCache extends WebzDestroyable {
 	public String getCacheTypeName();
 
 	/** TODO !!! describe !!! **/
-	public WebzMetadata fetchMetadata(String pathName);
+	public WebzMetadata fetchMetadata(String pathname);
 
 	/** TODO !!! describe !!! **/
-	public Map<String, WebzMetadata> fetchMetadata(Collection<String> pathNames);
+	public Map<String, WebzMetadata> fetchMetadata(Collection<String> pathnames);
 
 	/** TODO !!! describe !!! **/
-	public ChildPathNamesHolder fetchChildPathNamesHolder(String parentPathName);
+	public ChildPathnamesHolder fetchChildPathnamesHolder(String parentPathname);
 
 	/** TODO !!! describe !!! **/
-	public FileContentHolder fetchFileContentHolder(String pathName);
+	public FileContentHolder fetchFileContentHolder(String pathname);
 
 	/** TODO !!! describe !!! **/
-	public void putMetadataIntoCache(String pathName, WebzMetadata metadata);
+	public void putMetadataIntoCache(String pathname, WebzMetadata metadata);
 
 	/** TODO !!! describe !!! **/
-	public void putChildPathNamesHolderIntoCache(String pathName, ChildPathNamesHolder childPathNamesHolder);
+	public void putChildPathnamesHolderIntoCache(String pathname, ChildPathnamesHolder childPathnamesHolder);
 
 	/** TODO !!! describe !!! **/
-	public void putFileContentHolderIntoCache(String pathName, FileContentHolder fileContentHolder);
+	public void putFileContentHolderIntoCache(String pathname, FileContentHolder fileContentHolder);
 
 	/** TODO !!! describe !!! **/
-	public void dropMetadataFromCache(String pathName);
+	public void dropMetadataFromCache(String pathname);
 
 	/** TODO !!! describe !!! **/
-	public void dropChildPathNamesHolderFromCache(String parentPathName);
+	public void dropChildPathnamesHolderFromCache(String parentPathname);
 
 	/** TODO !!! describe !!! **/
-	public void dropFileContentHolderFromCache(String pathName);
+	public void dropFileContentHolderFromCache(String pathname);
 
 }

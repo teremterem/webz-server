@@ -9,7 +9,7 @@ public class ParentChildrenMetadata {
 	public WebzMetadata parentMetadata;
 
 	/** TODO !!! describe !!! **/
-	public Map<String, WebzMetadata> childPathNamesAndMetadata;
+	public Map<String, WebzMetadata> childPathnamesAndMetadata;
 
 	/** TODO !!! describe !!! **/
 	public Object folderHash;

@@ -9,16 +9,16 @@ import java.util.Collection;
 public interface WebzFile {
 
 	/** TODO !!! describe !!! **/
-	public String getPathName();
+	public String getPathname();
 
 	/** TODO !!! describe !!! **/
-	public boolean isPathNameInvalid();
+	public boolean isPathnameInvalid();
 
 	/** TODO !!! describe !!! **/
-	public WebzFile getParent() throws WebzPathNameException;
+	public WebzFile getParent() throws WebzPathnameException;
 
 	/** TODO !!! describe !!! **/
-	public WebzFile getDescendant(String relativePathName) throws WebzPathNameException;
+	public WebzFile getDescendant(String relativePathname) throws WebzPathnameException;
 
 	/** TODO !!! describe !!! **/
 	public void inflate() throws IOException, WebzException;
@@ -57,10 +57,10 @@ public interface WebzFile {
 	public WebzMetadata copy(WebzFile destFile) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzMetadata move(String destPathName) throws IOException, WebzException;
+	public WebzMetadata move(String destPathname) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public WebzMetadata copy(String destPathName) throws IOException, WebzException;
+	public WebzMetadata copy(String destPathname) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
 	public void delete() throws IOException, WebzException;

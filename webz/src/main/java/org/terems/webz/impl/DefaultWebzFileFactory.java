@@ -15,8 +15,8 @@ public class DefaultWebzFileFactory implements WebzFileFactory {
 	}
 
 	@Override
-	public WebzFile get(String pathName) {
-		return new MetadataInflatableWebzFile(pathName, this, fileSystem);
+	public WebzFile get(String pathname) {
+		return new MetadataInflatableWebzFile(pathname, this, fileSystem);
 	}
 
 }

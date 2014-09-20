@@ -7,13 +7,13 @@ public abstract class BaseLowerCaseFileSystem extends BaseForwardSlashFileSystem
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public boolean isNormalizedPathNameInvalid(String pathName) {
+	public boolean isNormalizedPathnameInvalid(String pathname) {
 
-		if (super.isNormalizedPathNameInvalid(pathName)) {
+		if (super.isNormalizedPathnameInvalid(pathname)) {
 			return true;
 		}
 
-		return WebzUtils.containsUpperCaseLetters(pathName);
+		return WebzUtils.containsUpperCaseLetters(pathname);
 	}
 
 }

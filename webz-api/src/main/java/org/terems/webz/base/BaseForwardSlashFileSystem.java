@@ -9,55 +9,55 @@ public abstract class BaseForwardSlashFileSystem extends BaseWebzFileSystem {
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public String normalizePathName(String nonNormalizedPathName) {
+	public String normalizePathname(String nonNormalizedPathname) {
 
-		if (nonNormalizedPathName == null) {
+		if (nonNormalizedPathname == null) {
 			return null;
 		}
 
-		String pathName = nonNormalizedPathName.replace('\\', FWD_SLASH);
+		String pathname = nonNormalizedPathname.replace('\\', FWD_SLASH);
 
-		if (pathName.startsWith(FWD_SLASH_STR)) {
-			pathName = pathName.substring(1);
+		if (pathname.startsWith(FWD_SLASH_STR)) {
+			pathname = pathname.substring(1);
 		}
-		if (pathName.endsWith(FWD_SLASH_STR)) {
-			pathName = pathName.substring(0, pathName.length() - 1);
+		if (pathname.endsWith(FWD_SLASH_STR)) {
+			pathname = pathname.substring(0, pathname.length() - 1);
 		}
 
-		return pathName;
+		return pathname;
 	}
 
 	private final static Pattern MULTIPLE_PATH_SEPARATORS = Pattern.compile(FWD_SLASH_STR + "{2,}");
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public boolean isNormalizedPathNameInvalid(String pathName) {
+	public boolean isNormalizedPathnameInvalid(String pathname) {
 
-		return pathName == null || pathName.startsWith(FWD_SLASH_STR) || pathName.endsWith(FWD_SLASH_STR)
-				|| MULTIPLE_PATH_SEPARATORS.matcher(pathName).find();
+		return pathname == null || pathname.startsWith(FWD_SLASH_STR) || pathname.endsWith(FWD_SLASH_STR)
+				|| MULTIPLE_PATH_SEPARATORS.matcher(pathname).find();
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public String getParentPathName(String pathName) {
+	public String getParentPathname(String pathname) {
 
-		if ("".equals(pathName)) {
+		if ("".equals(pathname)) {
 			return null;
 		}
 
-		int separatorIndex = pathName.lastIndexOf(FWD_SLASH);
+		int separatorIndex = pathname.lastIndexOf(FWD_SLASH);
 
 		if (separatorIndex < 0) {
 			return "";
 		}
-		return pathName.substring(0, separatorIndex);
+		return pathname.substring(0, separatorIndex);
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public String concatPathName(String basePathName, String relativePathName) {
+	public String concatPathname(String basePathname, String relativePathname) {
 
-		return basePathName + FWD_SLASH + relativePathName;
+		return basePathname + FWD_SLASH + relativePathname;
 	}
 
 }

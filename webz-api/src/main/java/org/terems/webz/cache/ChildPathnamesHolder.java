@@ -3,10 +3,10 @@ package org.terems.webz.cache;
 import java.util.Collection;
 
 /** TODO !!! describe !!! **/
-public class ChildPathNamesHolder {
+public class ChildPathnamesHolder {
 
 	/** TODO !!! describe !!! **/
-	public Collection<String> childPathNames;
+	public Collection<String> childPathnames;
 
 	/** TODO !!! describe !!! **/
 	public Object folderHash;
