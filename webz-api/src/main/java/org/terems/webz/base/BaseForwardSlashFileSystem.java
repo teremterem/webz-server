@@ -4,8 +4,8 @@ import java.util.regex.Pattern;
 
 public abstract class BaseForwardSlashFileSystem extends BaseWebzFileSystem {
 
-	private static final char FWD_SLASH = '/';
-	private static final String FWD_SLASH_STR = "" + FWD_SLASH;
+	protected static final char FWD_SLASH = '/';
+	protected static final String FWD_SLASH_STR = "" + FWD_SLASH;
 
 	/** TODO !!! describe !!! **/
 	@Override

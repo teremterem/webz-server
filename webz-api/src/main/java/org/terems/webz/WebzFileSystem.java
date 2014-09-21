@@ -31,6 +31,9 @@ public interface WebzFileSystem extends WebzDestroyable {
 	public String concatPathname(String basePathname, String relativePathname);
 
 	/** TODO !!! describe !!! **/
+	public boolean belongsToSubtree(String pathname, String subtreePathname);
+
+	/** TODO !!! describe !!! **/
 	public void inflate(WebzFile file) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/

@@ -67,6 +67,20 @@ public class GenericWebzFile implements WebzFile {
 	}
 
 	@Override
+	public boolean belongsToSubtree(WebzFile subtree) throws WebzPathnameException {
+
+		assertPathnameNotInvalid();
+		assertPathnameNotInvalid(subtree);
+
+		return fileSystem.belongsToSubtree(pathname, subtree.getPathname());
+	}
+
+	@Override
+	public boolean belongsToSubtree(String subtreePathname) throws WebzPathnameException {
+		return belongsToSubtree(fileFactory.get(subtreePathname));
+	}
+
+	@Override
 	public void inflate() throws IOException, WebzException {
 
 		if (!inflated) {
@@ -221,7 +235,7 @@ public class GenericWebzFile implements WebzFile {
 
 		if (file.isPathnameInvalid()) {
 
-			throw new WebzPathnameException("'" + file.getPathname() + "' is not a valid path name");
+			throw new WebzPathnameException("'" + file.getPathname() + "' is not a valid pathname");
 		}
 	}
 

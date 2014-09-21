@@ -53,7 +53,7 @@ public class GenericWebzApp implements WebzApp {
 		}
 
 		// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
-		rootContext = new RootWebzContext(fileFactory);
+		rootContext = new RootWebzContext(fileFactory, appFactory);
 		// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
 
 		WebzConfig filterConfig = new WebzConfigProxy() {

@@ -13,7 +13,7 @@ import org.terems.webz.base.BaseForwardSlashFileSystem;
 
 public class LocalFileSystem extends BaseForwardSlashFileSystem {
 
-	// TODO implement LocalFileSystem - come up with cross-platform "path name lower casing" strategy ?
+	// TODO implement LocalFileSystem - come up with cross-platform "pathname lower-casing" strategy ?
 
 	@Override
 	public void init(Properties properties) {
@@ -24,6 +24,12 @@ public class LocalFileSystem extends BaseForwardSlashFileSystem {
 	public String getFileSystemUniqueId() {
 		// Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public boolean belongsToSubtree(String pathname, String subtreePathname) {
+		// Auto-generated method stub
+		return false;
 	}
 
 	@Override

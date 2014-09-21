@@ -90,6 +90,11 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 	}
 
 	@Override
+	public boolean belongsToSubtree(String pathname, String subtreePathname) {
+		return innerFileSystem.belongsToSubtree(pathname, subtreePathname);
+	}
+
+	@Override
 	public void inflate(WebzFile file) throws IOException, WebzException {
 		innerFileSystem.inflate(cacheImpl, file);
 	}
@@ -97,8 +102,8 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 	private void dropFileContentAndChildPathnames(String pathname) {
 
 		cacheImpl.dropChildPathnamesHolderFromCache(pathname);
-		// TODO drop whole sub-tree (mind possible gaps in cache caused by evictions - maybe configure child path names cache to
-		// not evict anything ever at all?) - think in which cases this operation should be done
+		// TODO drop whole sub-tree (mind possible gaps in cache caused by evictions - maybe configure child pathnames cache to not evict
+		// anything ever at all?) - think in which cases this operation should be done
 
 		cacheImpl.dropFileContentHolderFromCache(pathname);
 	}

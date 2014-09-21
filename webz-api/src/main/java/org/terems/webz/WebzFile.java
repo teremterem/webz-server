@@ -21,6 +21,12 @@ public interface WebzFile {
 	public WebzFile getDescendant(String relativePathname) throws WebzPathnameException;
 
 	/** TODO !!! describe !!! **/
+	public boolean belongsToSubtree(WebzFile subtree) throws WebzPathnameException;
+
+	/** TODO !!! describe !!! **/
+	public boolean belongsToSubtree(String subtreePathname) throws WebzPathnameException;
+
+	/** TODO !!! describe !!! **/
 	public void inflate() throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
