@@ -12,8 +12,6 @@ import org.terems.webz.cache.WebzFileSystemCache;
 /** TODO !!! describe !!! **/
 public interface WebzFileSystem extends WebzDestroyable {
 
-	// TODO rename pathname to pathname everywhere !
-
 	/** TODO !!! describe !!! **/
 	public void init(Properties properties) throws WebzException;
 
