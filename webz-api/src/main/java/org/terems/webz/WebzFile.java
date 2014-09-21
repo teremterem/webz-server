@@ -24,7 +24,7 @@ public interface WebzFile {
 	public boolean belongsToSubtree(WebzFile subtree) throws WebzPathnameException;
 
 	/** TODO !!! describe !!! **/
-	public boolean belongsToSubtree(String subtreePathname) throws WebzPathnameException;
+	public boolean belongsToSubtree(String subtreePath) throws WebzPathnameException;
 
 	/** TODO !!! describe !!! **/
 	public void inflate() throws IOException, WebzException;

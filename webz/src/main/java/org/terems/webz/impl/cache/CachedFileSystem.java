@@ -85,13 +85,13 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 	}
 
 	@Override
-	public String concatPathname(String basePathname, String relativePathname) {
-		return innerFileSystem.concatPathname(basePathname, relativePathname);
+	public String concatPathname(String basePath, String relativePathname) {
+		return innerFileSystem.concatPathname(basePath, relativePathname);
 	}
 
 	@Override
-	public boolean belongsToSubtree(String pathname, String subtreePathname) {
-		return innerFileSystem.belongsToSubtree(pathname, subtreePathname);
+	public boolean belongsToSubtree(String pathname, String subtreePath) {
+		return innerFileSystem.belongsToSubtree(pathname, subtreePath);
 	}
 
 	@Override

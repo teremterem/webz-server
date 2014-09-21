@@ -45,8 +45,8 @@ public class WebzFileNotAccessible implements WebzFile {
 	}
 
 	@Override
-	public boolean belongsToSubtree(String subtreePathname) throws WebzPathnameException {
-		return file.belongsToSubtree(subtreePathname);
+	public boolean belongsToSubtree(String subtreePath) throws WebzPathnameException {
+		return file.belongsToSubtree(subtreePath);
 	}
 
 	@Override

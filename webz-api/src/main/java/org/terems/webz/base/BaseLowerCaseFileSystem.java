@@ -18,22 +18,22 @@ public abstract class BaseLowerCaseFileSystem extends BaseForwardSlashFileSystem
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public boolean belongsToSubtree(String pathname, String subtreePathname) {
+	public boolean belongsToSubtree(String pathname, String subtreePath) {
 
-		if (subtreePathname.isEmpty()) {
+		if (subtreePath.isEmpty()) {
 			return true;
 		}
-		if (pathname.length() < subtreePathname.length()) {
+		if (pathname.length() < subtreePath.length()) {
 			return false;
 		}
-		if (pathname.length() == subtreePathname.length()) {
-			return pathname.equals(subtreePathname);
+		if (pathname.length() == subtreePath.length()) {
+			return pathname.equals(subtreePath);
 		}
 
-		if (!pathname.startsWith(subtreePathname)) {
+		if (!pathname.startsWith(subtreePath)) {
 			return false;
 		}
-		return pathname.codePointAt(subtreePathname.length()) == FWD_SLASH;
+		return pathname.codePointAt(subtreePath.length()) == FWD_SLASH;
 	}
 
 }

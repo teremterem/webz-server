@@ -24,7 +24,7 @@ public class WebzEngine implements WebzServletContainerBridge {
 	private static final Logger LOG = LoggerFactory.getLogger(WebzEngine.class);
 
 	private WebzDestroyableFactory globalFactory = new WebzDestroyableFactory();
-	private WebzApp rootWebzApp;
+	private volatile WebzApp rootWebzApp;
 
 	public WebzEngine(Properties rootFileSystemProperties, Collection<Class<? extends WebzFilter>> filterClassesList) throws WebzException {
 

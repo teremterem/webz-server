@@ -76,8 +76,8 @@ public class GenericWebzFile implements WebzFile {
 	}
 
 	@Override
-	public boolean belongsToSubtree(String subtreePathname) throws WebzPathnameException {
-		return belongsToSubtree(fileFactory.get(subtreePathname));
+	public boolean belongsToSubtree(String subtreePath) throws WebzPathnameException {
+		return belongsToSubtree(fileFactory.get(subtreePath));
 	}
 
 	@Override

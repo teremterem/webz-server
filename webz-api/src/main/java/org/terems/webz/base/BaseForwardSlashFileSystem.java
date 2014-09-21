@@ -55,9 +55,9 @@ public abstract class BaseForwardSlashFileSystem extends BaseWebzFileSystem {
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public String concatPathname(String basePathname, String relativePathname) {
+	public String concatPathname(String basePath, String relativePathname) {
 
-		return basePathname + FWD_SLASH + relativePathname;
+		return basePath + FWD_SLASH + relativePathname;
 	}
 
 }

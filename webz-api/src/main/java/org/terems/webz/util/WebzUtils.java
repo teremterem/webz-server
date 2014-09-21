@@ -84,7 +84,7 @@ public class WebzUtils {
 	public static void loadPropertiesFromClasspath(String name, Properties properties, ClassLoader classLoader) throws WebzException {
 
 		if (name == null) {
-			throw new WebzException("null pathname was supplied - properties cannot be read");
+			throw new WebzException("null resource name was supplied - properties cannot be read");
 		}
 
 		InputStream in = classLoader.getResourceAsStream(name);
