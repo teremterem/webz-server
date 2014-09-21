@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
 
+/** TODO !!! describe !!! **/
 public class WebzFileNotAccessible implements WebzFile {
 
 	private WebzFile file;

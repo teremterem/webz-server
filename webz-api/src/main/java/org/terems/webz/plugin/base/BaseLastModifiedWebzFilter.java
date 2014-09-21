@@ -2,6 +2,7 @@ package org.terems.webz.plugin.base;
 
 import javax.servlet.http.HttpServletRequest;
 
+/** TODO !!! describe !!! **/
 public abstract class BaseLastModifiedWebzFilter extends BaseWebzFilter {
 
 	// TODO support last modified concept

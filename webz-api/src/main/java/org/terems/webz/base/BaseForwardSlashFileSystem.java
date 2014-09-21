@@ -2,6 +2,7 @@ package org.terems.webz.base;
 
 import java.util.regex.Pattern;
 
+/** TODO !!! describe !!! **/
 public abstract class BaseForwardSlashFileSystem extends BaseWebzFileSystem {
 
 	protected static final char FWD_SLASH = '/';

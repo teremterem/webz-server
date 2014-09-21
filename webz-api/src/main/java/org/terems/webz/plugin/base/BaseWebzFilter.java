@@ -14,7 +14,7 @@ public abstract class BaseWebzFilter implements WebzFilter {
 		return appConfig;
 	}
 
-	/** TODO !!! describe !!! **/
+	/** Do nothing by default... **/
 	public void init() throws WebzException {
 	}
 
@@ -25,7 +25,7 @@ public abstract class BaseWebzFilter implements WebzFilter {
 		init();
 	}
 
-	/** TODO !!! describe !!! **/
+	/** Do nothing by default... **/
 	@Override
 	public void destroy() {
 	}
