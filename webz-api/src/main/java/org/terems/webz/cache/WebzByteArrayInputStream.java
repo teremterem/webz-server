@@ -4,15 +4,21 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.terems.webz.WebzWriteException;
+
 /** TODO !!! describe !!! **/
 public class WebzByteArrayInputStream extends ByteArrayInputStream {
 
 	/** TODO !!! describe !!! **/
-	public long writeAvailableToOutputStream(OutputStream out) throws IOException {
+	public long writeAvailableToOutputStream(OutputStream out) throws WebzWriteException {
 
 		int available = available();
 
-		out.write(this.buf, this.pos, available);
+		try {
+			out.write(this.buf, this.pos, available);
+		} catch (IOException e) {
+			throw new WebzWriteException(e);
+		}
 		return skip(available);
 	}
 

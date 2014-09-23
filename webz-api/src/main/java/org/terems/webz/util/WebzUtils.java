@@ -178,6 +178,7 @@ public class WebzUtils {
 
 	/** TODO !!! describe !!! **/
 	public static String assertString(Object value) {
+
 		if (!(value instanceof String)) {
 			throw new ClassCastException(value + " is not of type String");
 		}

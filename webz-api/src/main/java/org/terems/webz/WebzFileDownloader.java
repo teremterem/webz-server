@@ -1,6 +1,5 @@
 package org.terems.webz;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -16,7 +15,7 @@ public class WebzFileDownloader {
 	public InputStream content;
 
 	/** TODO !!! describe !!! **/
-	public long copyContentAndClose(OutputStream out) throws IOException {
+	public long copyContentAndClose(OutputStream out) throws WebzReadException, WebzWriteException {
 
 		try {
 			return copyContent(out);
@@ -31,7 +30,7 @@ public class WebzFileDownloader {
 	}
 
 	/** Defined as a separate method for more convenient overriding... **/
-	protected long copyContent(OutputStream out) throws IOException {
+	protected long copyContent(OutputStream out) throws WebzReadException, WebzWriteException {
 		return WebzUtils.copyInToOut(content, out);
 	}
 

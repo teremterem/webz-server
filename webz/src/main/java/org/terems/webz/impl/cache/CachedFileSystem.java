@@ -15,6 +15,7 @@ import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzFileSystem;
 import org.terems.webz.WebzMetadata;
+import org.terems.webz.WebzWriteException;
 import org.terems.webz.base.BaseWebzFileSystem;
 import org.terems.webz.cache.ChildPathnamesHolder;
 import org.terems.webz.cache.FileContentHolder;
@@ -202,7 +203,7 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 			return new WebzFileDownloader(fileSpecific, webzIn) {
 
 				@Override
-				protected long copyContent(OutputStream out) throws IOException {
+				protected long copyContent(OutputStream out) throws WebzWriteException {
 					return webzIn.writeAvailableToOutputStream(out);
 				}
 			};
