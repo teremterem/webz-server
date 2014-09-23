@@ -20,6 +20,7 @@ import org.terems.webz.WebzFileSystem;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.base.WebzConfigProxy;
 import org.terems.webz.base.WebzContextProxy;
+import org.terems.webz.config.GeneralAppConfig;
 import org.terems.webz.plugin.WebzFilter;
 import org.terems.webz.util.WebzUtils;
 
@@ -38,6 +39,11 @@ public class GenericWebzApp implements WebzApp {
 	public void init(WebzFileSystem fileSystem, Collection<Class<? extends WebzFilter>> filterClassesList) throws WebzException {
 
 		WebzFileFactory fileFactory = new DefaultWebzFileFactory(fileSystem);
+
+		// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
+		rootContext = new RootWebzContext(fileFactory, appFactory);
+		// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
+
 		try {
 			WebzMetadata rootMetadata = fileFactory.get("").getMetadata();
 
@@ -45,16 +51,30 @@ public class GenericWebzApp implements WebzApp {
 				throw new WebzException(WebzUtils.formatFileSystemMessage("failed to initialize WebZ App - root location does not exist",
 						fileSystem));
 			}
-			// TODO first try to fetch app name from general.properties
-			displayName = rootMetadata.getName();
+
+			displayName = rootContext.getAppConfigObject(GeneralAppConfig.class).getAppDisplayName();
+			if (displayName == null) {
+				displayName = rootMetadata.getName();
+			}
 
 		} catch (IOException e) {
 			throw new WebzException(e);
 		}
 
-		// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
-		rootContext = new RootWebzContext(fileFactory, appFactory);
-		// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
+		initFilterChain(filterClassesList);
+
+		if (LOG.isInfoEnabled()) {
+			LOG.info("WebZ App '" + displayName + "' initialized");
+		}
+	}
+
+	private void initFilterChain(Collection<Class<? extends WebzFilter>> filterClassesList) throws WebzException {
+
+		filterChain = new ArrayList<>(filterClassesList.size());
+
+		for (Class<? extends WebzFilter> filterClass : filterClassesList) {
+			filterChain.add(appFactory.newDestroyable(filterClass));
+		}
 
 		WebzConfig filterConfig = new WebzConfigProxy() {
 
@@ -64,21 +84,8 @@ public class GenericWebzApp implements WebzApp {
 			}
 		};
 
-		initFilterChain(filterClassesList);
-
 		for (WebzFilter filter : filterChain) {
 			filter.init(filterConfig);
-		}
-
-		LOG.info("WebZ App '" + displayName + "' initialized");
-	}
-
-	private void initFilterChain(Collection<Class<? extends WebzFilter>> filterClassesList) throws WebzException {
-
-		filterChain = new ArrayList<>(filterClassesList.size());
-
-		for (Class<? extends WebzFilter> filterClass : filterClassesList) {
-			filterChain.add(appFactory.newDestroyable(filterClass));
 		}
 	}
 
@@ -160,8 +167,10 @@ public class GenericWebzApp implements WebzApp {
 
 		appFactory.destroy();
 
-		LOG.info("WebZ App '" + displayName + "' destroyed");
-	};
+		if (LOG.isInfoEnabled()) {
+			LOG.info("WebZ App '" + displayName + "' destroyed");
+		}
+	}
 
 	@Override
 	public String toString() {

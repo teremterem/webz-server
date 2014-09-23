@@ -14,10 +14,10 @@ import org.terems.webz.WebzException;
 import org.terems.webz.WebzFileSystem;
 import org.terems.webz.WebzServletContainerBridge;
 import org.terems.webz.cache.WebzFileSystemCache;
+import org.terems.webz.config.WebzDefaults;
+import org.terems.webz.config.WebzProperties;
 import org.terems.webz.impl.cache.CachedFileSystem;
 import org.terems.webz.plugin.WebzFilter;
-import org.terems.webz.settings.WebzDefaults;
-import org.terems.webz.settings.WebzProperties;
 
 public class WebzEngine implements WebzServletContainerBridge {
 

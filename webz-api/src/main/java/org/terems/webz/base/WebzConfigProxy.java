@@ -2,7 +2,7 @@ package org.terems.webz.base;
 
 import org.terems.webz.WebzConfig;
 import org.terems.webz.WebzException;
-import org.terems.webz.plugin.WebzConfigObject;
+import org.terems.webz.config.WebzConfigObject;
 
 /** TODO !!! describe !!! **/
 public abstract class WebzConfigProxy implements WebzConfig {

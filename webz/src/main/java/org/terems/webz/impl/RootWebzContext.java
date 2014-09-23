@@ -1,20 +1,22 @@
 package org.terems.webz.impl;
 
-import java.io.IOException;
-
 import javax.servlet.http.HttpServletRequest;
 
-import org.terems.webz.WebzPathnameException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzConfig;
 import org.terems.webz.WebzContext;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFileFactory;
 import org.terems.webz.WebzFileNotAccessible;
-import org.terems.webz.plugin.WebzConfigObject;
-import org.terems.webz.settings.WebzProperties;
+import org.terems.webz.WebzPathnameException;
+import org.terems.webz.config.WebzConfigObject;
+import org.terems.webz.config.WebzProperties;
 
 public class RootWebzContext implements WebzContext, WebzConfig {
+
+	private static final Logger LOG = LoggerFactory.getLogger(RootWebzContext.class);
 
 	private WebzFileFactory fileFactory;
 	private WebzDestroyableFactory appFactory;
@@ -31,6 +33,8 @@ public class RootWebzContext implements WebzContext, WebzConfig {
 
 	@Override
 	public WebzFile getFile(String pathInfo) {
+
+		// TODO move security logic to WebzFileFactory level
 
 		WebzFile file = fileFactory.get(pathInfo == null ? "" : pathInfo);
 		try {
@@ -49,12 +53,10 @@ public class RootWebzContext implements WebzContext, WebzConfig {
 	public <T extends WebzConfigObject> T getAppConfigObject(Class<T> configObjectClass) throws WebzException {
 
 		T configObject = appFactory.getDestroyableSingleton(configObjectClass);
-		try {
-			configObject.init(getConfigFolder());
-		} catch (IOException e) {
-			throw new WebzException(e);
-		}
 
+		if (configObject.doOneTimeInit(getConfigFolder()) && LOG.isInfoEnabled()) {
+			LOG.info("config object '" + configObject.getClass().getName() + "' initialized");
+		}
 		return configObject;
 	}
 

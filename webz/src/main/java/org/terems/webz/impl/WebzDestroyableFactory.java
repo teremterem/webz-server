@@ -50,7 +50,6 @@ public class WebzDestroyableFactory implements WebzDestroyable {
 		} finally {
 			readLock.unlock();
 		}
-
 	}
 
 	@SuppressWarnings("unchecked")

@@ -65,7 +65,7 @@ public class WebzFileNotAccessible implements WebzFile {
 	}
 
 	@Override
-	public WebzMetadata copyContentToOutputStream(OutputStream out) throws IOException, WebzException {
+	public WebzMetadata.FileSpecific copyContentToOutputStream(OutputStream out) throws IOException, WebzException {
 		return null;
 	}
 

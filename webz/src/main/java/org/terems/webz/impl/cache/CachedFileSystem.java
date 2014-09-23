@@ -55,8 +55,10 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 
 		this.fileSystemUniqueId = cacheImpl.getCacheTypeName() + "-for-" + innerFileSystem.getFileSystemUniqueId();
 
-		LOG.info("'" + this.fileSystemUniqueId + "' file system cache was created to wrap '" + innerFileSystem.getFileSystemUniqueId()
-				+ "'");
+		if (LOG.isInfoEnabled()) {
+			LOG.info("'" + this.fileSystemUniqueId + "' file system cache was created to wrap '" + innerFileSystem.getFileSystemUniqueId()
+					+ "'");
+		}
 	}
 
 	@Override

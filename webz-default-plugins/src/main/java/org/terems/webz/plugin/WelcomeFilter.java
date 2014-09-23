@@ -1,4 +1,4 @@
-package org.terems.webz.filter;
+package org.terems.webz.plugin;
 
 import java.io.IOException;
 import java.util.Arrays;

@@ -1,6 +1,6 @@
 package org.terems.webz;
 
-import org.terems.webz.plugin.WebzConfigObject;
+import org.terems.webz.config.WebzConfigObject;
 
 /** TODO !!! describe !!! **/
 public interface WebzConfig {

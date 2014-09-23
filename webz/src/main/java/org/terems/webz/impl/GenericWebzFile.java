@@ -15,6 +15,7 @@ import org.terems.webz.WebzFileFactory;
 import org.terems.webz.WebzFileSystem;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzPathnameException;
+import org.terems.webz.util.WebzUtils;
 
 public class GenericWebzFile implements WebzFile {
 
@@ -113,7 +114,7 @@ public class GenericWebzFile implements WebzFile {
 	}
 
 	@Override
-	public WebzMetadata copyContentToOutputStream(OutputStream out) throws IOException, WebzException {
+	public WebzMetadata.FileSpecific copyContentToOutputStream(OutputStream out) throws IOException, WebzException {
 
 		if (isPathnameInvalid()) {
 			return null;
@@ -122,24 +123,23 @@ public class GenericWebzFile implements WebzFile {
 		return fileSystem.copyContentToOutputStream(pathname, out);
 	}
 
-	/**
-	 * Will also fetch metadata...
-	 **/
 	@Override
 	public byte[] getFileContent() throws IOException, WebzException {
 
-		WebzMetadata metadata = getMetadata();
-		if (metadata == null) {
+		WebzFileDownloader downloader = getFileDownloader();
+		if (downloader == null) {
 			return null;
 		}
+		WebzMetadata.FileSpecific fileSpecific = downloader.fileSpecific;
 
-		WebzMetadata.FileSpecific fileSpecific = metadata.getFileSpecific();
-		if (fileSpecific == null) {
-			return null;
+		long numBytes = fileSpecific.getNumberOfBytes();
+		if (numBytes > Integer.MAX_VALUE) {
+			throw new IndexOutOfBoundsException(WebzUtils.formatFileSystemMessage("file '" + pathname + "' (" + numBytes
+					+ " bytes) is too big for a byte array", fileSystem));
 		}
 
-		ByteArrayOutputStream out = new ByteArrayOutputStream((int) fileSpecific.getNumberOfBytes());
-		copyContentToOutputStream(out);
+		ByteArrayOutputStream out = new ByteArrayOutputStream((int) numBytes);
+		downloader.copyContentAndClose(out);
 		return out.toByteArray();
 	}
 
