@@ -11,16 +11,17 @@ import org.terems.webz.WebzChainContext;
 import org.terems.webz.WebzException;
 import org.terems.webz.config.StatusCodesConfig;
 import org.terems.webz.plugin.base.BaseWebzFilter;
+import org.terems.webz.util.WebzUtils;
 
 public class ErrorFilter extends BaseWebzFilter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ErrorFilter.class);
 
-	private static final String FAILED_TO_SHOW_ERROR_MSG = "FAILED TO SHOW AN ERROR PAGE: ";
-	private static final String RESPONSE_ALREADY_COMMITTED_MSG = FAILED_TO_SHOW_ERROR_MSG + "response is already committed";
+	private static final String FAILED_TO_SHOW_ERROR_MSG = "FAILED TO SHOW PROPER ERROR PAGE TO THE CLIENT";
+	private static final String RESPONSE_ALREADY_COMMITTED_MSG = FAILED_TO_SHOW_ERROR_MSG + ": response is already committed";
 
 	// TODO make RETHROW_IF_CANNOT_HANDLE configurable ?
-	private final static boolean RETHROW_IF_CANNOT_HANDLE = false;
+	private static final boolean RETHROW_IF_CANNOT_HANDLE = false;
 
 	private String pathTo500file;
 	private StaticContentSender contentSender;
@@ -39,7 +40,7 @@ public class ErrorFilter extends BaseWebzFilter {
 
 		} catch (Throwable th) {
 
-			LOG.error(th.getMessage(), th);
+			LOG.warn(req.getMethod() + " " + WebzUtils.getFullUrl(req), th);
 
 			if (resp.isCommitted()) {
 
@@ -56,9 +57,7 @@ public class ErrorFilter extends BaseWebzFilter {
 
 				} catch (Throwable th2) {
 
-					if (LOG.isWarnEnabled()) {
-						LOG.warn(FAILED_TO_SHOW_ERROR_MSG + th2.getMessage(), th2);
-					}
+					LOG.warn(FAILED_TO_SHOW_ERROR_MSG, th2);
 					if (RETHROW_IF_CANNOT_HANDLE) {
 						throw th;
 					}

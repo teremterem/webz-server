@@ -41,13 +41,7 @@ public class StaticContentSender {
 		try {
 			downloader.copyContentAndClose(resp.getOutputStream());
 		} catch (WebzWriteException e) {
-
-			// most likely client dropped connection...
-			if (LOG.isDebugEnabled()) {
-				LOG.debug(e.getMessage(), e);
-			} else if (LOG.isWarnEnabled()) {
-				LOG.warn(e.toString());
-			}
+			LOG.debug("most likely client dropped connection while receiving static content", e);
 		}
 
 		return fileSpecific;

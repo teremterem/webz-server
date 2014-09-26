@@ -18,6 +18,7 @@ import org.terems.webz.config.WebzDefaults;
 import org.terems.webz.config.WebzProperties;
 import org.terems.webz.impl.cache.CachedFileSystem;
 import org.terems.webz.plugin.WebzFilter;
+import org.terems.webz.util.WebzUtils;
 
 public class WebzEngine implements WebzServletContainerBridge {
 
@@ -41,6 +42,12 @@ public class WebzEngine implements WebzServletContainerBridge {
 
 		if (rootWebzApp == null) {
 			throw new WebzException("WebZ Engine is already stopped");
+		}
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("\n\n\n// ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\\n "
+					+ req.getMethod() + " " + WebzUtils.getFullUrl(req)
+					+ "\n\\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ //\n\n");
 		}
 		rootWebzApp.serve(req, resp);
 	}

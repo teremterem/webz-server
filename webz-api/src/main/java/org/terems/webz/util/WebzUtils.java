@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFileDownloader;
@@ -20,6 +22,19 @@ public class WebzUtils {
 	public static final char FILE_EXT_SEPARATOR = '.';
 
 	private static final int DEFAULT_BUFFER_SIZE = 8192;
+
+	/** TODO !!! describe !!! **/
+	public static String getFullUrl(HttpServletRequest req) {
+
+		StringBuffer requestUrl = req.getRequestURL();
+		String queryString = req.getQueryString();
+
+		if (queryString == null) {
+			return requestUrl.toString();
+		} else {
+			return requestUrl.append('?').append(queryString).toString();
+		}
+	}
 
 	/** TODO !!! describe !!! **/
 	public static long copyInToOut(InputStream in, OutputStream out) throws WebzReadException, WebzWriteException {

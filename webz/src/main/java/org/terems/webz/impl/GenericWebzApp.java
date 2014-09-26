@@ -96,26 +96,7 @@ public class GenericWebzApp implements WebzApp {
 
 	@Override
 	public void serve(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException {
-
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("\n\n\n// ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\\n "
-					+ req.getMethod() + " " + getFullUrl(req)
-					+ "\n\\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ //\n\n");
-		}
-
 		new ChainContext(filterChain.iterator(), rootContext).nextPlease(req, resp);
-	}
-
-	private String getFullUrl(HttpServletRequest request) {
-
-		StringBuffer requestUrl = request.getRequestURL();
-		String queryString = request.getQueryString();
-
-		if (queryString == null) {
-			return requestUrl.toString();
-		} else {
-			return requestUrl.append('?').append(queryString).toString();
-		}
 	}
 
 	private static class ChainContext extends WebzContextProxy implements WebzChainContext {
