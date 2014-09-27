@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzChainContext;
 import org.terems.webz.WebzException;
+import org.terems.webz.WebzFile;
+import org.terems.webz.WebzMetadata;
 import org.terems.webz.config.StatusCodesConfig;
 import org.terems.webz.plugin.base.BaseWebzFilter;
 import org.terems.webz.util.WebzUtils;
@@ -49,15 +51,34 @@ public class ErrorFilter extends BaseWebzFilter {
 					throw th;
 				}
 			} else {
+
+				WebzFile errorFile = null;
+				WebzMetadata.FileSpecific errorFileMetadata = null;
+				Throwable exceptionWhileShowingErrorPage = null;
+
 				try {
 					resp.reset();
 					resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-					contentSender.serveStaticContent(resp, chainContext.getFile(pathTo500file));
+					errorFile = chainContext.getFile(pathTo500file);
+					errorFileMetadata = contentSender.serveStaticContent(resp, errorFile);
 
 				} catch (Throwable th2) {
+					exceptionWhileShowingErrorPage = th2;
+				}
 
-					LOG.warn(FAILED_TO_SHOW_ERROR_MSG, th2);
+				if (exceptionWhileShowingErrorPage != null) {
+
+					LOG.warn(FAILED_TO_SHOW_ERROR_MSG, exceptionWhileShowingErrorPage);
+					if (RETHROW_IF_CANNOT_HANDLE) {
+						throw th;
+					}
+				} else if (errorFileMetadata == null) {
+
+					if (LOG.isWarnEnabled()) {
+						LOG.warn(FAILED_TO_SHOW_ERROR_MSG + ": '" + (errorFile == null ? pathTo500file : errorFile.getPathname())
+								+ "' does not exist");
+					}
 					if (RETHROW_IF_CANNOT_HANDLE) {
 						throw th;
 					}

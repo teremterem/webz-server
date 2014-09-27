@@ -59,6 +59,7 @@ public interface WebzFileSystem extends WebzDestroyable {
 	public Collection<String> getChildPathnames(String parentPathname) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
+	// TODO should WebzReadException and WebzWriteException be mentioned explicitly in copyContentToOutputStream's throws declaration ?
 	public WebzMetadata.FileSpecific copyContentToOutputStream(String pathname, OutputStream out) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
