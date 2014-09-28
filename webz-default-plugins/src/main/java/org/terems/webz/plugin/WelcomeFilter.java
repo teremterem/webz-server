@@ -22,7 +22,7 @@ public class WelcomeFilter extends BaseWebzFilter {
 	private Collection<String> defaultFileNames = Arrays.asList(new String[] { "index" });
 
 	// dilemma: 301 (permanent) redirect is more SEO friendly but some browsers and crawlers may treat it as "eternal"
-	private boolean permanentRedirect = false;
+	private final boolean permanentRedirect = false;
 
 	@Override
 	public void serve(HttpServletRequest req, HttpServletResponse resp, final WebzChainContext chainContext) throws IOException,
@@ -38,9 +38,9 @@ public class WelcomeFilter extends BaseWebzFilter {
 			throws IOException, WebzException {
 
 		String requestMethod = req.getMethod();
-		boolean isMethodHead = "HEAD".equals(requestMethod);
+		boolean isMethodHead = HTTP_HEAD.equals(requestMethod);
 
-		if (("GET".equals(requestMethod) || isMethodHead)) {
+		if ((HTTP_GET.equals(requestMethod) || isMethodHead)) {
 
 			// resolving file using default resolver...
 			WebzMetadata metadata = chainContext.resolveFile(req).getMetadata();

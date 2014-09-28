@@ -23,7 +23,7 @@ public class ErrorFilter extends BaseWebzFilter {
 	private static final String RESPONSE_ALREADY_COMMITTED_MSG = FAILED_TO_SHOW_ERROR_MSG + ": response is already committed";
 
 	// TODO make RETHROW_IF_CANNOT_HANDLE configurable ?
-	private static final boolean RETHROW_IF_CANNOT_HANDLE = false;
+	private final boolean rethrowIfCannotHandle = false;
 
 	private String pathTo500file;
 	private StaticContentSender contentSender;
@@ -42,12 +42,12 @@ public class ErrorFilter extends BaseWebzFilter {
 
 		} catch (Throwable th) {
 
-			LOG.warn(req.getMethod() + " " + WebzUtils.getFullUrl(req), th);
+			LOG.warn(WebzUtils.formatRequestMethodAndUrl(req), th);
 
 			if (resp.isCommitted()) {
 
 				LOG.warn(RESPONSE_ALREADY_COMMITTED_MSG);
-				if (RETHROW_IF_CANNOT_HANDLE) {
+				if (rethrowIfCannotHandle) {
 					throw th;
 				}
 			} else {
@@ -70,7 +70,7 @@ public class ErrorFilter extends BaseWebzFilter {
 				if (exceptionWhileShowingErrorPage != null) {
 
 					LOG.warn(FAILED_TO_SHOW_ERROR_MSG, exceptionWhileShowingErrorPage);
-					if (RETHROW_IF_CANNOT_HANDLE) {
+					if (rethrowIfCannotHandle) {
 						throw th;
 					}
 				} else if (errorFileMetadata == null) {
@@ -79,7 +79,7 @@ public class ErrorFilter extends BaseWebzFilter {
 						LOG.warn(FAILED_TO_SHOW_ERROR_MSG + ": '" + (errorFile == null ? pathTo500file : errorFile.getPathname())
 								+ "' does not exist");
 					}
-					if (RETHROW_IF_CANNOT_HANDLE) {
+					if (rethrowIfCannotHandle) {
 						throw th;
 					}
 				}

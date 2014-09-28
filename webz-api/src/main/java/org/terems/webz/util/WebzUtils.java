@@ -4,7 +4,12 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Properties;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -34,6 +39,11 @@ public class WebzUtils {
 		} else {
 			return requestUrl.append('?').append(queryString).toString();
 		}
+	}
+
+	/** TODO !!! describe !!! **/
+	public static String formatRequestMethodAndUrl(HttpServletRequest req) {
+		return req.getMethod() + " " + getFullUrl(req);
 	}
 
 	/** TODO !!! describe !!! **/
@@ -201,13 +211,33 @@ public class WebzUtils {
 	}
 
 	/** TODO !!! describe !!! **/
+	public static String formatFileSystemMessage(String message, WebzFileSystem fileSystem) {
+		return message + " (file system: '" + fileSystem.getFileSystemUniqueId() + "')";
+	}
+
+	/** TODO !!! describe !!! **/
 	public static String replaceWhitespacesWithDashesSafely(String value) {
 		return value == null ? null : value.trim().replaceAll("\\s+", "-");
 	}
 
+	private static final ThreadLocal<DateFormat> HTTP_DATE_FORMAT = new ThreadLocal<DateFormat>() {
+		@Override
+		protected DateFormat initialValue() {
+
+			DateFormat value = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+			value.setTimeZone(TimeZone.getTimeZone("GMT"));
+			return value;
+		}
+	};
+
 	/** TODO !!! describe !!! **/
-	public static String formatFileSystemMessage(String message, WebzFileSystem fileSystem) {
-		return message + " (file system: '" + fileSystem.getFileSystemUniqueId() + "')";
+	public static String formatHttpDate(long date) {
+		return formatHttpDate(new Date(date));
+	}
+
+	/** TODO !!! describe !!! **/
+	public static String formatHttpDate(Date date) {
+		return HTTP_DATE_FORMAT.get().format(date);
 	}
 
 }
