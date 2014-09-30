@@ -241,8 +241,7 @@ public class GenericWebzFile implements WebzFile {
 
 	@Override
 	public String toString() {
-		return WebzUtils.formatFileSystemMessageOnlyClosingBracket("'" + pathname + "'" + WebzUtils.OPENING_BRACKET_MSG
-				+ getClass().getSimpleName() + " - ", fileSystem);
+		return WebzUtils.formatFileSystemMessage(getClass().getSimpleName() + " '" + pathname + "'", fileSystem);
 	}
 
 }

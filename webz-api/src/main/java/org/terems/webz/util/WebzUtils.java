@@ -210,18 +210,9 @@ public class WebzUtils {
 		return (String) value;
 	}
 
-	public static final String OPENING_BRACKET_MSG = " (";
-	private static final String FILE_SYSTEM_ID_MSG = "WebzFileSystem ID: '";
-	private static final String LAST_BRACKET_MSG = "')";
-
 	/** TODO !!! describe !!! **/
 	public static String formatFileSystemMessage(String message, WebzFileSystem fileSystem) {
-		return message + OPENING_BRACKET_MSG + FILE_SYSTEM_ID_MSG + fileSystem.getFileSystemUniqueId() + LAST_BRACKET_MSG;
-	}
-
-	/** TODO !!! describe !!! **/
-	public static String formatFileSystemMessageOnlyClosingBracket(String message, WebzFileSystem fileSystem) {
-		return message + FILE_SYSTEM_ID_MSG + fileSystem.getFileSystemUniqueId() + LAST_BRACKET_MSG;
+		return message + " (WebzFileSystem ID: '" + fileSystem.getFileSystemUniqueId() + "')";
 	}
 
 	/** TODO !!! describe !!! **/
