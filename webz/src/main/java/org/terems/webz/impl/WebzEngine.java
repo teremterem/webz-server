@@ -18,7 +18,6 @@ import org.terems.webz.config.WebzDefaults;
 import org.terems.webz.config.WebzProperties;
 import org.terems.webz.impl.cache.CachedFileSystem;
 import org.terems.webz.plugin.WebzFilter;
-import org.terems.webz.plugin.base.BaseWebzFilter;
 import org.terems.webz.util.WebzUtils;
 
 public class WebzEngine implements WebzServletContainerBridge {
@@ -46,24 +45,24 @@ public class WebzEngine implements WebzServletContainerBridge {
 		}
 
 		if (LOG.isTraceEnabled()) {
-			String modifiedSince = req.getHeader(BaseWebzFilter.HEADER_IF_MODIFIED_SINCE);
+			String modifiedSince = req.getHeader(WebzFilter.HEADER_IF_MODIFIED_SINCE);
 			LOG.trace("\n\n\n\n// ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\\n "
 					+ WebzUtils.formatRequestMethodAndUrl(req)
 					+ "\n\\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ //"
-					+ (modifiedSince == null ? "" : "\n " + BaseWebzFilter.HEADER_IF_MODIFIED_SINCE + ": " + modifiedSince
+					+ (modifiedSince == null ? "" : "\n " + WebzFilter.HEADER_IF_MODIFIED_SINCE + ": " + modifiedSince
 							+ "\n// ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\") + "\n");
 		}
 
 		rootWebzApp.serve(req, resp);
 
 		if (LOG.isTraceEnabled()) {
-			String lastModified = resp.getHeader(BaseWebzFilter.HEADER_LAST_MODIFIED);
+			String lastModified = resp.getHeader(WebzFilter.HEADER_LAST_MODIFIED);
 			LOG.trace("\n\n\\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ //\n HTTP "
 					+ resp.getStatus()
 					+ " ("
 					+ WebzUtils.formatRequestMethodAndUrl(req)
 					+ ")\n// ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\"
-					+ (lastModified == null ? "" : "\n " + BaseWebzFilter.HEADER_LAST_MODIFIED + ": " + lastModified
+					+ (lastModified == null ? "" : "\n " + WebzFilter.HEADER_LAST_MODIFIED + ": " + lastModified
 							+ "\n\\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ //")
 					+ "\n\n\n");
 		}

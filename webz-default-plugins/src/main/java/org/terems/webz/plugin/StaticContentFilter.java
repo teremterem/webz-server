@@ -14,7 +14,6 @@ import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.plugin.base.BaseLastModifiedWebzFilter;
-import org.terems.webz.plugin.base.BaseWebzFilter;
 import org.terems.webz.util.WebzUtils;
 
 public class StaticContentFilter extends BaseLastModifiedWebzFilter<WebzFile> {
@@ -48,7 +47,7 @@ public class StaticContentFilter extends BaseLastModifiedWebzFilter<WebzFile> {
 		Long lastModified = lastModifiedDate == null ? null : lastModifiedDate.getTime();
 
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("\n\n  " + resource + "\n  " + BaseWebzFilter.HEADER_LAST_MODIFIED + ": "
+			LOG.trace("\n\n  " + resource + "\n  " + WebzFilter.HEADER_LAST_MODIFIED + ": "
 					+ (lastModified == null ? "UNDEFINED !!!" : WebzUtils.formatHttpDate(lastModified)) + "\n");
 		}
 		return lastModified;

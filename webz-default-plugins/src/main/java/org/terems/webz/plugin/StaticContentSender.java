@@ -16,6 +16,7 @@ import org.terems.webz.config.GeneralAppConfig;
 import org.terems.webz.config.MimetypesConfig;
 
 public class StaticContentSender {
+	// TODO move StaticContentSender to webz-api (decide what to do with logging)
 
 	private static final Logger LOG = LoggerFactory.getLogger(StaticContentSender.class);
 
@@ -41,7 +42,7 @@ public class StaticContentSender {
 		try {
 			downloader.copyContentAndClose(resp.getOutputStream());
 		} catch (WebzWriteException e) {
-			LOG.debug("most likely client dropped connection while receiving static content", e);
+			LOG.debug("most likely client dropped connection while receiving static content from " + content, e);
 		}
 
 		return fileSpecific;
