@@ -5,22 +5,21 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terems.webz.ParentChildrenMetadata;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFileDownloader;
-import org.terems.webz.WebzFileSystem;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzWriteException;
-import org.terems.webz.base.BaseWebzFileSystem;
-import org.terems.webz.cache.ChildPathnamesHolder;
-import org.terems.webz.cache.FileContentHolder;
-import org.terems.webz.cache.WebzByteArrayInputStream;
-import org.terems.webz.cache.WebzFileSystemCache;
+import org.terems.webz.internals.ParentChildrenMetadata;
+import org.terems.webz.internals.WebzFileSystem;
+import org.terems.webz.internals.WebzFileSystemCache;
+import org.terems.webz.internals.base.BaseWebzFileSystem;
+import org.terems.webz.internals.cache.ChildPathnamesHolder;
+import org.terems.webz.internals.cache.FileContentHolder;
+import org.terems.webz.internals.cache.WebzByteArrayInputStream;
 import org.terems.webz.util.WebzUtils;
 
 // TODO background thread should periodically check certain number of pathnames against Dropbox to drop the whole FS cache if necessary
@@ -63,7 +62,7 @@ public class CachedFileSystem extends BaseWebzFileSystem {
 	}
 
 	@Override
-	public void init(Properties properties) {
+	protected void init() {
 		// do nothing - all the initialization happens in constructor
 	}
 

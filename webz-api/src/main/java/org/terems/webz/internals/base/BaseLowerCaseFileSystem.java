@@ -1,4 +1,4 @@
-package org.terems.webz.base;
+package org.terems.webz.internals.base;
 
 import org.terems.webz.util.WebzUtils;
 

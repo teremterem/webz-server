@@ -11,10 +11,10 @@ import java.util.Collection;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFileDownloader;
-import org.terems.webz.WebzFileFactory;
-import org.terems.webz.WebzFileSystem;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzPathnameException;
+import org.terems.webz.internals.WebzFileFactory;
+import org.terems.webz.internals.WebzFileSystem;
 import org.terems.webz.util.WebzUtils;
 
 public class GenericWebzFile implements WebzFile {

@@ -1,7 +1,13 @@
-package org.terems.webz.config;
+package org.terems.webz;
 
-/** TODO !!! describe constants !!! **/
-public class WebzProperties {
+import java.util.HashMap;
+import java.util.Map;
+
+import org.terems.webz.util.WebzUtils;
+
+/** TODO !!! describe !!! **/
+@SuppressWarnings("serial")
+public class WebzProperties extends HashMap<String, String> {
 
 	public static final String WEBZ_CONFIG_FOLDER = "-webz-config";
 
@@ -19,5 +25,30 @@ public class WebzProperties {
 
 	public static final String PATH_TO_404_FILE_PROPERTY = "404";
 	public static final String PATH_TO_500_FILE_PROPERTY = "500";
+
+	/** TODO !!! describe !!! **/
+	public WebzProperties() {
+		super();
+	}
+
+	/** TODO !!! describe !!! **/
+	public WebzProperties(int initialCapacity, float loadFactor) {
+		super(initialCapacity, loadFactor);
+	}
+
+	/** TODO !!! describe !!! **/
+	public WebzProperties(int initialCapacity) {
+		super(initialCapacity);
+	}
+
+	/** TODO !!! describe !!! **/
+	public WebzProperties(Map<Object, Object> properties) {
+
+		super(properties.size(), 1);
+
+		for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+			put(WebzUtils.assertString(entry.getKey()), WebzUtils.assertString(entry.getValue()));
+		}
+	}
 
 }

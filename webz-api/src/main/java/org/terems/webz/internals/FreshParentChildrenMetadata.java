@@ -1,4 +1,4 @@
-package org.terems.webz;
+package org.terems.webz.internals;
 
 /** TODO !!! describe !!! **/
 public class FreshParentChildrenMetadata {

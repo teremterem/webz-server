@@ -1,22 +1,24 @@
-package org.terems.webz;
+package org.terems.webz.internals;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Properties;
 
-import org.terems.webz.cache.WebzFileSystemCache;
+import org.terems.webz.WebzException;
+import org.terems.webz.WebzFile;
+import org.terems.webz.WebzFileDownloader;
+import org.terems.webz.WebzMetadata;
+import org.terems.webz.WebzPropertiesInitable;
+import org.terems.webz.WebzMetadata.FileSpecific;
 
 /** TODO !!! describe !!! **/
-public interface WebzFileSystem extends WebzDestroyable {
+public interface WebzFileSystem extends WebzPropertiesInitable {
 
-	/** TODO !!! describe !!! **/
-	public void init(Properties properties) throws WebzException;
+	// TODO split WebzFileSystem into several interfaces
 
-	/** TODO !!! describe !!! **/
-	public String getFileSystemUniqueId();
+	// ~~~ \\ // ~~~ \\ // ~~~ \\ WebzPathNormalizer // ~~~ \\ // ~~~ \\ // ~~~ \\
 
 	/** TODO !!! describe !!! **/
 	public String normalizePathname(String nonNormalizedPathname);
@@ -32,6 +34,11 @@ public interface WebzFileSystem extends WebzDestroyable {
 
 	/** TODO !!! describe !!! **/
 	public boolean belongsToSubtree(String pathname, String subtreePath);
+
+	// ~~~ \\ // ~~~ \\ // ~~~ \\ WebzFileSystemStructure // ~~~ \\ // ~~~ \\ // ~~~ \\
+
+	/** TODO !!! describe !!! **/
+	public String getFileSystemUniqueId();
 
 	/** TODO !!! describe !!! **/
 	public void inflate(WebzFile file) throws IOException, WebzException;
@@ -57,6 +64,8 @@ public interface WebzFileSystem extends WebzDestroyable {
 
 	/** TODO !!! describe !!! **/
 	public Collection<String> getChildPathnames(String parentPathname) throws IOException, WebzException;
+
+	// ~~~ \\ // ~~~ \\ // ~~~ \\ WebzFileSystemOperations // ~~~ \\ // ~~~ \\ // ~~~ \\
 
 	/** TODO !!! describe !!! **/
 	// TODO should WebzReadException and WebzWriteException be mentioned explicitly in copyContentToOutputStream's throws declaration ?

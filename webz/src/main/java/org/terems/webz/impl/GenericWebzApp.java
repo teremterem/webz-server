@@ -15,12 +15,12 @@ import org.terems.webz.WebzChainContext;
 import org.terems.webz.WebzConfig;
 import org.terems.webz.WebzContext;
 import org.terems.webz.WebzException;
-import org.terems.webz.WebzFileFactory;
-import org.terems.webz.WebzFileSystem;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.base.WebzConfigProxy;
 import org.terems.webz.base.WebzContextProxy;
 import org.terems.webz.config.GeneralAppConfig;
+import org.terems.webz.internals.WebzFileFactory;
+import org.terems.webz.internals.WebzFileSystem;
 import org.terems.webz.plugin.WebzFilter;
 import org.terems.webz.util.WebzUtils;
 

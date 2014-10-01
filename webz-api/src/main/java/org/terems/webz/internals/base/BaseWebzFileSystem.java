@@ -1,23 +1,24 @@
-package org.terems.webz.base;
+package org.terems.webz.internals.base;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Map;
 
-import org.terems.webz.FreshParentChildrenMetadata;
-import org.terems.webz.ParentChildrenMetadata;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFileDownloader;
-import org.terems.webz.WebzFileSystem;
 import org.terems.webz.WebzMetadata;
-import org.terems.webz.cache.WebzFileSystemCache;
+import org.terems.webz.base.BaseWebzPropertiesInitable;
+import org.terems.webz.internals.FreshParentChildrenMetadata;
+import org.terems.webz.internals.ParentChildrenMetadata;
+import org.terems.webz.internals.WebzFileSystem;
+import org.terems.webz.internals.WebzFileSystemCache;
 
 /**
- * Basic implementation of WebzFileSystem to be extended by concrete implementations...
+ * Basic implementation of {@code BaseWebzFileSystem} to be extended by concrete implementations...
  **/
-public abstract class BaseWebzFileSystem implements WebzFileSystem {
+public abstract class BaseWebzFileSystem extends BaseWebzPropertiesInitable implements WebzFileSystem {
 
 	/** Do nothing by default... **/
 	@Override
@@ -73,11 +74,6 @@ public abstract class BaseWebzFileSystem implements WebzFileSystem {
 		downloader.copyContentAndClose(out);
 
 		return downloader.fileSpecific;
-	}
-
-	/** Do nothing by default... **/
-	@Override
-	public void destroy() {
 	}
 
 }

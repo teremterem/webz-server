@@ -1,4 +1,4 @@
-package org.terems.webz.cache;
+package org.terems.webz.internals.cache;
 
 /** TODO !!! describe !!! **/
 public class FileContentHolder {

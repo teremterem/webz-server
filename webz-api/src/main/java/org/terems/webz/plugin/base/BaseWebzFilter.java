@@ -20,7 +20,7 @@ public abstract class BaseWebzFilter implements WebzFilter {
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public void init(WebzConfig appConfig) throws WebzException {
+	public final void init(WebzConfig appConfig) throws WebzException {
 		this.appConfig = appConfig;
 		init();
 	}

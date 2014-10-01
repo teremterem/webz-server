@@ -10,13 +10,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzApp;
+import org.terems.webz.WebzDefaults;
 import org.terems.webz.WebzException;
-import org.terems.webz.WebzFileSystem;
-import org.terems.webz.WebzServletContainerBridge;
-import org.terems.webz.cache.WebzFileSystemCache;
-import org.terems.webz.config.WebzDefaults;
-import org.terems.webz.config.WebzProperties;
+import org.terems.webz.WebzProperties;
 import org.terems.webz.impl.cache.CachedFileSystem;
+import org.terems.webz.internals.WebzFileSystem;
+import org.terems.webz.internals.WebzFileSystemCache;
+import org.terems.webz.internals.WebzServletContainerBridge;
 import org.terems.webz.plugin.WebzFilter;
 import org.terems.webz.util.WebzUtils;
 

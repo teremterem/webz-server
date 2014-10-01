@@ -8,11 +8,11 @@ import org.terems.webz.WebzConfig;
 import org.terems.webz.WebzContext;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
-import org.terems.webz.WebzFileFactory;
-import org.terems.webz.WebzFileNotAccessible;
 import org.terems.webz.WebzPathnameException;
+import org.terems.webz.WebzProperties;
 import org.terems.webz.config.WebzConfigObject;
-import org.terems.webz.config.WebzProperties;
+import org.terems.webz.internals.WebzFileFactory;
+import org.terems.webz.internals.WebzFileNotAccessible;
 
 public class RootWebzContext implements WebzContext, WebzConfig {
 

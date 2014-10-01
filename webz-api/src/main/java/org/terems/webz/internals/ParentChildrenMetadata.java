@@ -1,6 +1,8 @@
-package org.terems.webz;
+package org.terems.webz.internals;
 
 import java.util.Map;
+
+import org.terems.webz.WebzMetadata;
 
 /** TODO !!! describe !!! **/
 public class ParentChildrenMetadata {

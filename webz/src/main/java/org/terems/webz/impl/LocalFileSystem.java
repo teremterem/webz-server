@@ -2,21 +2,20 @@ package org.terems.webz.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Properties;
 
-import org.terems.webz.ParentChildrenMetadata;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzMetadata.FileSpecific;
-import org.terems.webz.base.BaseForwardSlashFileSystem;
+import org.terems.webz.internals.ParentChildrenMetadata;
+import org.terems.webz.internals.base.BaseForwardSlashFileSystem;
 
 public class LocalFileSystem extends BaseForwardSlashFileSystem {
 
 	// TODO implement LocalFileSystem - come up with cross-platform "pathname lower-casing" strategy ?
 
 	@Override
-	public void init(Properties properties) {
+	protected void init() {
 		// Auto-generated method stub
 	}
 

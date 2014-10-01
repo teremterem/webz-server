@@ -1,11 +1,12 @@
-package org.terems.webz.cache;
+package org.terems.webz.internals;
 
 import java.util.Collection;
 import java.util.Map;
 
 import org.terems.webz.WebzDestroyable;
-import org.terems.webz.WebzFileSystem;
 import org.terems.webz.WebzMetadata;
+import org.terems.webz.internals.cache.ChildPathnamesHolder;
+import org.terems.webz.internals.cache.FileContentHolder;
 
 /** TODO !!! describe !!! **/
 public interface WebzFileSystemCache extends WebzDestroyable {

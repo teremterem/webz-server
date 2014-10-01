@@ -1,8 +1,8 @@
 package org.terems.webz.impl;
 
 import org.terems.webz.WebzFile;
-import org.terems.webz.WebzFileFactory;
-import org.terems.webz.WebzFileSystem;
+import org.terems.webz.internals.WebzFileFactory;
+import org.terems.webz.internals.WebzFileSystem;
 
 public class DefaultWebzFileFactory implements WebzFileFactory {
 

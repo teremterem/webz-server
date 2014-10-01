@@ -3,9 +3,9 @@ package org.terems.webz.impl;
 import java.io.IOException;
 
 import org.terems.webz.WebzException;
-import org.terems.webz.WebzFileFactory;
-import org.terems.webz.WebzFileSystem;
 import org.terems.webz.WebzMetadata;
+import org.terems.webz.internals.WebzFileFactory;
+import org.terems.webz.internals.WebzFileSystem;
 
 public class MetadataInflatableWebzFile extends GenericWebzFile {
 

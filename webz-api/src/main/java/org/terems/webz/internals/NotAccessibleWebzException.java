@@ -1,4 +1,6 @@
-package org.terems.webz;
+package org.terems.webz.internals;
+
+import org.terems.webz.WebzException;
 
 /** TODO !!! describe !!! **/
 @SuppressWarnings("serial")

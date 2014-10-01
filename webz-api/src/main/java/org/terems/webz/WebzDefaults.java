@@ -1,4 +1,4 @@
-package org.terems.webz.config;
+package org.terems.webz;
 
 /** TODO !!! describe constants !!! **/
 public class WebzDefaults {

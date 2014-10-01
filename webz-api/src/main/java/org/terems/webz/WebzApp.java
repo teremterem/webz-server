@@ -2,6 +2,8 @@ package org.terems.webz;
 
 import java.util.Collection;
 
+import org.terems.webz.internals.WebzFileSystem;
+import org.terems.webz.internals.WebzServletContainerBridge;
 import org.terems.webz.plugin.WebzFilter;
 
 /** TODO !!! describe !!! **/

@@ -8,6 +8,7 @@ import java.util.Properties;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
 import org.terems.webz.WebzMetadata;
+import org.terems.webz.WebzProperties;
 import org.terems.webz.util.WebzUtils;
 
 public class MimetypesConfig extends WebzConfigObject {
