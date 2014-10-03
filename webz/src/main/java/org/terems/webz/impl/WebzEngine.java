@@ -54,14 +54,13 @@ public class WebzEngine implements WebzServletContainerBridge {
 
 		if (LOG.isTraceEnabled()) {
 			String lastModified = resp.getHeader(WebzFilter.HEADER_LAST_MODIFIED);
-			LOG.trace("\n\n\\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ //\n HTTP "
-					+ resp.getStatus()
-					+ " ("
-					+ WebzUtils.formatRequestMethodAndUrl(req)
-					+ ")\n// ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\"
-					+ (lastModified == null ? "" : "\n " + WebzFilter.HEADER_LAST_MODIFIED + ": " + lastModified
-							+ "\n\\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ //")
-					+ "\n\n\n");
+			LOG.trace("\n"
+					+ (lastModified == null ? ""
+							: "\n\\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ //\n "
+									+ WebzFilter.HEADER_LAST_MODIFIED + ": " + lastModified)
+					+ "\n// ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\\n HTTP "
+					+ resp.getStatus() + " (" + WebzUtils.formatRequestMethodAndUrl(req)
+					+ ")\n\\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ //" + "\n\n\n");
 		}
 	}
 
