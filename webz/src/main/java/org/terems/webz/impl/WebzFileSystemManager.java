@@ -3,12 +3,12 @@ package org.terems.webz.impl;
 import java.util.Properties;
 
 import org.terems.webz.WebzException;
+import org.terems.webz.WebzProperties;
 import org.terems.webz.base.BaseWebzDestroyable;
+import org.terems.webz.internals.WebzDestroyableFactory;
 import org.terems.webz.internals.WebzFileSystem;
 
 public class WebzFileSystemManager extends BaseWebzDestroyable {
-
-	private WebzDestroyableFactory factory;
 
 	public static WebzFileSystemManager getManager(WebzDestroyableFactory factory) throws WebzException {
 
@@ -18,13 +18,13 @@ public class WebzFileSystemManager extends BaseWebzDestroyable {
 		return manager;
 	}
 
+	private WebzDestroyableFactory factory;
+
 	public WebzFileSystem createFileSystem(Properties properties) throws WebzException {
 
 		GenericWebzFileSystem fileSystem = factory.newDestroyable(GenericWebzFileSystem.class);
-		fileSystem.factory = factory;
 
-		fileSystem.init(properties, true);
-		return fileSystem;
+		return fileSystem.init(properties == null ? null : new WebzProperties(properties), factory);
 	}
 
 }

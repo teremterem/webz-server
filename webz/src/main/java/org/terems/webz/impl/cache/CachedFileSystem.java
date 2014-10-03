@@ -8,14 +8,18 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.terems.webz.WebzDefaults;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzMetadata;
+import org.terems.webz.WebzProperties;
 import org.terems.webz.WebzWriteException;
 import org.terems.webz.internals.ParentChildrenMetadata;
+import org.terems.webz.internals.WebzDestroyableFactory;
 import org.terems.webz.internals.WebzFileSystemCache;
 import org.terems.webz.internals.WebzFileSystemImpl;
+import org.terems.webz.internals.WebzPathNormalizer;
 import org.terems.webz.internals.base.BaseWebzFileSystemImpl;
 import org.terems.webz.internals.cache.ChildPathnamesHolder;
 import org.terems.webz.internals.cache.FileContentHolder;
@@ -32,9 +36,11 @@ public class CachedFileSystem extends BaseWebzFileSystemImpl {
 	private WebzFileSystemImpl fileSystemImpl;
 	private WebzFileSystemCache cacheImpl;
 
-	private final int filePayloadSizeThreshold;
+	private int filePayloadSizeThreshold;
 
-	public CachedFileSystem(WebzFileSystemImpl fileSystemImpl, WebzFileSystemCache cacheImpl, int filePayloadSizeThreshold) {
+	public CachedFileSystem init(WebzFileSystemImpl fileSystemImpl, WebzPathNormalizer pathNormalizer, WebzProperties properties,
+			WebzDestroyableFactory factory) throws WebzException {
+
 		// TODO add two additional modes:
 		// 1) payload cache disabled completely
 		// 2) payload cache works for any payload sizes without the threshold
@@ -46,21 +52,18 @@ public class CachedFileSystem extends BaseWebzFileSystemImpl {
 		}
 		this.fileSystemImpl = fileSystemImpl;
 
-		cacheImpl.init(fileSystemImpl, filePayloadSizeThreshold);
-		this.cacheImpl = cacheImpl;
-
-		this.filePayloadSizeThreshold = filePayloadSizeThreshold;
+		cacheImpl = ((WebzFileSystemCache) factory.newDestroyable(properties.get(WebzProperties.FS_CACHE_IMPL_CLASS_PROPERTY,
+				WebzDefaults.FS_CACHE_IMPL_CLASS))).init(fileSystemImpl, filePayloadSizeThreshold);
+		filePayloadSizeThreshold = Integer.valueOf(properties.get(WebzProperties.FS_CACHE_PAYLOAD_THRESHOLD_BYTES_PROPERTY,
+				String.valueOf(WebzDefaults.FS_CACHE_PAYLOAD_THRESHOLD_BYTES)));
 
 		this.uniqueId = cacheImpl.getCacheTypeName() + "-for-" + fileSystemImpl.getUniqueId();
 
 		if (LOG.isInfoEnabled()) {
 			LOG.info("'" + this.uniqueId + "' file system cache was created to wrap '" + fileSystemImpl.getUniqueId() + "'");
 		}
-	}
-
-	@Override
-	protected void init() {
-		// do nothing - all the initialization happens in constructor
+		super.init(pathNormalizer, null);
+		return this;
 	}
 
 	@Override

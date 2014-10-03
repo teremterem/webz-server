@@ -12,7 +12,7 @@ import org.terems.webz.internals.cache.FileContentHolder;
 public interface WebzFileSystemCache extends WebzDestroyable {
 
 	/** TODO !!! describe !!! **/
-	public void init(WebzFileSystemImpl fileSystemImpl, int filePayloadSizeThreshold);
+	public WebzFileSystemCache init(WebzFileSystemImpl fileSystemImpl, int filePayloadSizeThreshold);
 
 	/** TODO !!! describe !!! **/
 	public String getCacheTypeName();

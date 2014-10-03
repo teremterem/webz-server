@@ -9,6 +9,7 @@ import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzMetadata;
+import org.terems.webz.WebzProperties;
 import org.terems.webz.base.BaseWebzPropertiesInitable;
 import org.terems.webz.internals.FreshParentChildrenMetadata;
 import org.terems.webz.internals.ParentChildrenMetadata;
@@ -25,6 +26,14 @@ public abstract class BaseWebzFileSystemImpl extends BaseWebzPropertiesInitable 
 	protected WebzPathNormalizer pathNormalizer;
 	protected WebzFileSystemStructure structure = this;
 	protected String uniqueId;
+
+	@Override
+	public BaseWebzFileSystemImpl init(WebzPathNormalizer pathNormalizer, WebzProperties properties) throws WebzException {
+
+		setPathNormalizer(pathNormalizer);
+		init(properties);
+		return this;
+	}
 
 	@Override
 	public void setPathNormalizer(WebzPathNormalizer pathNormalizer) {

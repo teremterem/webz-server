@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzApp;
 import org.terems.webz.WebzException;
+import org.terems.webz.internals.WebzDestroyableFactory;
 import org.terems.webz.internals.WebzFileSystem;
 import org.terems.webz.internals.WebzServletContainerBridge;
 import org.terems.webz.plugin.WebzFilter;
@@ -20,7 +21,7 @@ public class WebzEngine implements WebzServletContainerBridge {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WebzEngine.class);
 
-	private WebzDestroyableFactory globalFactory = new WebzDestroyableFactory();
+	private WebzDestroyableFactory globalFactory = new GenericWebzDestroyableFactory();
 	private volatile WebzApp rootWebzApp;
 
 	public WebzEngine(Properties rootFileSystemProperties, Collection<Class<? extends WebzFilter>> filterClassesList) throws WebzException {
@@ -28,7 +29,7 @@ public class WebzEngine implements WebzServletContainerBridge {
 		WebzFileSystem rootFileSystem = WebzFileSystemManager.getManager(globalFactory).createFileSystem(rootFileSystemProperties);
 
 		rootWebzApp = globalFactory.newDestroyable(GenericWebzApp.class);
-		rootWebzApp.init(rootFileSystem, filterClassesList);
+		rootWebzApp.init(rootFileSystem, filterClassesList, globalFactory.newDestroyable(GenericWebzDestroyableFactory.class));
 
 		LOG.info("WebZ Engine started\n");
 	}
@@ -71,6 +72,7 @@ public class WebzEngine implements WebzServletContainerBridge {
 		LOG.info("WebZ Engine stopped\n");
 
 		globalFactory.destroy();
+		LOG.info("WebZ Engine destroyed\n");
 	}
 
 }

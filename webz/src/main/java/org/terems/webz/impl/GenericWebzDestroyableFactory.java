@@ -12,14 +12,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzDestroyable;
 import org.terems.webz.WebzException;
+import org.terems.webz.internals.WebzDestroyableFactory;
 
-public class WebzDestroyableFactory implements WebzDestroyable {
+public class GenericWebzDestroyableFactory implements WebzDestroyableFactory {
 
-	private static final Logger LOG = LoggerFactory.getLogger(WebzDestroyableFactory.class);
+	private static final Logger LOG = LoggerFactory.getLogger(GenericWebzDestroyableFactory.class);
 
 	private static final String NULL_ENCOUNTERED_MSG = "null was encountered among " + WebzDestroyable.class.getSimpleName()
-			+ " objects while destroying " + WebzDestroyableFactory.class.getSimpleName();
-	private static final String ALREADY_DESTROYED_MSG = WebzDestroyableFactory.class.getSimpleName() + " is already destroyed";
+			+ " objects while destroying " + GenericWebzDestroyableFactory.class.getSimpleName();
+	private static final String ALREADY_DESTROYED_MSG = GenericWebzDestroyableFactory.class.getSimpleName() + " is already destroyed";
 
 	private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
@@ -31,6 +32,7 @@ public class WebzDestroyableFactory implements WebzDestroyable {
 	 **/
 	private volatile ConcurrentMap<Class<? extends WebzDestroyable>, DestroyableWrapper> singletons = new ConcurrentHashMap<>();
 
+	@Override
 	public <T extends WebzDestroyable> T newDestroyable(Class<T> destroyableClass) throws WebzException {
 
 		Lock readLock = readWriteLock.readLock();
@@ -52,6 +54,7 @@ public class WebzDestroyableFactory implements WebzDestroyable {
 		}
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends WebzDestroyable> T newDestroyable(String destroyableClassName) throws WebzException {
 		return newDestroyable((Class<T>) findDestroyableClassByName(destroyableClassName));
@@ -62,6 +65,7 @@ public class WebzDestroyableFactory implements WebzDestroyable {
 	 * href="http://stackoverflow.com/questions/17112504/with-double-checked-locking-does-a-put-to-a-volatile-concurrenthashmap-have-hap">
 	 * With double-checked locking, does a put to a volatile ConcurrentHashMap have happens-before guarantee?</a>
 	 **/
+	@Override
 	public <T extends WebzDestroyable> T getDestroyableSingleton(Class<T> destroyableClass) throws WebzException {
 
 		Lock readLock = readWriteLock.readLock();
@@ -91,6 +95,7 @@ public class WebzDestroyableFactory implements WebzDestroyable {
 		}
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends WebzDestroyable> T getDestroyableSingleton(String destroyableClassName) throws WebzException {
 		return getDestroyableSingleton((Class<T>) findDestroyableClassByName(destroyableClassName));

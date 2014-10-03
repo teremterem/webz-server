@@ -2,6 +2,7 @@ package org.terems.webz;
 
 import java.util.Collection;
 
+import org.terems.webz.internals.WebzDestroyableFactory;
 import org.terems.webz.internals.WebzFileSystem;
 import org.terems.webz.internals.WebzServletContainerBridge;
 import org.terems.webz.plugin.WebzFilter;
@@ -10,7 +11,8 @@ import org.terems.webz.plugin.WebzFilter;
 public interface WebzApp extends WebzServletContainerBridge {
 
 	/** TODO !!! describe !!! **/
-	public void init(WebzFileSystem fileSystem, Collection<Class<? extends WebzFilter>> filterClassesList) throws WebzException;
+	public void init(WebzFileSystem fileSystem, Collection<Class<? extends WebzFilter>> filterClassesList, WebzDestroyableFactory appFactory)
+			throws WebzException;
 
 	/** TODO !!! describe !!! **/
 	public String getDisplayName();

@@ -1,10 +1,13 @@
 package org.terems.webz.internals;
 
 import org.terems.webz.WebzDestroyable;
+import org.terems.webz.WebzException;
 import org.terems.webz.WebzIdentifiable;
-import org.terems.webz.WebzPropertiesInitable;
+import org.terems.webz.WebzProperties;
 
-public interface WebzFileSystem extends WebzPropertiesInitable, WebzIdentifiable, WebzDestroyable {
+public interface WebzFileSystem extends WebzIdentifiable, WebzDestroyable {
+
+	public WebzFileSystem init(WebzProperties properties, WebzDestroyableFactory factory) throws WebzException;
 
 	public WebzFileFactory getFileFactory();
 

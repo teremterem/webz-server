@@ -11,8 +11,11 @@ public class DefaultWebzFileFactory extends BaseWebzDestroyable implements WebzF
 
 	private WebzFileSystem fileSystem;
 
-	public DefaultWebzFileFactory(WebzFileSystem fileSystem) {
+	@Override
+	public DefaultWebzFileFactory init(WebzFileSystem fileSystem) {
+
 		this.fileSystem = fileSystem;
+		return this;
 	}
 
 	@Override
