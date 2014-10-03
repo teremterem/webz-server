@@ -5,20 +5,19 @@ import java.util.Properties;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzProperties;
 import org.terems.webz.WebzPropertiesInitable;
-import org.terems.webz.util.WebzUtils;
 
 /** TODO !!! describe !!! **/
 public abstract class BaseWebzPropertiesInitable extends BaseWebzDestroyable implements WebzPropertiesInitable {
 
-	private WebzProperties webzProperties;
+	private WebzProperties properties;
 
 	/** Do nothing by default... **/
 	protected void init() throws WebzException {
 	}
 
 	/** TODO !!! describe !!! **/
-	protected WebzProperties getWebzProperties() {
-		return webzProperties;
+	protected WebzProperties getProperties() {
+		return properties;
 	}
 
 	/** TODO !!! describe !!! **/
@@ -30,27 +29,29 @@ public abstract class BaseWebzPropertiesInitable extends BaseWebzDestroyable imp
 	/** TODO !!! describe !!! **/
 	@Override
 	public final void init(Properties properties, boolean failIfNotFound) throws WebzException {
-
-		if (properties == null && failIfNotFound) {
-			throw WebzUtils.newWebzNotFound(Properties.class);
-		}
-		init(new WebzProperties(properties), failIfNotFound);
+		init(properties == null ? null : new WebzProperties(properties), failIfNotFound);
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public final void init(WebzProperties webzProps) throws WebzException {
-		init(webzProps, false);
+	public final void init(WebzProperties webzProperties) throws WebzException {
+		init(webzProperties, false);
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public final void init(WebzProperties webzProps, boolean failIfNotFound) throws WebzException {
+	public final void init(WebzProperties webzProperties, boolean failIfNotFound) throws WebzException {
 
-		if (webzProps == null && failIfNotFound) {
-			throw WebzUtils.newWebzNotFound(WebzProperties.class);
+		if (webzProperties == null) {
+			if (failIfNotFound) {
+
+				throw new WebzException("properties not found");
+			} else {
+				this.properties = new WebzProperties();
+			}
+		} else {
+			this.properties = webzProperties;
 		}
-		this.webzProperties = webzProps;
 		init();
 	}
 

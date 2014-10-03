@@ -1,95 +1,17 @@
 package org.terems.webz.internals;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Collection;
-import java.util.Map;
-
-import org.terems.webz.WebzException;
-import org.terems.webz.WebzFile;
-import org.terems.webz.WebzFileDownloader;
-import org.terems.webz.WebzMetadata;
+import org.terems.webz.WebzDestroyable;
+import org.terems.webz.WebzIdentifiable;
 import org.terems.webz.WebzPropertiesInitable;
-import org.terems.webz.WebzMetadata.FileSpecific;
 
-/** TODO !!! describe !!! **/
-public interface WebzFileSystem extends WebzPropertiesInitable {
+public interface WebzFileSystem extends WebzPropertiesInitable, WebzIdentifiable, WebzDestroyable {
 
-	// TODO split WebzFileSystem into several interfaces
+	public WebzFileFactory getFileFactory();
 
-	// ~~~ \\ // ~~~ \\ // ~~~ \\ WebzPathNormalizer // ~~~ \\ // ~~~ \\ // ~~~ \\
+	public WebzPathNormalizer getPathNormalizer();
 
-	/** TODO !!! describe !!! **/
-	public String normalizePathname(String nonNormalizedPathname);
+	public WebzFileSystemStructure getStructure();
 
-	/** TODO !!! describe !!! **/
-	public boolean isNormalizedPathnameInvalid(String pathname);
-
-	/** TODO !!! describe !!! **/
-	public String getParentPathname(String pathname);
-
-	/** TODO !!! describe !!! **/
-	public String concatPathname(String basePath, String relativePathname);
-
-	/** TODO !!! describe !!! **/
-	public boolean belongsToSubtree(String pathname, String subtreePath);
-
-	// ~~~ \\ // ~~~ \\ // ~~~ \\ WebzFileSystemStructure // ~~~ \\ // ~~~ \\ // ~~~ \\
-
-	/** TODO !!! describe !!! **/
-	public String getFileSystemUniqueId();
-
-	/** TODO !!! describe !!! **/
-	public void inflate(WebzFile file) throws IOException, WebzException;
-
-	/** TODO !!! describe !!! **/
-	public void inflate(WebzFileSystemCache fileSystemCache, WebzFile file) throws IOException, WebzException;
-
-	/** TODO !!! describe !!! **/
-	public WebzMetadata getMetadata(String pathname) throws IOException, WebzException;
-
-	/** TODO !!! describe !!! **/
-	public ParentChildrenMetadata getParentChildrenMetadata(String parentPathname) throws IOException, WebzException;
-
-	/**
-	 * @return null if folder hash has not changed, otherwise - FreshParentChildrenMetadata object that encapsulates ParentChildrenMetadata;
-	 *         however encapsulated ParentChildrenMetadata may be null if there is no such file or folder...
-	 **/
-	public FreshParentChildrenMetadata getParentChildrenMetadataIfChanged(String parentPathname, Object previousFolderHash)
-			throws IOException, WebzException;
-
-	/** TODO !!! describe !!! **/
-	public Map<String, WebzMetadata> getChildPathnamesAndMetadata(String parentPathname) throws IOException, WebzException;
-
-	/** TODO !!! describe !!! **/
-	public Collection<String> getChildPathnames(String parentPathname) throws IOException, WebzException;
-
-	// ~~~ \\ // ~~~ \\ // ~~~ \\ WebzFileSystemOperations // ~~~ \\ // ~~~ \\ // ~~~ \\
-
-	/** TODO !!! describe !!! **/
-	// TODO should WebzReadException and WebzWriteException be mentioned explicitly in copyContentToOutputStream's throws declaration ?
-	public WebzMetadata.FileSpecific copyContentToOutputStream(String pathname, OutputStream out) throws IOException, WebzException;
-
-	/** TODO !!! describe !!! **/
-	public WebzFileDownloader getFileDownloader(String pathname) throws IOException, WebzException;
-
-	/** TODO !!! describe !!! **/
-	public WebzMetadata createFolder(String pathname) throws IOException, WebzException;
-
-	/** TODO !!! describe !!! **/
-	public WebzMetadata.FileSpecific uploadFile(String pathname, InputStream content, long numBytes) throws IOException, WebzException;
-
-	/** TODO !!! describe !!! **/
-	public WebzMetadata.FileSpecific uploadFile(String pathname, InputStream content) throws IOException, WebzException;
-
-	/** TODO !!! describe !!! **/
-	public WebzMetadata move(String srcPathname, String destPathname) throws IOException, WebzException;
-
-	/** TODO !!! describe !!! **/
-	public WebzMetadata copy(String srcPathname, String destPathname) throws IOException, WebzException;
-
-	/** TODO !!! describe !!! **/
-	public void delete(String pathname) throws IOException, WebzException;
+	public WebzFileSystemOperations getOperations();
 
 }

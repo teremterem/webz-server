@@ -2,8 +2,11 @@ package org.terems.webz.internals.base;
 
 import java.util.regex.Pattern;
 
+import org.terems.webz.base.BaseWebzPropertiesInitable;
+import org.terems.webz.internals.WebzPathNormalizer;
+
 /** TODO !!! describe !!! **/
-public abstract class BaseForwardSlashFileSystem extends BaseWebzFileSystem {
+public abstract class BaseForwardSlashNormalizer extends BaseWebzPropertiesInitable implements WebzPathNormalizer {
 
 	protected static final char FWD_SLASH = '/';
 	protected static final String FWD_SLASH_STR = "" + FWD_SLASH;

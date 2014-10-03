@@ -3,7 +3,7 @@ package org.terems.webz.internals.base;
 import org.terems.webz.util.WebzUtils;
 
 /** TODO !!! describe !!! **/
-public abstract class BaseLowerCaseFileSystem extends BaseForwardSlashFileSystem {
+public class LowerCaseNormalizer extends BaseForwardSlashNormalizer {
 
 	/** TODO !!! describe !!! **/
 	@Override

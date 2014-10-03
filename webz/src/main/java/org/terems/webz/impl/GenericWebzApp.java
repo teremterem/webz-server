@@ -38,7 +38,7 @@ public class GenericWebzApp implements WebzApp {
 	@Override
 	public void init(WebzFileSystem fileSystem, Collection<Class<? extends WebzFilter>> filterClassesList) throws WebzException {
 
-		WebzFileFactory fileFactory = new DefaultWebzFileFactory(fileSystem);
+		WebzFileFactory fileFactory = fileSystem.getFileFactory();
 
 		// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
 		rootContext = new RootWebzContext(fileFactory, appFactory);

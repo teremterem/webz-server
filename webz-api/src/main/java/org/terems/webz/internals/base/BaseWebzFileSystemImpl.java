@@ -12,15 +12,35 @@ import org.terems.webz.WebzMetadata;
 import org.terems.webz.base.BaseWebzPropertiesInitable;
 import org.terems.webz.internals.FreshParentChildrenMetadata;
 import org.terems.webz.internals.ParentChildrenMetadata;
-import org.terems.webz.internals.WebzFileSystem;
 import org.terems.webz.internals.WebzFileSystemCache;
+import org.terems.webz.internals.WebzFileSystemImpl;
+import org.terems.webz.internals.WebzFileSystemStructure;
+import org.terems.webz.internals.WebzPathNormalizer;
 
 /**
- * Basic implementation of {@code BaseWebzFileSystem} to be extended by concrete implementations...
+ * Basic implementation of {@code WebzFileSystemImpl} to be extended by concrete implementations...
  **/
-public abstract class BaseWebzFileSystem extends BaseWebzPropertiesInitable implements WebzFileSystem {
+public abstract class BaseWebzFileSystemImpl extends BaseWebzPropertiesInitable implements WebzFileSystemImpl {
 
-	/** Do nothing by default... **/
+	protected WebzPathNormalizer pathNormalizer;
+	protected WebzFileSystemStructure structure = this;
+	protected String uniqueId;
+
+	@Override
+	public void setPathNormalizer(WebzPathNormalizer pathNormalizer) {
+		this.pathNormalizer = pathNormalizer;
+	}
+
+	@Override
+	public void setFileSystemStructure(WebzFileSystemStructure structure) {
+		this.structure = structure;
+	}
+
+	@Override
+	public String getUniqueId() {
+		return uniqueId;
+	}
+
 	@Override
 	public void inflate(WebzFile file) throws IOException, WebzException {
 	}

@@ -9,9 +9,41 @@ import org.terems.webz.util.WebzUtils;
 @SuppressWarnings("serial")
 public class WebzProperties extends HashMap<String, String> {
 
+	/** TODO !!! describe !!! **/
+	public String get(String key, String defaultValue) {
+
+		String value = get(key);
+		return value == null ? defaultValue : value;
+	}
+
+	/** TODO !!! describe !!! **/
+	public WebzProperties(Map<Object, Object> properties) {
+
+		super(properties.size(), 1);
+
+		for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+			put(WebzUtils.assertString(entry.getKey()), WebzUtils.assertString(entry.getValue()));
+		}
+	}
+
+	public WebzProperties() {
+		super();
+	}
+
+	public WebzProperties(int initialCapacity, float loadFactor) {
+		super(initialCapacity, loadFactor);
+	}
+
+	public WebzProperties(int initialCapacity) {
+		super(initialCapacity);
+	}
+
+	// TODO public static WebzProperties makeReadOnly(WebzProperties) {
+	// }
+
 	public static final String WEBZ_CONFIG_FOLDER = "-webz-config";
 
-	public static final String FS_IMPL_CLASS_PROPERTY = "file.system.impl.class";
+	public static final String WEBZ_FS_IMPL_CLASS_PROPERTY = "webz.file.system.impl.class";
 	public static final String FS_CACHE_ENABLED_PROPERTY = "file.system.cache.enabled";
 	public static final String FS_CACHE_IMPL_CLASS_PROPERTY = "file.system.cache.impl.class";
 	public static final String FS_CACHE_PAYLOAD_THRESHOLD_BYTES_PROPERTY = "file.system.cache.payload.threshold.bytes";
@@ -25,30 +57,5 @@ public class WebzProperties extends HashMap<String, String> {
 
 	public static final String PATH_TO_404_FILE_PROPERTY = "404";
 	public static final String PATH_TO_500_FILE_PROPERTY = "500";
-
-	/** TODO !!! describe !!! **/
-	public WebzProperties() {
-		super();
-	}
-
-	/** TODO !!! describe !!! **/
-	public WebzProperties(int initialCapacity, float loadFactor) {
-		super(initialCapacity, loadFactor);
-	}
-
-	/** TODO !!! describe !!! **/
-	public WebzProperties(int initialCapacity) {
-		super(initialCapacity);
-	}
-
-	/** TODO !!! describe !!! **/
-	public WebzProperties(Map<Object, Object> properties) {
-
-		super(properties.size(), 1);
-
-		for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-			put(WebzUtils.assertString(entry.getKey()), WebzUtils.assertString(entry.getValue()));
-		}
-	}
 
 }

@@ -10,10 +10,10 @@ import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzPathnameException;
-import org.terems.webz.WebzMetadata.FileSpecific;
 
-/** TODO !!! describe !!! **/
 public class WebzFileNotAccessible implements WebzFile {
+
+	// TODO refactor WebzFileNotAccessible into something else
 
 	private WebzFile file;
 	private Throwable cause = null;

@@ -10,12 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzApp;
-import org.terems.webz.WebzDefaults;
 import org.terems.webz.WebzException;
-import org.terems.webz.WebzProperties;
-import org.terems.webz.impl.cache.CachedFileSystem;
 import org.terems.webz.internals.WebzFileSystem;
-import org.terems.webz.internals.WebzFileSystemCache;
 import org.terems.webz.internals.WebzServletContainerBridge;
 import org.terems.webz.plugin.WebzFilter;
 import org.terems.webz.util.WebzUtils;
@@ -29,7 +25,7 @@ public class WebzEngine implements WebzServletContainerBridge {
 
 	public WebzEngine(Properties rootFileSystemProperties, Collection<Class<? extends WebzFilter>> filterClassesList) throws WebzException {
 
-		WebzFileSystem rootFileSystem = createFileSystem(rootFileSystemProperties);
+		WebzFileSystem rootFileSystem = WebzFileSystemManager.getManager(globalFactory).createFileSystem(rootFileSystemProperties);
 
 		rootWebzApp = globalFactory.newDestroyable(GenericWebzApp.class);
 		rootWebzApp.init(rootFileSystem, filterClassesList);
@@ -75,27 +71,6 @@ public class WebzEngine implements WebzServletContainerBridge {
 		LOG.info("WebZ Engine stopped\n");
 
 		globalFactory.destroy();
-	}
-
-	private WebzFileSystem createFileSystem(Properties properties) throws WebzException {
-
-		WebzFileSystem fileSystem = globalFactory.newDestroyable(properties.getProperty(WebzProperties.FS_IMPL_CLASS_PROPERTY,
-				WebzDefaults.FS_IMPL_CLASS));
-		fileSystem.init(properties);
-
-		boolean cacheEnabled = Boolean.valueOf(properties.getProperty(WebzProperties.FS_CACHE_ENABLED_PROPERTY,
-				String.valueOf(WebzDefaults.FS_CACHE_ENABLED)));
-		if (cacheEnabled) {
-
-			WebzFileSystemCache fsCache = globalFactory.newDestroyable(properties.getProperty(WebzProperties.FS_CACHE_IMPL_CLASS_PROPERTY,
-					WebzDefaults.FS_CACHE_IMPL_CLASS));
-			int payloadThreshold = Integer.valueOf(properties.getProperty(WebzProperties.FS_CACHE_PAYLOAD_THRESHOLD_BYTES_PROPERTY,
-					String.valueOf(WebzDefaults.FS_CACHE_PAYLOAD_THRESHOLD_BYTES)));
-
-			fileSystem = new CachedFileSystem(fileSystem, fsCache, payloadThreshold);
-		}
-
-		return fileSystem;
 	}
 
 }

@@ -1,0 +1,95 @@
+[1mdiff --git a/webz-api/src/main/java/org/terems/webz/WebzPropertiesInitable.java b/webz-api/src/main/java/org/terems/webz/WebzPropertiesInitable.java[m
+[1mindex f60a7d5..066a831 100644[m
+[1m--- a/webz-api/src/main/java/org/terems/webz/WebzPropertiesInitable.java[m
+[1m+++ b/webz-api/src/main/java/org/terems/webz/WebzPropertiesInitable.java[m
+[36m@@ -2,9 +2,8 @@[m [mpackage org.terems.webz;[m
+[m
+import java.util.Properties;[m
+[m
+[32m/** TODO !!! describe !!! **/[m
+public interface WebzPropertiesInitable[31mextends WebzDestroyable[m {[31m// TODO split WebzFileSystem into several interfaces, all inherited from WebzPropertiesInitable[m
+[m
+	/** TODO !!! describe !!! **/[m
+	public void init(Properties properties) throws WebzException;[m
+[1mdiff --git a/webz-api/src/main/java/org/terems/webz/internals/base/BaseForwardSlashNormalizer.java b/webz-api/src/main/java/org/terems/webz/internals/base/BaseForwardSlashNormalizer.java[m
+[1mindex 26b65a9..507fffa 100644[m
+[1m--- a/webz-api/src/main/java/org/terems/webz/internals/base/BaseForwardSlashNormalizer.java[m
+[1m+++ b/webz-api/src/main/java/org/terems/webz/internals/base/BaseForwardSlashNormalizer.java[m
+[36m@@ -2,8 +2,10 @@[m [mpackage org.terems.webz.internals.base;[m
+[m
+import java.util.regex.Pattern;[m
+[m
+[32mimport org.terems.webz.internals.WebzPathNormalizer;[m
+
+/** TODO !!! describe !!! **/[m
+public abstract class [31mBaseForwardSlashFileSystem extends BaseWebzFileSystem[m[32mBaseForwardSlashNormalizer implements WebzPathNormalizer[m {
+[m
+	protected static final char FWD_SLASH = '/';[m
+	protected static final String FWD_SLASH_STR = "" + FWD_SLASH;[m
+[1mdiff --git a/webz-api/src/main/java/org/terems/webz/internals/base/BaseLowerCaseNormalizer.java b/webz-api/src/main/java/org/terems/webz/internals/base/BaseLowerCaseNormalizer.java[m
+[1mindex b35351e..de35a57 100644[m
+[1m--- a/webz-api/src/main/java/org/terems/webz/internals/base/BaseLowerCaseNormalizer.java[m
+[1m+++ b/webz-api/src/main/java/org/terems/webz/internals/base/BaseLowerCaseNormalizer.java[m
+[36m@@ -3,7 +3,7 @@[m [mpackage org.terems.webz.internals.base;[m
+import org.terems.webz.util.WebzUtils;[m
+[m
+/** TODO !!! describe !!! **/[m
+public abstract class [31mBaseLowerCaseFileSystem[m[32mBaseLowerCaseNormalizer[m extends [31mBaseForwardSlashFileSystem[m[32mBaseForwardSlashNormalizer[m {
+[m
+	/** TODO !!! describe !!! **/[m
+	@Override[m
+[1mdiff --git a/webz-api/src/main/java/org/terems/webz/internals/base/BaseWebzFileSystem.java b/webz-api/src/main/java/org/terems/webz/internals/base/BaseWebzFileSystem.java[m
+[1mindex aba4af7..fce59db 100644[m
+[1m--- a/webz-api/src/main/java/org/terems/webz/internals/base/BaseWebzFileSystem.java[m
+[1m+++ b/webz-api/src/main/java/org/terems/webz/internals/base/BaseWebzFileSystem.java[m
+[36m@@ -12,13 +12,15 @@[m [mimport org.terems.webz.WebzMetadata;[m
+import org.terems.webz.base.BaseWebzPropertiesInitable;[m
+import org.terems.webz.internals.FreshParentChildrenMetadata;[m
+import org.terems.webz.internals.ParentChildrenMetadata;[m
+[31mimport org.terems.webz.internals.WebzFileSystem;[m
+import org.terems.webz.internals.WebzFileSystemCache;[m
+[32mimport org.terems.webz.internals.WebzFileSystemOperations;[m
+[32mimport org.terems.webz.internals.WebzFileSystemStructure;[m
+[m
+/**[m
+ * Basic implementation of {@code [31mBaseWebzFileSystem}[m[32mWebzFileSystemStructure} and {@code WebzFileSystemOperations}[m to be extended by concrete
+ [32m*[m implementations...
+ **/[m
+public abstract class BaseWebzFileSystem extends BaseWebzPropertiesInitable implements [31mWebzFileSystem[m[32mWebzFileSystemStructure, WebzFileSystemOperations[m {
+[m
+	/** Do nothing by default... **/[m
+	@Override[m
+[1mdiff --git a/webz-dropbox/src/main/java/org/terems/webz/impl/dropbox/DropboxFileSystem.java b/webz-dropbox/src/main/java/org/terems/webz/impl/dropbox/DropboxFileSystem.java[m
+[1mindex a9c7a8c..2845c26 100644[m
+[1m--- a/webz-dropbox/src/main/java/org/terems/webz/impl/dropbox/DropboxFileSystem.java[m
+[1m+++ b/webz-dropbox/src/main/java/org/terems/webz/impl/dropbox/DropboxFileSystem.java[m
+[36m@@ -16,7 +16,7 @@[m [mimport org.terems.webz.WebzMetadata;[m
+import org.terems.webz.internals.FreshParentChildrenMetadata;[m
+import org.terems.webz.internals.ParentChildrenMetadata;[m
+import org.terems.webz.internals.WebzFileSystemCache;[m
+import [31morg.terems.webz.internals.base.BaseLowerCaseFileSystem;[m[32morg.terems.webz.internals.base.BaseLowerCaseNormalizer;[m
+import org.terems.webz.util.WebzUtils;[m
+[m
+import com.dropbox.core.DbxAccountInfo;[m
+[36m@@ -28,7 +28,7 @@[m [mimport com.dropbox.core.DbxRequestConfig;[m
+import com.dropbox.core.DbxWriteMode;[m
+import com.dropbox.core.util.Maybe;[m
+[m
+public class DropboxFileSystem extends [31mBaseLowerCaseFileSystem[m[32mBaseLowerCaseNormalizer[m {
+[m
+	private static final Logger LOG = LoggerFactory.getLogger(DropboxFileSystem.class);[m
+[m
+[1mdiff --git a/webz/src/main/java/org/terems/webz/impl/LocalFileSystem.java b/webz/src/main/java/org/terems/webz/impl/LocalFileSystem.java[m
+[1mindex 2922e37..2bf06ae 100644[m
+[1m--- a/webz/src/main/java/org/terems/webz/impl/LocalFileSystem.java[m
+[1m+++ b/webz/src/main/java/org/terems/webz/impl/LocalFileSystem.java[m
+[36m@@ -8,9 +8,9 @@[m [mimport org.terems.webz.WebzFileDownloader;[m
+import org.terems.webz.WebzMetadata;[m
+import org.terems.webz.WebzMetadata.FileSpecific;[m
+import org.terems.webz.internals.ParentChildrenMetadata;[m
+import [31morg.terems.webz.internals.base.BaseForwardSlashFileSystem;[m[32morg.terems.webz.internals.base.BaseForwardSlashNormalizer;[m
+[m
+public class LocalFileSystem extends [31mBaseForwardSlashFileSystem[m[32mBaseForwardSlashNormalizer[m {
+[m
+	// TODO implement LocalFileSystem - come up with cross-platform "pathname lower-casing" strategy ?[m
+[m

@@ -8,27 +8,15 @@ import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzMetadata.FileSpecific;
 import org.terems.webz.internals.ParentChildrenMetadata;
-import org.terems.webz.internals.base.BaseForwardSlashFileSystem;
+import org.terems.webz.internals.base.BaseWebzFileSystemImpl;
 
-public class LocalFileSystem extends BaseForwardSlashFileSystem {
+public class LocalFileSystem extends BaseWebzFileSystemImpl {
 
 	// TODO implement LocalFileSystem - come up with cross-platform "pathname lower-casing" strategy ?
 
 	@Override
 	protected void init() {
 		// Auto-generated method stub
-	}
-
-	@Override
-	public String getFileSystemUniqueId() {
-		// Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean belongsToSubtree(String pathname, String subtreePathname) {
-		// Auto-generated method stub
-		return false;
 	}
 
 	@Override
