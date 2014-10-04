@@ -13,6 +13,8 @@ import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzPathnameException;
+import org.terems.webz.WebzReadException;
+import org.terems.webz.WebzWriteException;
 import org.terems.webz.internals.WebzFileFactory;
 import org.terems.webz.internals.WebzFileSystem;
 import org.terems.webz.util.WebzUtils;
@@ -113,19 +115,22 @@ public class GenericWebzFile implements WebzFile {
 		return fileSystem.getOperations().getFileDownloader(pathname);
 	}
 
-	// TODO what to do with GenericWebzFile.copyContentToOutputStream() ?
-	public WebzMetadata.FileSpecific copyContentToOutputStream(OutputStream out) throws IOException, WebzException {
+	@Override
+	public WebzMetadata.FileSpecific copyContentToOutputStream(OutputStream out) throws IOException, WebzReadException, WebzWriteException,
+			WebzException {
 
-		throw new UnsupportedOperationException();
-		// if (isPathnameInvalid()) {
-		// return null;
-		// }
+		WebzFileDownloader downloader = getFileDownloader();
+		if (downloader == null) {
+			return null;
+		}
 
-		// return fileSystem.getOperations().copyContentToOutputStream(pathname, out);
+		downloader.copyContentAndClose(out);
+
+		return downloader.fileSpecific;
 	}
 
 	@Override
-	public byte[] getFileContent() throws IOException, WebzException {
+	public byte[] getFileContent() throws IOException, WebzReadException, WebzWriteException, WebzException {
 
 		WebzFileDownloader downloader = getFileDownloader();
 		if (downloader == null) {

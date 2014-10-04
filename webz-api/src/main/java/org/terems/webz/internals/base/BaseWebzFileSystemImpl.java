@@ -89,19 +89,4 @@ public abstract class BaseWebzFileSystemImpl extends BaseWebzPropertiesInitable 
 		return parentChildrenMetadata.childPathnamesAndMetadata.keySet();
 	}
 
-	/** Default implementation... **/
-	// TODO remove BaseWebzFileSystemImpl.copyContentToOutputStream() completely ?
-	// @Override
-	// public WebzMetadata.FileSpecific copyContentToOutputStream(String pathname, OutputStream out) throws IOException, WebzException {
-
-	// WebzFileDownloader downloader = getFileDownloader(pathname);
-	// if (downloader == null) {
-	// return null;
-	// }
-
-	// downloader.copyContentAndClose(out);
-
-	// return downloader.fileSpecific;
-	// }
-
 }
