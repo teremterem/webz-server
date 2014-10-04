@@ -13,7 +13,7 @@ public class WebzFileSystemManager extends BaseWebzDestroyable {
 	public static WebzFileSystemManager getManager(WebzDestroyableFactory factory) throws WebzException {
 
 		WebzFileSystemManager manager = factory.getDestroyableSingleton(WebzFileSystemManager.class);
-		manager.factory = factory.newDestroyable(GenericWebzDestroyableFactory.class);
+		manager.factory = factory;
 
 		return manager;
 	}
