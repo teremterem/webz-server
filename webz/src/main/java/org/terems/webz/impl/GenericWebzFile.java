@@ -113,14 +113,15 @@ public class GenericWebzFile implements WebzFile {
 		return fileSystem.getOperations().getFileDownloader(pathname);
 	}
 
-	@Override
+	// TODO what to do with GenericWebzFile.copyContentToOutputStream() ?
 	public WebzMetadata.FileSpecific copyContentToOutputStream(OutputStream out) throws IOException, WebzException {
 
-		if (isPathnameInvalid()) {
-			return null;
-		}
+		throw new UnsupportedOperationException();
+		// if (isPathnameInvalid()) {
+		// return null;
+		// }
 
-		return fileSystem.getOperations().copyContentToOutputStream(pathname, out);
+		// return fileSystem.getOperations().copyContentToOutputStream(pathname, out);
 	}
 
 	@Override

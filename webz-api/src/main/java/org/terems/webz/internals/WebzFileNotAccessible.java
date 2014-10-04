@@ -2,7 +2,6 @@ package org.terems.webz.internals;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Collection;
 
 import org.terems.webz.WebzException;
@@ -68,11 +67,6 @@ public class WebzFileNotAccessible implements WebzFile {
 
 	@Override
 	public WebzFileDownloader getFileDownloader() throws IOException, WebzException {
-		return null;
-	}
-
-	@Override
-	public WebzMetadata.FileSpecific copyContentToOutputStream(OutputStream out) throws IOException, WebzException {
 		return null;
 	}
 

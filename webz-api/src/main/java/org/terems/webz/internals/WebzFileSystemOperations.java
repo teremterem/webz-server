@@ -2,7 +2,6 @@ package org.terems.webz.internals;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFileDownloader;
@@ -13,7 +12,7 @@ public interface WebzFileSystemOperations extends WebzPathNormalizerSettable, We
 
 	/** TODO !!! describe !!! **/
 	// TODO should WebzReadException and WebzWriteException be mentioned explicitly in copyContentToOutputStream's throws declaration ?
-	public WebzMetadata.FileSpecific copyContentToOutputStream(String pathname, OutputStream out) throws IOException, WebzException;
+	// public WebzMetadata.FileSpecific copyContentToOutputStream(String pathname, OutputStream out) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
 	public WebzFileDownloader getFileDownloader(String pathname) throws IOException, WebzException;

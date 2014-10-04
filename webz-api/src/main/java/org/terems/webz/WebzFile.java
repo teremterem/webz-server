@@ -2,7 +2,6 @@ package org.terems.webz;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Collection;
 
 /** TODO !!! describe !!! **/
@@ -35,8 +34,7 @@ public interface WebzFile {
 	/** TODO !!! describe !!! **/
 	public WebzFileDownloader getFileDownloader() throws IOException, WebzException;
 
-	/** TODO !!! describe !!! **/
-	public WebzMetadata.FileSpecific copyContentToOutputStream(OutputStream out) throws IOException, WebzException;
+	// public WebzMetadata.FileSpecific copyContentToOutputStream(OutputStream out) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
 	public byte[] getFileContent() throws IOException, WebzException;

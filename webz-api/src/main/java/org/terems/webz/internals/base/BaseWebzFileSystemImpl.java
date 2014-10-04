@@ -1,13 +1,11 @@
 package org.terems.webz.internals.base;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Map;
 
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
-import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzProperties;
 import org.terems.webz.base.BaseWebzPropertiesInitable;
@@ -92,17 +90,18 @@ public abstract class BaseWebzFileSystemImpl extends BaseWebzPropertiesInitable 
 	}
 
 	/** Default implementation... **/
-	@Override
-	public WebzMetadata.FileSpecific copyContentToOutputStream(String pathname, OutputStream out) throws IOException, WebzException {
+	// TODO remove BaseWebzFileSystemImpl.copyContentToOutputStream() completely ?
+	// @Override
+	// public WebzMetadata.FileSpecific copyContentToOutputStream(String pathname, OutputStream out) throws IOException, WebzException {
 
-		WebzFileDownloader downloader = getFileDownloader(pathname);
-		if (downloader == null) {
-			return null;
-		}
+	// WebzFileDownloader downloader = getFileDownloader(pathname);
+	// if (downloader == null) {
+	// return null;
+	// }
 
-		downloader.copyContentAndClose(out);
+	// downloader.copyContentAndClose(out);
 
-		return downloader.fileSpecific;
-	}
+	// return downloader.fileSpecific;
+	// }
 
 }
