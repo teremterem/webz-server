@@ -22,7 +22,7 @@ public class ErrorFilter extends BaseWebzFilter {
 	private static final String FAILED_TO_SHOW_ERROR_MSG = "FAILED TO SHOW PROPER ERROR PAGE TO THE CLIENT";
 	private static final String RESPONSE_ALREADY_COMMITTED_MSG = FAILED_TO_SHOW_ERROR_MSG + ": response is already committed";
 
-	// TODO make RETHROW_IF_CANNOT_HANDLE configurable ?
+	// TODO make rethrowIfCannotHandle configurable ?
 	private final boolean rethrowIfCannotHandle = false;
 
 	private String pathTo500file;

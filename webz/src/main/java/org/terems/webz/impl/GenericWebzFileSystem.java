@@ -34,8 +34,6 @@ public class GenericWebzFileSystem extends BaseWebzDestroyable implements WebzFi
 		boolean cacheEnabled = Boolean.valueOf(properties.get(WebzProperties.FS_CACHE_ENABLED_PROPERTY,
 				String.valueOf(WebzDefaults.FS_CACHE_ENABLED)));
 		if (cacheEnabled) {
-
-			// TODO finish WebzFileSystem refactoring
 			fileSystemImpl = factory.newDestroyable(CachedFileSystem.class).init(fileSystemImpl, pathNormalizer, properties, factory);
 		}
 
