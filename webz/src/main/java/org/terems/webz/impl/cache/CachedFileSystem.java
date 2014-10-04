@@ -61,7 +61,7 @@ public class CachedFileSystem extends BaseWebzFileSystemImpl {
 		if (LOG.isInfoEnabled()) {
 			LOG.info("'" + this.uniqueId + "' file system cache was created to wrap '" + fileSystemImpl.getUniqueId() + "'");
 		}
-		super.init(pathNormalizer, null);
+		super.init(pathNormalizer, properties);
 		return this;
 	}
 
