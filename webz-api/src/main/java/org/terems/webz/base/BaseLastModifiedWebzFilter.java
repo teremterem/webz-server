@@ -1,4 +1,4 @@
-package org.terems.webz.plugin.base;
+package org.terems.webz.base;
 
 import java.io.IOException;
 

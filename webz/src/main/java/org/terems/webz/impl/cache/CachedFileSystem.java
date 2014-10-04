@@ -52,10 +52,10 @@ public class CachedFileSystem extends BaseWebzFileSystemImpl {
 		}
 		this.fileSystemImpl = fileSystemImpl;
 
-		cacheImpl = ((WebzFileSystemCache) factory.newDestroyable(properties.get(WebzProperties.FS_CACHE_IMPL_CLASS_PROPERTY,
-				WebzDefaults.FS_CACHE_IMPL_CLASS))).init(fileSystemImpl, filePayloadSizeThreshold);
 		filePayloadSizeThreshold = Integer.valueOf(properties.get(WebzProperties.FS_CACHE_PAYLOAD_THRESHOLD_BYTES_PROPERTY,
 				String.valueOf(WebzDefaults.FS_CACHE_PAYLOAD_THRESHOLD_BYTES)));
+		cacheImpl = ((WebzFileSystemCache) factory.newDestroyable(properties.get(WebzProperties.FS_CACHE_IMPL_CLASS_PROPERTY,
+				WebzDefaults.FS_CACHE_IMPL_CLASS))).init(fileSystemImpl, filePayloadSizeThreshold);
 
 		this.uniqueId = cacheImpl.getCacheTypeName() + "-for-" + fileSystemImpl.getUniqueId();
 

@@ -2,7 +2,6 @@ package org.terems.webz.internals;
 
 import org.terems.webz.WebzDestroyable;
 import org.terems.webz.WebzException;
-import org.terems.webz.WebzIdentifiable;
 import org.terems.webz.WebzProperties;
 
 public interface WebzFileSystem extends WebzIdentifiable, WebzDestroyable {

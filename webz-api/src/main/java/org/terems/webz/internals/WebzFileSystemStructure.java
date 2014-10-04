@@ -9,7 +9,7 @@ import org.terems.webz.WebzFile;
 import org.terems.webz.WebzMetadata;
 
 /** TODO !!! describe !!! **/
-public interface WebzFileSystemStructure extends WebzPathNormalizerSetable {
+public interface WebzFileSystemStructure extends WebzPathNormalizerSettable {
 
 	/** TODO !!! describe !!! **/
 	public void inflate(WebzFile file) throws IOException, WebzException;

@@ -7,8 +7,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.terems.webz.WebzChainContext;
 import org.terems.webz.WebzException;
+import org.terems.webz.base.BaseWebzFilter;
 import org.terems.webz.config.StatusCodesConfig;
-import org.terems.webz.plugin.base.BaseWebzFilter;
 
 public class NotFoundFilter extends BaseWebzFilter {
 

@@ -1,7 +1,6 @@
 package org.terems.webz.internals;
 
 import org.terems.webz.WebzException;
-import org.terems.webz.WebzIdentifiable;
 import org.terems.webz.WebzProperties;
 import org.terems.webz.WebzPropertiesInitable;
 

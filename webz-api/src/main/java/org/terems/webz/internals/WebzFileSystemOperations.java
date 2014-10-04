@@ -9,7 +9,7 @@ import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzMetadata;
 
 /** TODO !!! describe !!! **/
-public interface WebzFileSystemOperations extends WebzPathNormalizerSetable, WebzFileSystemStructureSetable {
+public interface WebzFileSystemOperations extends WebzPathNormalizerSettable, WebzFileSystemStructureSettable {
 
 	/** TODO !!! describe !!! **/
 	// TODO should WebzReadException and WebzWriteException be mentioned explicitly in copyContentToOutputStream's throws declaration ?

@@ -1,8 +1,8 @@
-package org.terems.webz.plugin.base;
+package org.terems.webz.base;
 
 import org.terems.webz.WebzConfig;
 import org.terems.webz.WebzException;
-import org.terems.webz.plugin.WebzFilter;
+import org.terems.webz.WebzFilter;
 
 /** TODO !!! describe !!! **/
 public abstract class BaseWebzFilter implements WebzFilter {

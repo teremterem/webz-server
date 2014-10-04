@@ -9,12 +9,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terems.webz.WebzApp;
 import org.terems.webz.WebzException;
+import org.terems.webz.WebzFilter;
+import org.terems.webz.internals.WebzApp;
 import org.terems.webz.internals.WebzDestroyableFactory;
 import org.terems.webz.internals.WebzFileSystem;
 import org.terems.webz.internals.WebzServletContainerBridge;
-import org.terems.webz.plugin.WebzFilter;
 import org.terems.webz.util.WebzUtils;
 
 public class WebzEngine implements WebzServletContainerBridge {
@@ -56,11 +56,11 @@ public class WebzEngine implements WebzServletContainerBridge {
 			String lastModified = resp.getHeader(WebzFilter.HEADER_LAST_MODIFIED);
 			LOG.trace("\n"
 					+ (lastModified == null ? ""
-							: "\n\\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ //\n "
+							: "\n// ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\\n "
 									+ WebzFilter.HEADER_LAST_MODIFIED + ": " + lastModified)
-					+ "\n// ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\\n HTTP "
+					+ "\n\\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ //\n HTTP "
 					+ resp.getStatus() + " (" + WebzUtils.formatRequestMethodAndUrl(req)
-					+ ")\n\\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ //" + "\n\n\n");
+					+ ")\n// ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\" + "\n\n\n");
 		}
 	}
 

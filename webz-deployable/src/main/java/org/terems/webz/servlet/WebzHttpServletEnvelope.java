@@ -11,11 +11,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.terems.webz.WebzException;
+import org.terems.webz.WebzFilter;
 import org.terems.webz.impl.WebzEngine;
 import org.terems.webz.plugin.ErrorFilter;
 import org.terems.webz.plugin.NotFoundFilter;
 import org.terems.webz.plugin.StaticContentFilter;
-import org.terems.webz.plugin.WebzFilter;
 import org.terems.webz.plugin.WelcomeFilter;
 import org.terems.webz.util.WebzUtils;
 

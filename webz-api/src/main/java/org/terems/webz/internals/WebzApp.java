@@ -1,11 +1,9 @@
-package org.terems.webz;
+package org.terems.webz.internals;
 
 import java.util.Collection;
 
-import org.terems.webz.internals.WebzDestroyableFactory;
-import org.terems.webz.internals.WebzFileSystem;
-import org.terems.webz.internals.WebzServletContainerBridge;
-import org.terems.webz.plugin.WebzFilter;
+import org.terems.webz.WebzException;
+import org.terems.webz.WebzFilter;
 
 /** TODO !!! describe !!! **/
 public interface WebzApp extends WebzServletContainerBridge {

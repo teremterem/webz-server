@@ -16,10 +16,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFileDownloader;
-import org.terems.webz.WebzIdentifiable;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzReadException;
 import org.terems.webz.WebzWriteException;
+import org.terems.webz.internals.WebzIdentifiable;
 
 /** TODO !!! describe !!! **/
 public class WebzUtils {

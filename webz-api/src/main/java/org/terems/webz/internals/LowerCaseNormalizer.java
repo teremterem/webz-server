@@ -1,5 +1,6 @@
-package org.terems.webz.internals.base;
+package org.terems.webz.internals;
 
+import org.terems.webz.internals.base.BaseForwardSlashNormalizer;
 import org.terems.webz.util.WebzUtils;
 
 /** TODO !!! describe !!! **/
