@@ -38,9 +38,6 @@ public class WebzProperties extends HashMap<String, String> {
 		super(initialCapacity);
 	}
 
-	// TODO public static WebzProperties makeReadOnly(WebzProperties) {
-	// }
-
 	public static final String WEBZ_CONFIG_FOLDER = "-webz-config";
 
 	public static final String WEBZ_FS_IMPL_CLASS_PROPERTY = "webz.file.system.impl.class";

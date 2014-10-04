@@ -17,7 +17,7 @@ import org.terems.webz.base.WebzContextProxy;
 
 public class WelcomeFilter extends BaseWebzFilter {
 
-	// TODO move it to config folder
+	// TODO move default file extensions/names to config folder
 	private Collection<String> defaultFileExtensions = Arrays.asList(new String[] { ".html" });
 	private Collection<String> defaultFileNames = Arrays.asList(new String[] { "index" });
 

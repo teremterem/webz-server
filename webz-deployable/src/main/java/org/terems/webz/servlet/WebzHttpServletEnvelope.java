@@ -22,8 +22,6 @@ import org.terems.webz.util.WebzUtils;
 @SuppressWarnings("serial")
 public class WebzHttpServletEnvelope extends HttpServlet {
 
-	// TODO concurrency unit tests ?
-
 	private static final String ROOT_FILE_SYSTEM_PROPERTIES_PARAM = "rootFileSystemProperties";
 
 	@Override

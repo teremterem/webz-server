@@ -41,9 +41,8 @@ public class CachedFileSystem extends BaseWebzFileSystemImpl {
 	public CachedFileSystem init(WebzFileSystemImpl fileSystemImpl, WebzPathNormalizer pathNormalizer, WebzProperties properties,
 			WebzDestroyableFactory factory) throws WebzException {
 
-		// TODO add two additional modes:
-		// 1) payload cache disabled completely
-		// 2) payload cache works for any payload sizes without the threshold
+		// TODO additional mode #1: payload cache disabled completely
+		// TODO additional mode #2: payload cache works for any payload sizes without the threshold ?
 
 		if (fileSystemImpl instanceof CachedFileSystem) {
 			throw new IllegalArgumentException(
