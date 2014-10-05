@@ -13,11 +13,12 @@ import org.terems.webz.internals.base.BaseWebzFileSystemImpl;
 public class LocalFileSystem extends BaseWebzFileSystemImpl {
 
 	// TODO come up with cross-platform "pathname lower-casing ?" strategy
+
 	// TODO implement LocalFileSystem
 
 	@Override
 	protected void init() {
-		// Auto-generated method stub
+		uniqueId = "localhost-" + basePath;
 	}
 
 	@Override

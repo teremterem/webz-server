@@ -25,15 +25,28 @@
 			<param-name>rootFileSystemProperties</param-name>
 			<param-value>dbx-webz-pedesis.properties</param-value>
 		</init-param>
+		<!-- <async-supported>true</async-supported> -->
+	</servlet>
 
-		<!--
-		<async-supported>true</async-supported>
-		-->
+	<servlet>
+		<servlet-name>WebzLocal</servlet-name>
+		<servlet-class>org.terems.webz.servlet.WebzHttpServletEnvelope</servlet-class>
+
+		<init-param>
+			<param-name>rootFileSystemProperties</param-name>
+			<param-value>local-webz-pedesis.properties</param-value>
+		</init-param>
+		<!-- <async-supported>true</async-supported> -->
 	</servlet>
 
 	<servlet-mapping>
 		<servlet-name>WebzDropbox</servlet-name>
 		<url-pattern>/dropbox/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>WebzLocal</servlet-name>
+		<url-pattern>/local/*</url-pattern>
 	</servlet-mapping>
 
 </web-app>
