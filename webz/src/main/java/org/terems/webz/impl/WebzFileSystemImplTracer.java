@@ -48,10 +48,11 @@ public class WebzFileSystemImplTracer extends BaseWebzPropertiesInitable impleme
 	}
 
 	@Override
-	public void inflate(WebzFileSystemCache fileSystemCache, WebzFile file) throws IOException, WebzException {
+	public void inflate(WebzFileSystemCache fsCache, WebzFile file) throws IOException, WebzException {
 
-		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets("attempt to inflate in cache '" + file.getPathname() + "'", fsImpl));
-		fsImpl.inflate(fileSystemCache, file);
+		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(
+				"attempt to inflate '" + file.getPathname() + "' in " + fsCache.getCacheTypeName(), fsImpl));
+		fsImpl.inflate(fsCache, file);
 	}
 
 	@Override

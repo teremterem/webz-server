@@ -15,7 +15,7 @@ public interface WebzFileSystemStructure extends WebzPathNormalizerSettable {
 	public void inflate(WebzFile file) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
-	public void inflate(WebzFileSystemCache fileSystemCache, WebzFile file) throws IOException, WebzException;
+	public void inflate(WebzFileSystemCache fsCache, WebzFile file) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/
 	public WebzMetadata getMetadata(String pathname) throws IOException, WebzException;
