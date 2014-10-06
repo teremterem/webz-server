@@ -1,0 +1,178 @@
+package org.terems.webz.impl;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.terems.webz.WebzException;
+import org.terems.webz.WebzFile;
+import org.terems.webz.WebzFileDownloader;
+import org.terems.webz.WebzMetadata;
+import org.terems.webz.WebzMetadata.FileSpecific;
+import org.terems.webz.WebzProperties;
+import org.terems.webz.base.BaseWebzPropertiesInitable;
+import org.terems.webz.internals.FreshParentChildrenMetadata;
+import org.terems.webz.internals.ParentChildrenMetadata;
+import org.terems.webz.internals.WebzFileSystemCache;
+import org.terems.webz.internals.WebzFileSystemImpl;
+import org.terems.webz.internals.WebzFileSystemStructure;
+import org.terems.webz.internals.WebzPathNormalizer;
+import org.terems.webz.util.WebzUtils;
+
+public class WebzFileSystemImplTracer extends BaseWebzPropertiesInitable implements WebzFileSystemImpl {
+
+	private static final Logger LOG = LoggerFactory.getLogger(WebzFileSystemImplTracer.class);
+
+	private WebzFileSystemImpl fsImpl;
+
+	public static WebzFileSystemImpl wrapIfApplicable(WebzFileSystemImpl fsImpl) {
+
+		if (LOG.isTraceEnabled()) {
+			return new WebzFileSystemImplTracer(fsImpl);
+		}
+		return fsImpl;
+	}
+
+	private WebzFileSystemImplTracer(WebzFileSystemImpl fsImpl) {
+		this.fsImpl = fsImpl;
+	}
+
+	@Override
+	public void inflate(WebzFile file) throws IOException, WebzException {
+
+		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".inflate('" + file.getPathname() + "');", fsImpl));
+		fsImpl.inflate(file);
+	}
+
+	@Override
+	public void inflate(WebzFileSystemCache fileSystemCache, WebzFile file) throws IOException, WebzException {
+
+		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets("attempt to inflate in cache '" + file.getPathname() + "'", fsImpl));
+		fsImpl.inflate(fileSystemCache, file);
+	}
+
+	@Override
+	public WebzMetadata getMetadata(String pathname) throws IOException, WebzException {
+
+		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".getMetadata('" + pathname + "');", fsImpl));
+		return fsImpl.getMetadata(pathname);
+	}
+
+	private static final String FOLDER_HASH_MSG = "folder hash";
+	private static final String NOT_FOUND_MSG = "NOT FOUND";
+
+	@Override
+	public ParentChildrenMetadata getParentChildrenMetadata(String parentPathname) throws IOException, WebzException {
+
+		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".getParentChildrenMetadata('" + parentPathname + "');", fsImpl));
+		ParentChildrenMetadata result = fsImpl.getParentChildrenMetadata(parentPathname);
+
+		if (result == null) {
+			LOG.trace("'" + parentPathname + "' " + NOT_FOUND_MSG);
+		} else {
+			LOG.trace("'" + parentPathname + "' - " + FOLDER_HASH_MSG + ": '" + String.valueOf(result.folderHash) + "'");
+		}
+		return result;
+	}
+
+	@Override
+	public FreshParentChildrenMetadata getParentChildrenMetadataIfChanged(String parentPathname, Object previousFolderHash)
+			throws IOException, WebzException {
+
+		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".getParentChildrenMetadataIfChanged('" + parentPathname + "', '"
+				+ previousFolderHash + "');", fsImpl));
+		FreshParentChildrenMetadata result = fsImpl.getParentChildrenMetadataIfChanged(parentPathname, previousFolderHash);
+
+		if (result == null) {
+			LOG.trace("'" + parentPathname + "' not changed - " + FOLDER_HASH_MSG + ": '" + previousFolderHash + "'");
+		} else if (result.parentChildrenMetadata == null) {
+			LOG.trace("'" + parentPathname + "' " + NOT_FOUND_MSG);
+		} else {
+			LOG.trace("'" + parentPathname + "' - " + FOLDER_HASH_MSG + ": '" + String.valueOf(result.parentChildrenMetadata.folderHash)
+					+ "'");
+		}
+		return result;
+	}
+
+	@Override
+	public Map<String, WebzMetadata> getChildPathnamesAndMetadata(String parentPathname) throws IOException, WebzException {
+		return fsImpl.getChildPathnamesAndMetadata(parentPathname);
+	}
+
+	@Override
+	public Collection<String> getChildPathnames(String parentPathname) throws IOException, WebzException {
+		return fsImpl.getChildPathnames(parentPathname);
+	}
+
+	@Override
+	public void setPathNormalizer(WebzPathNormalizer pathNormalizer) {
+		fsImpl.setPathNormalizer(pathNormalizer);
+	}
+
+	@Override
+	public WebzFileDownloader getFileDownloader(String pathname) throws IOException, WebzException {
+
+		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".getFileDownloader('" + pathname + "');", fsImpl));
+		return fsImpl.getFileDownloader(pathname);
+	}
+
+	@Override
+	public WebzMetadata createFolder(String pathname) throws IOException, WebzException {
+
+		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".createFolder('" + pathname + "');", fsImpl));
+		return fsImpl.createFolder(pathname);
+	}
+
+	@Override
+	public FileSpecific uploadFile(String pathname, InputStream content, long numBytes) throws IOException, WebzException {
+
+		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".uploadFile('" + pathname + "', " + numBytes + " bytes);", fsImpl));
+		return fsImpl.uploadFile(pathname, content, numBytes);
+	}
+
+	@Override
+	public FileSpecific uploadFile(String pathname, InputStream content) throws IOException, WebzException {
+
+		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".uploadFile('" + pathname + "');", fsImpl));
+		return fsImpl.uploadFile(pathname, content);
+	}
+
+	@Override
+	public WebzMetadata move(String srcPathname, String destPathname) throws IOException, WebzException {
+
+		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".move('" + srcPathname + "', '" + destPathname + "');", fsImpl));
+		return fsImpl.move(srcPathname, destPathname);
+	}
+
+	@Override
+	public WebzMetadata copy(String srcPathname, String destPathname) throws IOException, WebzException {
+
+		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".copy('" + srcPathname + "', '" + destPathname + "');", fsImpl));
+		return fsImpl.copy(srcPathname, destPathname);
+	}
+
+	@Override
+	public void delete(String pathname) throws IOException, WebzException {
+		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".delete('" + pathname + "');", fsImpl));
+		fsImpl.delete(pathname);
+	}
+
+	@Override
+	public void setFileSystemStructure(WebzFileSystemStructure structure) {
+		fsImpl.setFileSystemStructure(structure);
+	}
+
+	@Override
+	public String getUniqueId() {
+		return fsImpl.getUniqueId();
+	}
+
+	@Override
+	public WebzFileSystemImpl init(WebzPathNormalizer pathNormalizer, WebzProperties properties) throws WebzException {
+		return fsImpl.init(pathNormalizer, properties);
+	}
+
+}

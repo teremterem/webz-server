@@ -28,7 +28,6 @@ import org.terems.webz.util.WebzUtils;
 
 // TODO background thread should periodically check certain number of pathnames against Dropbox to drop the whole FS cache if necessary
 // TODO also do similar check when some metadata is being fetched as a "side-effect" in cache implementations to drop the whole FS cache if necessary
-/** TODO !!! describe !!! **/
 public class CachedFileSystem extends BaseWebzFileSystemImpl {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CachedFileSystem.class);

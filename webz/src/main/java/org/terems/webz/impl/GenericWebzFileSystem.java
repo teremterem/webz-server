@@ -28,19 +28,20 @@ public class GenericWebzFileSystem extends BaseWebzDestroyable implements WebzFi
 		fileFactory = factory.newDestroyable(DefaultWebzFileFactory.class).init(this);
 		pathNormalizer = factory.newDestroyable(LowerCaseNormalizer.class);
 
-		WebzFileSystemImpl fileSystemImpl = ((WebzFileSystemImpl) factory.newDestroyable(properties.get(
-				WebzProperties.WEBZ_FS_IMPL_CLASS_PROPERTY, WebzDefaults.FS_IMPL_CLASS))).init(pathNormalizer, properties);
+		WebzFileSystemImpl fsImpl = ((WebzFileSystemImpl) factory.newDestroyable(properties.get(WebzProperties.WEBZ_FS_IMPL_CLASS_PROPERTY,
+				WebzDefaults.FS_IMPL_CLASS))).init(pathNormalizer, properties);
+		fsImpl = WebzFileSystemImplTracer.wrapIfApplicable(fsImpl);
 
 		boolean cacheEnabled = Boolean.valueOf(properties.get(WebzProperties.FS_CACHE_ENABLED_PROPERTY,
 				String.valueOf(WebzDefaults.FS_CACHE_ENABLED)));
 		if (cacheEnabled) {
 
-			fileSystemImpl = factory.newDestroyable(CachedFileSystem.class).init(fileSystemImpl, pathNormalizer, properties, factory);
+			fsImpl = factory.newDestroyable(CachedFileSystem.class).init(fsImpl, pathNormalizer, properties, factory);
 		}
-		structure = fileSystemImpl;
-		operations = fileSystemImpl;
+		structure = fsImpl;
+		operations = fsImpl;
 
-		uniqueId = fileSystemImpl.getUniqueId();
+		uniqueId = fsImpl.getUniqueId();
 		return this;
 	}
 
