@@ -29,13 +29,14 @@ public class WebzEngine implements WebzServletContainerBridge {
 		try {
 			WebzFileSystem rootFileSystem = WebzFileSystemManager.getManager(globalFactory).createFileSystem(rootFileSystemProperties);
 
-			rootWebzApp = globalFactory.newDestroyable(GenericWebzApp.class);
-			rootWebzApp.init(rootFileSystem, filterClassesList, globalFactory.newDestroyable(GenericWebzDestroyableFactory.class));
+			rootWebzApp = globalFactory.newDestroyable(GenericWebzApp.class).init(rootFileSystem, filterClassesList,
+					globalFactory.newDestroyable(GenericWebzDestroyableFactory.class));
 		} catch (WebzException e) {
 
 			if (LOG.isErrorEnabled()) {
-				String displayName = rootWebzApp == null ? null : rootWebzApp.getDisplayName();
-				LOG.error("!!! FAILED to init WebZ App " + (displayName == null ? null : "'" + displayName + "'") + ": " + e.toString(), e);
+				LOG.error(
+						"!!! FAILED to init WebZ App '" + (rootWebzApp == null ? null : rootWebzApp.getDisplayName()) + "': "
+								+ e.toString(), e);
 			}
 		}
 
@@ -46,7 +47,7 @@ public class WebzEngine implements WebzServletContainerBridge {
 	public void serve(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException {
 
 		if (rootWebzApp == null) {
-			throw new WebzException("WebZ Engine is already stopped");
+			throw new WebzException("root WebZ App is already stopped or has not been started yet");
 		}
 
 		if (LOG.isTraceEnabled()) {

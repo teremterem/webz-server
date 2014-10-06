@@ -37,8 +37,8 @@ public class GenericWebzApp implements WebzApp {
 	private WebzDestroyableFactory appFactory;
 
 	@Override
-	public void init(WebzFileSystem fileSystem, Collection<Class<? extends WebzFilter>> filterClassesList, WebzDestroyableFactory appFactory)
-			throws WebzException {
+	public GenericWebzApp init(WebzFileSystem fileSystem, Collection<Class<? extends WebzFilter>> filterClassesList,
+			WebzDestroyableFactory appFactory) throws WebzException {
 
 		this.appFactory = appFactory;
 		WebzFileFactory fileFactory = fileSystem.getFileFactory();
@@ -69,6 +69,7 @@ public class GenericWebzApp implements WebzApp {
 		if (LOG.isInfoEnabled()) {
 			LOG.info("WebZ App '" + displayName + "' initialized");
 		}
+		return this;
 	}
 
 	private void initFilterChain(Collection<Class<? extends WebzFilter>> filterClassesList) throws WebzException {
