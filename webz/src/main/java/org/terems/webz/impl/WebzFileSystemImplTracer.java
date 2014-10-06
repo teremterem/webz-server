@@ -73,7 +73,7 @@ public class WebzFileSystemImplTracer extends BaseWebzPropertiesInitable impleme
 
 		if (result == null) {
 			LOG.trace("'" + parentPathname + "' " + NOT_FOUND_MSG);
-		} else {
+		} else if (result.parentMetadata == null || result.parentMetadata.isFolder()) {
 			LOG.trace("'" + parentPathname + "' - " + FOLDER_HASH_MSG + ": '" + String.valueOf(result.folderHash) + "'");
 		}
 		return result;
@@ -83,8 +83,8 @@ public class WebzFileSystemImplTracer extends BaseWebzPropertiesInitable impleme
 	public FreshParentChildrenMetadata getParentChildrenMetadataIfChanged(String parentPathname, Object previousFolderHash)
 			throws IOException, WebzException {
 
-		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".getParentChildrenMetadataIfChanged('" + parentPathname + "', '"
-				+ previousFolderHash + "');", fsImpl));
+		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".getParentChildrenMetadataIfChanged('" + parentPathname
+				+ (previousFolderHash == null ? "', null !!! );" : "', '" + previousFolderHash + "');"), fsImpl));
 		FreshParentChildrenMetadata result = fsImpl.getParentChildrenMetadataIfChanged(parentPathname, previousFolderHash);
 
 		if (result == null) {
