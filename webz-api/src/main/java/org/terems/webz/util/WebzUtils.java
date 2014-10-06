@@ -210,9 +210,16 @@ public class WebzUtils {
 		return (String) value;
 	}
 
+	private static final String WEBZ_FILE_SYSTEM_ID_MSG = "WebzFileSystem ID";
+
 	/** TODO !!! describe !!! **/
 	public static String formatFileSystemMessage(String message, WebzIdentifiable identifiable) {
-		return message + " (WebzFileSystem ID: '" + identifiable.getUniqueId() + "')";
+		return message + " (" + WEBZ_FILE_SYSTEM_ID_MSG + ": '" + identifiable.getUniqueId() + "')";
+	}
+
+	/** TODO !!! describe !!! **/
+	public static String formatFileSystemMessageNoBrackets(String message, WebzIdentifiable identifiable) {
+		return message + " - " + WEBZ_FILE_SYSTEM_ID_MSG + ": '" + identifiable.getUniqueId() + "'";
 	}
 
 	/** TODO !!! describe !!! **/
