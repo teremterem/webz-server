@@ -1,7 +1,6 @@
 package org.terems.webz;
 
 import java.io.IOException;
-import java.util.Date;
 
 /** TODO !!! describe !!! **/
 public interface WebzMetadata {
@@ -25,7 +24,7 @@ public interface WebzMetadata {
 		public long getNumberOfBytes() throws IOException, WebzException;
 
 		/** TODO !!! describe !!! **/
-		public Date getLastModified() throws IOException, WebzException;
+		public Long getLastModified() throws IOException, WebzException;
 
 		/** TODO !!! describe !!! **/
 		public String getRevision() throws IOException, WebzException;

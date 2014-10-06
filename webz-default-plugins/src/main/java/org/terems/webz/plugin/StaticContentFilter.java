@@ -1,7 +1,6 @@
 package org.terems.webz.plugin;
 
 import java.io.IOException;
-import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,8 +43,7 @@ public class StaticContentFilter extends BaseLastModifiedWebzFilter<WebzFile> {
 	@Override
 	protected Long resolveLastModified(WebzFile resource) throws IOException, WebzException {
 
-		Date lastModifiedDate = resource.getMetadata().getFileSpecific().getLastModified();
-		Long lastModified = lastModifiedDate == null ? null : lastModifiedDate.getTime();
+		Long lastModified = resource.getMetadata().getFileSpecific().getLastModified();
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("\n\n  " + resource + "\n  " + WebzFilter.HEADER_LAST_MODIFIED + ": "

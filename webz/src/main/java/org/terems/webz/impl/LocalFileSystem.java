@@ -1,7 +1,11 @@
 package org.terems.webz.impl;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFileDownloader;
@@ -23,20 +27,45 @@ public class LocalFileSystem extends BaseWebzFileSystemImpl {
 
 	@Override
 	public WebzMetadata getMetadata(String pathname) throws IOException, WebzException {
-		// Auto-generated method stub
-		return null;
+
+		File file = new File(basePath, pathname);
+		return file.exists() ? new LocalFileMetadata(file) : null;
 	}
 
 	@Override
 	public ParentChildrenMetadata getParentChildrenMetadata(String parentPathname) throws IOException, WebzException {
-		// Auto-generated method stub
-		return null;
+
+		File file = new File(basePath, parentPathname);
+		if (!file.exists()) {
+			return null;
+		}
+
+		ParentChildrenMetadata parentChildren = new ParentChildrenMetadata();
+		parentChildren.parentMetadata = new LocalFileMetadata(file);
+
+		String[] children = file.list();
+		if (children != null) {
+
+			String localBasePath = file.getAbsolutePath();
+			Map<String, WebzMetadata> pathnamesAndMetadata = new HashMap<>();
+			parentChildren.childPathnamesAndMetadata = pathnamesAndMetadata;
+			for (String childName : children) {
+				File child = new File(localBasePath, childName);
+				pathnamesAndMetadata.put(pathNormalizer.concatPathname(parentPathname, childName), new LocalFileMetadata(child));
+			}
+		}
+		return parentChildren;
 	}
 
 	@Override
 	public WebzFileDownloader getFileDownloader(String pathname) throws IOException, WebzException {
-		// Auto-generated method stub
-		return null;
+
+		File file = new File(basePath, pathname);
+		if (!file.exists() || !file.isFile()) {
+			return null;
+		}
+
+		return new WebzFileDownloader(new LocalFileMetadata(file).getFileSpecific(), new FileInputStream(file));
 	}
 
 	@Override
