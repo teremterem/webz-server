@@ -31,7 +31,7 @@ public class WebzEngine implements WebzServletContainerBridge {
 		rootWebzApp = globalFactory.newDestroyable(GenericWebzApp.class);
 		rootWebzApp.init(rootFileSystem, filterClassesList, globalFactory.newDestroyable(GenericWebzDestroyableFactory.class));
 
-		LOG.info("WebZ Engine started\n\n");
+		LOG.info("WebZ Engine started\n\n\n");
 	}
 
 	@Override
@@ -69,10 +69,10 @@ public class WebzEngine implements WebzServletContainerBridge {
 	public void destroy() {
 
 		rootWebzApp = null;
-		LOG.info("WebZ Engine stopped\n\n");
+		LOG.info("WebZ Engine stopped\n\n\n");
 
 		globalFactory.destroy();
-		LOG.info("WebZ Engine destroyed\n\n");
+		LOG.info("WebZ Engine destroyed\n\n\n");
 	}
 
 }
