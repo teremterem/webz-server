@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzMetadata;
@@ -16,11 +18,17 @@ import org.terems.webz.internals.base.BaseWebzFileSystemImpl;
 
 public class LocalFileSystem extends BaseWebzFileSystemImpl {
 
+	private static final Logger LOG = LoggerFactory.getLogger(LocalFileSystem.class);
+
 	// TODO come up with cross-platform "pathname lower-casing ?" strategy
 
 	@Override
 	protected void init() {
 		uniqueId = "localhost-" + basePath;
+
+		if (LOG.isInfoEnabled()) {
+			LOG.info("'" + uniqueId + "' file system was created");
+		}
 	}
 
 	@Override

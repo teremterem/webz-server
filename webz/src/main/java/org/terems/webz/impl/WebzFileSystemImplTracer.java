@@ -72,9 +72,10 @@ public class WebzFileSystemImplTracer extends BaseWebzPropertiesInitable impleme
 		ParentChildrenMetadata result = fsImpl.getParentChildrenMetadata(parentPathname);
 
 		if (result == null) {
-			LOG.trace("'" + parentPathname + "' " + NOT_FOUND_MSG);
+			LOG.trace(WebzUtils.formatFileSystemMessage("'" + parentPathname + "' " + NOT_FOUND_MSG, fsImpl));
 		} else if (result.parentMetadata == null || result.parentMetadata.isFolder()) {
-			LOG.trace("'" + parentPathname + "' - " + FOLDER_HASH_MSG + ": '" + String.valueOf(result.folderHash) + "'");
+			LOG.trace(WebzUtils.formatFileSystemMessage(
+					"'" + parentPathname + "' - " + FOLDER_HASH_MSG + ": '" + String.valueOf(result.folderHash) + "'", fsImpl));
 		}
 		return result;
 	}
@@ -88,12 +89,14 @@ public class WebzFileSystemImplTracer extends BaseWebzPropertiesInitable impleme
 		FreshParentChildrenMetadata result = fsImpl.getParentChildrenMetadataIfChanged(parentPathname, previousFolderHash);
 
 		if (result == null) {
-			LOG.trace("'" + parentPathname + "' not changed - " + FOLDER_HASH_MSG + ": '" + previousFolderHash + "'");
+			LOG.trace(WebzUtils.formatFileSystemMessage("'" + parentPathname + "' not changed - " + FOLDER_HASH_MSG + ": '"
+					+ previousFolderHash + "'", fsImpl));
 		} else if (result.parentChildrenMetadata == null) {
-			LOG.trace("'" + parentPathname + "' " + NOT_FOUND_MSG);
+			LOG.trace(WebzUtils.formatFileSystemMessage("'" + parentPathname + "' " + NOT_FOUND_MSG, fsImpl));
 		} else {
-			LOG.trace("'" + parentPathname + "' - " + FOLDER_HASH_MSG + ": '" + String.valueOf(result.parentChildrenMetadata.folderHash)
-					+ "'");
+			LOG.trace(WebzUtils.formatFileSystemMessage(
+					"'" + parentPathname + "' - " + FOLDER_HASH_MSG + ": '" + String.valueOf(result.parentChildrenMetadata.folderHash)
+							+ "'", fsImpl));
 		}
 		return result;
 	}
@@ -161,6 +164,7 @@ public class WebzFileSystemImplTracer extends BaseWebzPropertiesInitable impleme
 
 	@Override
 	public void delete(String pathname) throws IOException, WebzException {
+
 		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".delete('" + pathname + "');", fsImpl));
 		fsImpl.delete(pathname);
 	}
