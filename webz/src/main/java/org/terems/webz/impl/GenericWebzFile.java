@@ -17,6 +17,7 @@ import org.terems.webz.WebzReadException;
 import org.terems.webz.WebzWriteException;
 import org.terems.webz.internals.WebzFileFactory;
 import org.terems.webz.internals.WebzFileSystem;
+import org.terems.webz.internals.WebzPathNormalizer;
 import org.terems.webz.util.WebzUtils;
 
 public class GenericWebzFile implements WebzFile {
@@ -63,10 +64,9 @@ public class GenericWebzFile implements WebzFile {
 	public WebzFile getDescendant(String relativePathname) throws WebzPathnameException {
 
 		assertPathnameNotInvalid();
+		WebzPathNormalizer pathNormalizer = fileSystem.getPathNormalizer();
 
-		return fileSystem.getFileFactory()
-				.get(fileSystem.getPathNormalizer().concatPathname(pathname,
-						fileSystem.getPathNormalizer().normalizePathname(relativePathname)));
+		return fileSystem.getFileFactory().get(pathNormalizer.concatPathname(pathname, pathNormalizer.normalizePathname(relativePathname)));
 	}
 
 	@Override

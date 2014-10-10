@@ -41,8 +41,8 @@ public abstract class BaseLastModifiedWebzFilter<R> extends BaseWebzFilter {
 		String method = req.getMethod();
 		if (HTTP_GET.equals(method)) {
 
-			Long lastModified = resolveLastModified(resource);
-			if (lastModified == null || lastModified < 0) {
+			Long lastModifiedPrecise = resolveLastModified(resource);
+			if (lastModifiedPrecise == null || lastModifiedPrecise < 0) {
 
 				// this particular resource doesn't support last modified time
 				serveResource(resource, req, resp, chainContext);
@@ -50,6 +50,7 @@ public abstract class BaseLastModifiedWebzFilter<R> extends BaseWebzFilter {
 			} else {
 
 				long modifiedSince = req.getDateHeader(HEADER_IF_MODIFIED_SINCE);
+				long lastModified = roundUpLastModified(lastModifiedPrecise);
 				if (modifiedSince < lastModified) {
 
 					// resource has changed - serve it (also, modifiedSince of value -1 will always be less than lastModified)
@@ -63,12 +64,24 @@ public abstract class BaseLastModifiedWebzFilter<R> extends BaseWebzFilter {
 
 		} else if (HTTP_HEAD.equals(method)) {
 
-			setLastModifiedIfApplicable(resp, resolveLastModified(resource));
+			Long lastModifiedPrecise = resolveLastModified(resource);
+			setLastModifiedIfApplicable(resp, roundUpLastModified(lastModifiedPrecise));
 			serveResource(resource, req, resp, chainContext);
 
 		} else {
 			serveResource(resource, req, resp, chainContext);
 		}
+	}
+
+	private Long roundUpLastModified(Long lastModified) {
+
+		if (lastModified == null) {
+			return null;
+		}
+		if (lastModified > 0) {
+			return lastModified / 1000 * 1000;
+		}
+		return lastModified;
 	}
 
 	private void setLastModifiedIfApplicable(HttpServletResponse resp, Long lastModified) {

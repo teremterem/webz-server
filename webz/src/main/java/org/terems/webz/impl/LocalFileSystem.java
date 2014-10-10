@@ -18,8 +18,6 @@ public class LocalFileSystem extends BaseWebzFileSystemImpl {
 
 	// TODO come up with cross-platform "pathname lower-casing ?" strategy
 
-	// TODO implement LocalFileSystem
-
 	@Override
 	protected void init() {
 		uniqueId = "localhost-" + basePath;
@@ -67,6 +65,8 @@ public class LocalFileSystem extends BaseWebzFileSystemImpl {
 
 		return new WebzFileDownloader(new LocalFileMetadata(file).getFileSpecific(), new FileInputStream(file));
 	}
+
+	// TODO implement LocalFileSystem
 
 	@Override
 	public WebzMetadata createFolder(String pathname) throws IOException, WebzException {

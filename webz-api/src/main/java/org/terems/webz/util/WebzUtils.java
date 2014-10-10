@@ -231,7 +231,7 @@ public class WebzUtils {
 		@Override
 		protected DateFormat initialValue() {
 
-			DateFormat value = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+			DateFormat value = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss.SSS z", Locale.US);
 			value.setTimeZone(TimeZone.getTimeZone("GMT"));
 			return value;
 		}

@@ -100,11 +100,15 @@ public class WebzFileSystemImplTracer extends BaseWebzPropertiesInitable impleme
 
 	@Override
 	public Map<String, WebzMetadata> getChildPathnamesAndMetadata(String parentPathname) throws IOException, WebzException {
+
+		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".getChildPathnamesAndMetadata('" + parentPathname + "');", fsImpl));
 		return fsImpl.getChildPathnamesAndMetadata(parentPathname);
 	}
 
 	@Override
 	public Collection<String> getChildPathnames(String parentPathname) throws IOException, WebzException {
+
+		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".getChildPathnames('" + parentPathname + "');", fsImpl));
 		return fsImpl.getChildPathnames(parentPathname);
 	}
 
