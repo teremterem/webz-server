@@ -28,7 +28,7 @@ public class GenericWebzDestroyableFactoryTest {
 	@Test
 	public void testFactoryMethods() throws WebzException {
 
-		GenericWebzDestroyableFactory factory = new GenericWebzDestroyableFactory();
+		GenericWebzObjectFactory factory = new GenericWebzObjectFactory();
 
 		assertFactoryMethods(factory, null);
 	}
@@ -36,7 +36,7 @@ public class GenericWebzDestroyableFactoryTest {
 	@Test
 	public void testReturnedClasses() throws WebzException {
 
-		GenericWebzDestroyableFactory factory = new GenericWebzDestroyableFactory();
+		GenericWebzObjectFactory factory = new GenericWebzObjectFactory();
 
 		assertInstanceOf(factory.newDestroyable(DestroyableTestClass.class), DestroyableTestClass.class);
 		assertInstanceOf(factory.newDestroyable(DestroyableTestClass.class.getName()), DestroyableTestClass.class);
@@ -56,7 +56,7 @@ public class GenericWebzDestroyableFactoryTest {
 	@Test
 	public void testIllegalArguments() throws WebzException {
 
-		GenericWebzDestroyableFactory assertException = assertExceptionThrown(new GenericWebzDestroyableFactory(), WebzException.class);
+		GenericWebzObjectFactory assertException = assertExceptionThrown(new GenericWebzObjectFactory(), WebzException.class);
 
 		assertException.newDestroyable("fake1");
 
@@ -84,14 +84,14 @@ public class GenericWebzDestroyableFactoryTest {
 	@Test
 	public void testFactoryDestroy() throws WebzException {
 
-		GenericWebzDestroyableFactory factory = new GenericWebzDestroyableFactory();
+		GenericWebzObjectFactory factory = new GenericWebzObjectFactory();
 
 		WebzDestroyable counterMock = mock(WebzDestroyable.class);
 
-		GenericWebzDestroyableFactory subFactory2_1 = assertFactoryMethods(factory, counterMock);
-		GenericWebzDestroyableFactory subFactory2_2 = assertFactoryMethods(factory, counterMock);
-		GenericWebzDestroyableFactory subFactory2_3 = assertFactoryMethods(factory, counterMock);
-		GenericWebzDestroyableFactory subFactory1_singleton = factory.getDestroyableSingleton(GenericWebzDestroyableFactory.class);
+		GenericWebzObjectFactory subFactory2_1 = assertFactoryMethods(factory, counterMock);
+		GenericWebzObjectFactory subFactory2_2 = assertFactoryMethods(factory, counterMock);
+		GenericWebzObjectFactory subFactory2_3 = assertFactoryMethods(factory, counterMock);
+		GenericWebzObjectFactory subFactory1_singleton = factory.getDestroyableSingleton(GenericWebzObjectFactory.class);
 
 		factory.destroy();
 
@@ -107,7 +107,7 @@ public class GenericWebzDestroyableFactoryTest {
 	@Test
 	public void testExceptionDuringDestroy() throws WebzException {
 
-		GenericWebzDestroyableFactory factory = new GenericWebzDestroyableFactory();
+		GenericWebzObjectFactory factory = new GenericWebzObjectFactory();
 
 		WebzDestroyable counterMock = mock(WebzDestroyable.class);
 
@@ -128,6 +128,8 @@ public class GenericWebzDestroyableFactoryTest {
 		verify(counterMock, times(4)).destroy();
 	}
 
+	// TODO test exceptions while creating objects as well ?
+
 	private static final long SLOW_SINGLETON_CONSTRUCTOR_DELAY_MILLIS = 55;
 
 	@Test
@@ -137,7 +139,7 @@ public class GenericWebzDestroyableFactoryTest {
 		final int numOfNonSingletonThreads = 20;
 		final int numOfNonSingletonRepeats = 50;
 
-		GenericWebzDestroyableFactory factory = new GenericWebzDestroyableFactory();
+		GenericWebzObjectFactory factory = new GenericWebzObjectFactory();
 
 		WebzDestroyable counterMock = mock(WebzDestroyable.class);
 
@@ -213,10 +215,11 @@ public class GenericWebzDestroyableFactoryTest {
 	 * @return non-singleton sub-factory that was created in this method (singleton sub-factory can be fetched directly from
 	 *         {@code topFactory})
 	 */
-	private GenericWebzDestroyableFactory assertFactoryMethods(GenericWebzDestroyableFactory factory, WebzDestroyable counterMock) throws WebzException {
+	private GenericWebzObjectFactory assertFactoryMethods(GenericWebzObjectFactory factory, WebzDestroyable counterMock)
+			throws WebzException {
 
-		GenericWebzDestroyableFactory subFactory1_singleton = factory.getDestroyableSingleton(GenericWebzDestroyableFactory.class);
-		GenericWebzDestroyableFactory subFactory2 = factory.newDestroyable(GenericWebzDestroyableFactory.class);
+		GenericWebzObjectFactory subFactory1_singleton = factory.getDestroyableSingleton(GenericWebzObjectFactory.class);
+		GenericWebzObjectFactory subFactory2 = factory.newDestroyable(GenericWebzObjectFactory.class);
 		// two sub-factories (singleton and non-singleton) created
 		assertNotNull(subFactory1_singleton);
 		assertNotNull(subFactory2);
@@ -256,7 +259,8 @@ public class GenericWebzDestroyableFactoryTest {
 				counterMock);
 		// 3 new objects + 1 new DestroyableClass singleton created (using singleton sub-factory)
 
-		GenericWebzDestroyableFactory subFactory1_sameSingleton = factory.getDestroyableSingleton(GenericWebzDestroyableFactory.class.getName());
+		GenericWebzObjectFactory subFactory1_sameSingleton = factory.getDestroyableSingleton(GenericWebzObjectFactory.class
+				.getName());
 		// this singleton sub-factory exists already
 		assertSame(subFactory1_sameSingleton, subFactory1_singleton);
 
@@ -318,9 +322,9 @@ public class GenericWebzDestroyableFactoryTest {
 
 	// ~ testFactoryDestroy() related stuff ~
 
-	private void assertFactoryDestroyed(GenericWebzDestroyableFactory factory) throws WebzException {
+	private void assertFactoryDestroyed(GenericWebzObjectFactory factory) throws WebzException {
 
-		GenericWebzDestroyableFactory assertException = assertExceptionThrown(factory, WebzException.class);
+		GenericWebzObjectFactory assertException = assertExceptionThrown(factory, WebzException.class);
 
 		assertException.newDestroyable(DestroyableTestClass.class.getName());
 		assertException.newDestroyable(DestroyableTestClass.class);
@@ -362,12 +366,12 @@ public class GenericWebzDestroyableFactoryTest {
 
 		public Throwable exception;
 
-		protected GenericWebzDestroyableFactory factory;
+		protected GenericWebzObjectFactory factory;
 		protected WebzDestroyable counterMock;
 
 		public abstract void runTest() throws Throwable;
 
-		public AbstractFactoryTestRunnable(GenericWebzDestroyableFactory factory, WebzDestroyable counterMock) {
+		public AbstractFactoryTestRunnable(GenericWebzObjectFactory factory, WebzDestroyable counterMock) {
 
 			this.factory = factory;
 			this.counterMock = counterMock;
@@ -393,7 +397,7 @@ public class GenericWebzDestroyableFactoryTest {
 		public WebzDestroyable anotherSlow;
 		public WebzDestroyable sameAnotherSlow;
 
-		public SingletonsTestRunnable(GenericWebzDestroyableFactory factory, WebzDestroyable counterMock) {
+		public SingletonsTestRunnable(GenericWebzObjectFactory factory, WebzDestroyable counterMock) {
 			super(factory, counterMock);
 		}
 
@@ -418,7 +422,7 @@ public class GenericWebzDestroyableFactoryTest {
 
 		private int numOfRepeats;
 
-		public NonSingletonsTestRunnable(GenericWebzDestroyableFactory factory, WebzDestroyable counterMock, int numOfRepeats) {
+		public NonSingletonsTestRunnable(GenericWebzObjectFactory factory, WebzDestroyable counterMock, int numOfRepeats) {
 
 			super(factory, counterMock);
 

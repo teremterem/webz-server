@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFilter;
 import org.terems.webz.internals.WebzApp;
-import org.terems.webz.internals.WebzDestroyableFactory;
+import org.terems.webz.internals.WebzDestroyableObjectFactory;
 import org.terems.webz.internals.WebzFileSystem;
 import org.terems.webz.internals.WebzServletContainerBridge;
 import org.terems.webz.util.WebzUtils;
@@ -21,7 +21,7 @@ public class WebzEngine implements WebzServletContainerBridge {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WebzEngine.class);
 
-	private WebzDestroyableFactory globalFactory = new GenericWebzDestroyableFactory();
+	private WebzDestroyableObjectFactory globalFactory = new GenericWebzObjectFactory();
 	private volatile WebzApp rootWebzApp;
 
 	public WebzEngine(Properties rootFileSystemProperties, Collection<Class<? extends WebzFilter>> filterClassesList) {
@@ -30,13 +30,12 @@ public class WebzEngine implements WebzServletContainerBridge {
 			WebzFileSystem rootFileSystem = WebzFileSystemManager.getManager(globalFactory).createFileSystem(rootFileSystemProperties);
 
 			rootWebzApp = globalFactory.newDestroyable(GenericWebzApp.class).init(rootFileSystem, filterClassesList,
-					globalFactory.newDestroyable(GenericWebzDestroyableFactory.class));
+					globalFactory.newDestroyable(GenericWebzObjectFactory.class));
 		} catch (WebzException e) {
 
 			if (LOG.isErrorEnabled()) {
-				LOG.error(
-						"!!! FAILED to init WebZ App '" + (rootWebzApp == null ? null : rootWebzApp.getDisplayName()) + "': "
-								+ e.toString(), e);
+				LOG.error("failed to init WebZ App '" + (rootWebzApp == null ? null : rootWebzApp.getDisplayName()) + "': " + e.toString(),
+						e);
 			}
 		}
 

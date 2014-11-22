@@ -6,7 +6,9 @@ import org.terems.webz.WebzProperties;
 
 public interface WebzFileSystem extends WebzIdentifiable, WebzDestroyable {
 
-	public WebzFileSystem init(WebzProperties properties, WebzDestroyableFactory factory) throws WebzException;
+	// TODO elaborate a concept of WebzFileAccessController (in terms of servlet container it should be user session scoped)
+
+	public WebzFileSystem init(WebzProperties properties, WebzObjectFactory factory) throws WebzException;
 
 	public WebzFileFactory getFileFactory();
 
@@ -15,5 +17,7 @@ public interface WebzFileSystem extends WebzIdentifiable, WebzDestroyable {
 	public WebzFileSystemStructure getStructure();
 
 	public WebzFileSystemOperations getOperations();
+
+	// TODO any ideas on file blocking/merging approaches when they are edited through WebZ ?
 
 }

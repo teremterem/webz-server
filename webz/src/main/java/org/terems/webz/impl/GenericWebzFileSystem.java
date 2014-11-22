@@ -6,12 +6,12 @@ import org.terems.webz.WebzProperties;
 import org.terems.webz.base.BaseWebzDestroyable;
 import org.terems.webz.impl.cache.CachedFileSystem;
 import org.terems.webz.internals.LowerCaseNormalizer;
-import org.terems.webz.internals.WebzDestroyableFactory;
 import org.terems.webz.internals.WebzFileFactory;
 import org.terems.webz.internals.WebzFileSystem;
 import org.terems.webz.internals.WebzFileSystemImpl;
 import org.terems.webz.internals.WebzFileSystemOperations;
 import org.terems.webz.internals.WebzFileSystemStructure;
+import org.terems.webz.internals.WebzObjectFactory;
 import org.terems.webz.internals.WebzPathNormalizer;
 
 public class GenericWebzFileSystem extends BaseWebzDestroyable implements WebzFileSystem {
@@ -23,7 +23,7 @@ public class GenericWebzFileSystem extends BaseWebzDestroyable implements WebzFi
 	private WebzFileSystemOperations operations;
 
 	@Override
-	public GenericWebzFileSystem init(WebzProperties properties, WebzDestroyableFactory factory) throws WebzException {
+	public GenericWebzFileSystem init(WebzProperties properties, WebzObjectFactory factory) throws WebzException {
 
 		fileFactory = factory.newDestroyable(DefaultWebzFileFactory.class).init(this);
 		pathNormalizer = factory.newDestroyable(LowerCaseNormalizer.class);

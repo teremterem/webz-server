@@ -16,9 +16,9 @@ import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzProperties;
 import org.terems.webz.WebzWriteException;
 import org.terems.webz.internals.ParentChildrenMetadata;
-import org.terems.webz.internals.WebzDestroyableFactory;
 import org.terems.webz.internals.WebzFileSystemCache;
 import org.terems.webz.internals.WebzFileSystemImpl;
+import org.terems.webz.internals.WebzObjectFactory;
 import org.terems.webz.internals.WebzPathNormalizer;
 import org.terems.webz.internals.base.BaseWebzFileSystemImpl;
 import org.terems.webz.internals.cache.ChildPathnamesHolder;
@@ -38,7 +38,7 @@ public class CachedFileSystem extends BaseWebzFileSystemImpl {
 	private int filePayloadSizeThreshold;
 
 	public CachedFileSystem init(WebzFileSystemImpl fileSystemImpl, WebzPathNormalizer pathNormalizer, WebzProperties properties,
-			WebzDestroyableFactory factory) throws WebzException {
+			WebzObjectFactory factory) throws WebzException {
 
 		// TODO additional mode #1: payload cache disabled completely
 		// TODO additional mode #2: payload cache works for any payload sizes without the threshold ?

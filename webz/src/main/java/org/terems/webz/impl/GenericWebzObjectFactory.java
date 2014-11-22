@@ -12,15 +12,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzDestroyable;
 import org.terems.webz.WebzException;
-import org.terems.webz.internals.WebzDestroyableFactory;
+import org.terems.webz.internals.WebzDestroyableObjectFactory;
 
-public class GenericWebzDestroyableFactory implements WebzDestroyableFactory {
+public class GenericWebzObjectFactory implements WebzDestroyableObjectFactory {
 
-	private static final Logger LOG = LoggerFactory.getLogger(GenericWebzDestroyableFactory.class);
+	private static final Logger LOG = LoggerFactory.getLogger(GenericWebzObjectFactory.class);
 
 	private static final String NULL_ENCOUNTERED_MSG = "null was encountered among " + WebzDestroyable.class.getSimpleName()
-			+ " objects while destroying " + GenericWebzDestroyableFactory.class.getSimpleName();
-	private static final String ALREADY_DESTROYED_MSG = GenericWebzDestroyableFactory.class.getSimpleName() + " is already destroyed";
+			+ " objects while destroying " + GenericWebzObjectFactory.class.getSimpleName();
+	private static final String ALREADY_DESTROYED_MSG = GenericWebzObjectFactory.class.getSimpleName() + " is already destroyed";
 
 	private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 

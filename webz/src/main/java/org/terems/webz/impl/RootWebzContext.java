@@ -11,18 +11,18 @@ import org.terems.webz.WebzFile;
 import org.terems.webz.WebzPathnameException;
 import org.terems.webz.WebzProperties;
 import org.terems.webz.config.WebzConfigObject;
-import org.terems.webz.internals.WebzDestroyableFactory;
 import org.terems.webz.internals.WebzFileFactory;
 import org.terems.webz.internals.WebzFileNotAccessible;
+import org.terems.webz.internals.WebzObjectFactory;
 
 public class RootWebzContext implements WebzContext, WebzConfig {
 
 	private static final Logger LOG = LoggerFactory.getLogger(RootWebzContext.class);
 
 	private WebzFileFactory fileFactory;
-	private WebzDestroyableFactory appFactory;
+	private WebzObjectFactory appFactory;
 
-	public RootWebzContext(WebzFileFactory fileFactory, WebzDestroyableFactory appFactory) {
+	public RootWebzContext(WebzFileFactory fileFactory, WebzObjectFactory appFactory) {
 		this.fileFactory = fileFactory;
 		this.appFactory = appFactory;
 	}

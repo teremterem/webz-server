@@ -4,7 +4,7 @@ import org.terems.webz.WebzDestroyable;
 import org.terems.webz.WebzException;
 
 /** TODO !!! describe !!! **/
-public interface WebzDestroyableFactory extends WebzDestroyable {
+public interface WebzObjectFactory {
 
 	/** TODO !!! describe !!! **/
 	public <T extends WebzDestroyable> T newDestroyable(Class<T> destroyableClass) throws WebzException;

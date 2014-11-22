@@ -20,7 +20,7 @@ import org.terems.webz.base.WebzConfigProxy;
 import org.terems.webz.base.WebzContextProxy;
 import org.terems.webz.config.GeneralAppConfig;
 import org.terems.webz.internals.WebzApp;
-import org.terems.webz.internals.WebzDestroyableFactory;
+import org.terems.webz.internals.WebzDestroyableObjectFactory;
 import org.terems.webz.internals.WebzFileFactory;
 import org.terems.webz.internals.WebzFileSystem;
 import org.terems.webz.util.WebzUtils;
@@ -34,11 +34,11 @@ public class GenericWebzApp implements WebzApp {
 	private RootWebzContext rootContext;
 	private Collection<WebzFilter> filterChain;
 
-	private WebzDestroyableFactory appFactory;
+	private WebzDestroyableObjectFactory appFactory;
 
 	@Override
 	public GenericWebzApp init(WebzFileSystem fileSystem, Collection<Class<? extends WebzFilter>> filterClassesList,
-			WebzDestroyableFactory appFactory) throws WebzException {
+			WebzDestroyableObjectFactory appFactory) throws WebzException {
 
 		this.appFactory = appFactory;
 		WebzFileFactory fileFactory = fileSystem.getFileFactory();
