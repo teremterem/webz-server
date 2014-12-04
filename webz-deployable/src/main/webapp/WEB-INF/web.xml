@@ -46,7 +46,7 @@
 
 	<servlet-mapping>
 		<servlet-name>WebzLocal</servlet-name>
-		<url-pattern>/local/*</url-pattern>
+		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
 
 </web-app>

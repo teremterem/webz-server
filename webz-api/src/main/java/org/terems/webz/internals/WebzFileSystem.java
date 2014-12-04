@@ -8,7 +8,7 @@ public interface WebzFileSystem extends WebzIdentifiable, WebzDestroyable {
 
 	// TODO elaborate a concept of WebzFileAccessController (in terms of servlet container it should be user session scoped)
 
-	public WebzFileSystem init(WebzProperties properties, WebzObjectFactory factory) throws WebzException;
+	public WebzFileSystem init(WebzObjectFactory factory, WebzProperties properties) throws WebzException;
 
 	public WebzFileFactory getFileFactory();
 

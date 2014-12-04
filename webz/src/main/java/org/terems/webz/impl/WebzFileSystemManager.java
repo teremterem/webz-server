@@ -25,7 +25,7 @@ public class WebzFileSystemManager extends BaseWebzDestroyable {
 	}
 
 	public WebzFileSystem createFileSystem(WebzProperties webzProperties) throws WebzException {
-		return factory.newDestroyable(GenericWebzFileSystem.class).init(webzProperties, factory);
+		return factory.newDestroyable(GenericWebzFileSystem.class).init(factory, webzProperties);
 	}
 
 }

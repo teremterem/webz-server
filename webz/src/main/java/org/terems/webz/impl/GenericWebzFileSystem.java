@@ -23,9 +23,11 @@ public class GenericWebzFileSystem extends BaseWebzDestroyable implements WebzFi
 	private WebzFileSystemOperations operations;
 
 	@Override
-	public GenericWebzFileSystem init(WebzProperties properties, WebzObjectFactory factory) throws WebzException {
+	public GenericWebzFileSystem init(WebzObjectFactory factory, WebzProperties properties) throws WebzException {
 
-		fileFactory = factory.newDestroyable(DefaultWebzFileFactory.class).init(this);
+		fileFactory = factory.newDestroyable(DefaultWebzFileFactory.class);
+		fileFactory.init(this, properties);
+
 		pathNormalizer = factory.newDestroyable(LowerCaseNormalizer.class);
 
 		WebzFileSystemImpl fsImpl = ((WebzFileSystemImpl) factory.newDestroyable(properties.get(WebzProperties.WEBZ_FS_IMPL_CLASS_PROPERTY,
