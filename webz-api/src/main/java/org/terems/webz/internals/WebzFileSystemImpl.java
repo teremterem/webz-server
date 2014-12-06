@@ -8,6 +8,6 @@ import org.terems.webz.WebzPropertiesInitable;
 public interface WebzFileSystemImpl extends WebzFileSystemStructure, WebzFileSystemOperations, WebzPropertiesInitable, WebzIdentifiable {
 
 	/** TODO !!! describe !!! **/
-	public WebzFileSystemImpl init(WebzPathNormalizer pathNormalizer, WebzProperties properties) throws WebzException;
+	public void init(WebzPathNormalizer pathNormalizer, WebzProperties properties) throws WebzException;
 
 }

@@ -180,8 +180,8 @@ public class WebzFileSystemImplTracer extends BaseWebzPropertiesInitable impleme
 	}
 
 	@Override
-	public WebzFileSystemImpl init(WebzPathNormalizer pathNormalizer, WebzProperties properties) throws WebzException {
-		return fsImpl.init(pathNormalizer, properties);
+	public void init(WebzPathNormalizer pathNormalizer, WebzProperties properties) throws WebzException {
+		fsImpl.init(pathNormalizer, properties);
 	}
 
 }

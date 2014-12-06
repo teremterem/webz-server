@@ -6,7 +6,7 @@ import org.terems.webz.base.BaseWebzPropertiesInitable;
 import org.terems.webz.internals.WebzPathNormalizer;
 
 /** TODO !!! describe !!! **/
-public abstract class BaseForwardSlashNormalizer extends BaseWebzPropertiesInitable implements WebzPathNormalizer {
+public class ForwardSlashNormalizer extends BaseWebzPropertiesInitable implements WebzPathNormalizer {
 
 	protected static final char FWD_SLASH = '/';
 	protected static final String FWD_SLASH_STR = "" + FWD_SLASH;
@@ -39,6 +39,23 @@ public abstract class BaseForwardSlashNormalizer extends BaseWebzPropertiesInita
 
 		return pathname == null || pathname.startsWith(FWD_SLASH_STR) || pathname.endsWith(FWD_SLASH_STR)
 				|| MULTIPLE_PATH_SEPARATORS.matcher(pathname).find();
+	}
+
+	/** TODO !!! describe !!! **/
+	@Override
+	public boolean belongsToSubtree(String pathname, String subtreePath) {
+
+		if (subtreePath.isEmpty()) {
+			return true;
+		}
+		if (pathname.length() < subtreePath.length()) {
+			return false;
+		}
+
+		if (!pathname.startsWith(subtreePath)) {
+			return false;
+		}
+		return pathname.length() == subtreePath.length() || pathname.codePointAt(subtreePath.length()) == FWD_SLASH;
 	}
 
 	/** TODO !!! describe !!! **/

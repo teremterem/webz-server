@@ -20,8 +20,6 @@ public class LocalFileSystem extends BaseWebzFileSystemImpl {
 
 	private static final Logger LOG = LoggerFactory.getLogger(LocalFileSystem.class);
 
-	// TODO come up with cross-platform "pathname lower-casing ?" strategy
-
 	@Override
 	protected void init() {
 		uniqueId = "localhost-" + basePath;
@@ -35,14 +33,14 @@ public class LocalFileSystem extends BaseWebzFileSystemImpl {
 	public WebzMetadata getMetadata(String pathname) throws IOException, WebzException {
 
 		File file = new File(basePath, pathname);
-		return file.exists() ? new LocalFileMetadata(file) : null;
+		return fileExists(file, pathname) ? new LocalFileMetadata(file) : null;
 	}
 
 	@Override
 	public ParentChildrenMetadata getParentChildrenMetadata(String parentPathname) throws IOException, WebzException {
 
 		File file = new File(basePath, parentPathname);
-		if (!file.exists()) {
+		if (!fileExists(file, parentPathname)) {
 			return null;
 		}
 
@@ -67,14 +65,14 @@ public class LocalFileSystem extends BaseWebzFileSystemImpl {
 	public WebzFileDownloader getFileDownloader(String pathname) throws IOException, WebzException {
 
 		File file = new File(basePath, pathname);
-		if (!file.exists() || !file.isFile()) {
+		if (!fileExists(file, pathname) || !file.isFile()) {
 			return null;
 		}
 
 		return new WebzFileDownloader(new LocalFileMetadata(file).getFileSpecific(), new FileInputStream(file));
 	}
 
-	// TODO implement LocalFileSystem
+	// TODO implement "operations" part of LocalFileSystem
 
 	@Override
 	public WebzMetadata createFolder(String pathname) throws IOException, WebzException {
@@ -109,6 +107,14 @@ public class LocalFileSystem extends BaseWebzFileSystemImpl {
 	@Override
 	public void delete(String pathname) throws IOException, WebzException {
 		// Auto-generated method stub
+	}
+
+	protected boolean pathnameMatchesFileExactly(String pathnameToValidate, File file) throws IOException {
+		return pathNormalizer.normalizePathname(file.getCanonicalPath()).endsWith(pathnameToValidate);
+	}
+
+	protected boolean fileExists(File file, String pathnameToValidate) throws IOException {
+		return file.exists() && pathnameMatchesFileExactly(pathnameToValidate, file);
 	}
 
 }

@@ -28,13 +28,12 @@ public abstract class BaseWebzFileSystemImpl extends BaseWebzPropertiesInitable 
 	protected String basePath;
 
 	@Override
-	public BaseWebzFileSystemImpl init(WebzPathNormalizer pathNormalizer, WebzProperties properties) throws WebzException {
+	public void init(WebzPathNormalizer pathNormalizer, WebzProperties properties) throws WebzException {
 
 		setPathNormalizer(pathNormalizer);
 		basePath = pathNormalizer.normalizePathname(properties.get(WebzProperties.FS_BASE_PATH_PROPERTY));
 
 		init(properties);
-		return this;
 	}
 
 	@Override
