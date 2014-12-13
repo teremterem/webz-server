@@ -53,6 +53,7 @@ public class WebzProperties extends HashMap<String, String> {
 
 	public static final String APP_DISPLAY_NAME_PROPERTY = "app.display.name";
 	public static final String DEFAULT_MIMETYPE_PROPERTY = "default.mimetype";
+	public static final String DEFAULT_ENCODING_PROPERTY = "default.encoding";
 
 	public static final String PATH_TO_404_FILE_PROPERTY = "404";
 	public static final String PATH_TO_500_FILE_PROPERTY = "500";

@@ -22,10 +22,15 @@ public class StaticContentSender {
 
 	private MimetypesConfig mimetypes;
 	private String defaultMimetype;
+	private String defaultEncoding;
 
 	public StaticContentSender(WebzConfig config) throws WebzException {
+
 		mimetypes = config.getAppConfigObject(MimetypesConfig.class);
-		defaultMimetype = config.getAppConfigObject(GeneralAppConfig.class).getDefaultMimetype();
+
+		GeneralAppConfig appConfig = config.getAppConfigObject(GeneralAppConfig.class);
+		defaultMimetype = appConfig.getDefaultMimetype();
+		defaultEncoding = appConfig.getDefaultEncoding();
 	}
 
 	public WebzMetadata.FileSpecific serveStaticContent(ServletResponse resp, WebzFile content) throws IOException, WebzException {
@@ -37,7 +42,7 @@ public class StaticContentSender {
 		WebzMetadata.FileSpecific fileSpecific = downloader.fileSpecific;
 
 		resp.setContentType(mimetypes.getMimetype(fileSpecific, defaultMimetype));
-		resp.setCharacterEncoding("UTF-8"); // TODO move response charset to properties !!!
+		resp.setCharacterEncoding(defaultEncoding); // TODO should I read BOM for this ??
 		resp.setContentLengthLong(fileSpecific.getNumberOfBytes());
 
 		try {
