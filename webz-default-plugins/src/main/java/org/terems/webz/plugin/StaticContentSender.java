@@ -37,6 +37,7 @@ public class StaticContentSender {
 		WebzMetadata.FileSpecific fileSpecific = downloader.fileSpecific;
 
 		resp.setContentType(mimetypes.getMimetype(fileSpecific, defaultMimetype));
+		resp.setCharacterEncoding("UTF-8"); // TODO move response charset to properties !!!
 		resp.setContentLengthLong(fileSpecific.getNumberOfBytes());
 
 		try {
