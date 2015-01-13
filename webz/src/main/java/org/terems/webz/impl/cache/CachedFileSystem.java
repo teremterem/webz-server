@@ -157,12 +157,12 @@ public class CachedFileSystem extends BaseWebzFileSystemImpl {
 							+ " - removing it from cache...", this));
 				}
 				cacheImpl.putFileContentHolderIntoCache(pathname, new FileContentHolder()); // putting empty content holder instead...
-				// TODO think if all caches should be dropped in such a case
 			}
 
 			WebzMetadata.FileSpecific fileSpecific = fetchFileSpecific(pathname);
 			if (fileSpecific == null) {
-				// TODO think if all caches (or this particular entry ?) should be dropped in such a case
+
+				cacheImpl.putFileContentHolderIntoCache(pathname, new FileContentHolder()); // putting empty content holder instead...
 				return null;
 			}
 

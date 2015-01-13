@@ -60,7 +60,7 @@ public class StaticContentFilter extends BaseLastModifiedWebzFilter<WebzFile> {
 
 		if (fileSpecific == null) {
 			// file does not exist or is not a file - invoke the next filter in the chain (filter chain usually ends with NotFoundFilter)
-			chainContext.nextPlease(req, resp);
+			serveNotFound(req, resp, chainContext);
 		}
 	}
 

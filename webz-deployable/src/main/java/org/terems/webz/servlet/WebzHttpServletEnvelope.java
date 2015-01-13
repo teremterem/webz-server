@@ -54,6 +54,8 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 					// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
 					this.webzEngine = webzEngine = new WebzEngine(rootFileSystemProperties, getDefaultFilterClassesList());
 					// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
+
+					// TODO UPON WEBZAPP GITHUB REPO VERSION CHANGE: simply recreate the whole WebZ Engine and voilà: the server is ready ;)
 				}
 			}
 		}

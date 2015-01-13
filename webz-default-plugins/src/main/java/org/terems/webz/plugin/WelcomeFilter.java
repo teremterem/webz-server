@@ -3,6 +3,7 @@ package org.terems.webz.plugin;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,8 +19,8 @@ import org.terems.webz.base.WebzContextProxy;
 public class WelcomeFilter extends BaseWebzFilter {
 
 	// TODO move default file extensions/names to config folder
-	private Collection<String> defaultFileExtensions = Arrays.asList(new String[] { ".html" });
-	private Collection<String> defaultFileNames = Arrays.asList(new String[] { "index" });
+	private Collection<String> defaultExtensions = Arrays.asList(new String[] { ".html" });
+	private Collection<String> defaultFilenames = Arrays.asList(new String[] { "index" });
 
 	// dilemma: 301 (permanent) redirect is more SEO friendly but some browsers and crawlers may treat it as "eternal"
 	private final boolean permanentRedirect = false;
@@ -28,10 +29,7 @@ public class WelcomeFilter extends BaseWebzFilter {
 	public void serve(HttpServletRequest req, HttpServletResponse resp, final WebzChainContext chainContext) throws IOException,
 			WebzException {
 
-		// TODO support welcome files
-
 		redirectFileFolder(req, resp, chainContext);
-		// TODO also consider redirecting from upper-cased paths to lower-cased ones ?
 	}
 
 	public void redirectFileFolder(HttpServletRequest req, HttpServletResponse resp, final WebzChainContext chainContext)
@@ -61,21 +59,7 @@ public class WelcomeFilter extends BaseWebzFilter {
 				}
 			}
 		}
-		chainContext.nextPlease(req, resp, new WebzContextProxy() {
-
-			@Override
-			public WebzFile resolveFile(HttpServletRequest req) throws IOException, WebzException {
-
-				// TODO support "invisible" redirects to welcome files
-
-				return super.resolveFile(req);
-			}
-
-			@Override
-			protected WebzContext getInnerContext() {
-				return chainContext;
-			}
-		});
+		chainContext.nextPlease(req, resp, new WelcomeContextProxy(chainContext));
 	}
 
 	private void doRedirect(HttpServletRequest req, HttpServletResponse resp, boolean toFolder, boolean isMethodHead) throws IOException {
@@ -99,6 +83,61 @@ public class WelcomeFilter extends BaseWebzFilter {
 
 		if (!isMethodHead) {
 			resp.getWriter().write("Redirect to " + redirectUrl);
+		}
+	}
+
+	private class WelcomeContextProxy extends WebzContextProxy {
+
+		private WebzChainContext chainContext;
+
+		private WelcomeContextProxy(WebzChainContext chainContext) {
+			this.chainContext = chainContext;
+		}
+
+		private boolean checkFilename(WebzFile file, String extension, String filename) {
+
+			String filePathname = file.getPathname().toLowerCase(Locale.ENGLISH);
+			String expectedFilename = filename.toLowerCase(Locale.ENGLISH) + extension.toLowerCase(Locale.ENGLISH);
+
+			if (filePathname.length() < expectedFilename.length()) {
+				return false;
+
+			} else if (filePathname.length() == expectedFilename.length()) {
+
+				return filePathname.equals(expectedFilename);
+			} else {
+				return filePathname.endsWith("/" + expectedFilename);
+			}
+		}
+
+		@Override
+		public WebzFile resolveFile(HttpServletRequest req) throws IOException, WebzException {
+			WebzFile file = super.resolveFile(req);
+
+			WebzMetadata metadata = file.getMetadata();
+			if (metadata != null && !file.isPathnameInvalid() && !metadata.isFile()) {
+
+				for (WebzFile child : file.listChildren()) {
+					for (String extension : defaultExtensions) {
+
+						for (String filename : defaultFilenames) {
+							if (checkFilename(child, extension, filename)) {
+								return child;
+							}
+						}
+						if (checkFilename(child, extension, metadata.getName())) {
+							return child;
+						}
+					}
+				}
+			}
+
+			return file;
+		}
+
+		@Override
+		protected WebzContext getInnerContext() {
+			return chainContext;
 		}
 	}
 
