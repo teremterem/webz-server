@@ -118,6 +118,7 @@ public class WelcomeFilter extends BaseWebzFilter {
 
 		@Override
 		public WebzFile resolveFile(HttpServletRequest req) throws IOException, WebzException {
+
 			WebzFile file = super.resolveFile(req);
 
 			WebzMetadata metadata = file.getMetadata();
