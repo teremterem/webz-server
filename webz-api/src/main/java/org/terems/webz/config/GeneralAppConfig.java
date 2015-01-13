@@ -14,6 +14,9 @@ public class GeneralAppConfig extends WebzConfigObject {
 	private String defaultMimetype;
 	private String defaultEncoding;
 
+	private String welcomeExtensionsList;
+	private String welcomeFilenamesList;
+
 	@Override
 	public void init(WebzFile configFolder) throws WebzException {
 
@@ -23,6 +26,11 @@ public class GeneralAppConfig extends WebzConfigObject {
 		appDisplayName = properties.getProperty(WebzProperties.APP_DISPLAY_NAME_PROPERTY);
 		defaultMimetype = properties.getProperty(WebzProperties.DEFAULT_MIMETYPE_PROPERTY, WebzDefaults.DEFAULT_MIMETYPE);
 		defaultEncoding = properties.getProperty(WebzProperties.DEFAULT_ENCODING_PROPERTY, WebzDefaults.DEFAULT_ENCODING);
+
+		welcomeExtensionsList = properties.getProperty(WebzProperties.WELCOME_EXTENSIONS_PROPERTY,
+				WebzDefaults.DEFAULT_WELCOME_EXTENSIONS_LIST);
+		welcomeFilenamesList = properties.getProperty(WebzProperties.WELCOME_FILENAMES_PROPERTY,
+				WebzDefaults.DEFAULT_WELCOME_FILENAMES_LIST);
 	}
 
 	public String getAppDisplayName() {
@@ -35,6 +43,14 @@ public class GeneralAppConfig extends WebzConfigObject {
 
 	public String getDefaultEncoding() {
 		return defaultEncoding;
+	}
+
+	public String getWelcomeExtensionsList() {
+		return welcomeExtensionsList;
+	}
+
+	public String getWelcomeFilenamesList() {
+		return welcomeFilenamesList;
 	}
 
 }

@@ -1,8 +1,6 @@
 package org.terems.webz.plugin;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,15 +13,23 @@ import org.terems.webz.WebzFile;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.base.BaseWebzFilter;
 import org.terems.webz.base.WebzContextProxy;
+import org.terems.webz.config.GeneralAppConfig;
+import org.terems.webz.util.WebzUtils;
 
 public class WelcomeFilter extends BaseWebzFilter {
 
-	// TODO move default file extensions/names to config folder
-	private Collection<String> defaultExtensions = Arrays.asList(new String[] { ".html" });
-	private Collection<String> defaultFilenames = Arrays.asList(new String[] { "index" });
+	private String[] welcomeExtensions;
+	private String[] welcomeFilenames;
 
 	// dilemma: 301 (permanent) redirect is more SEO friendly but some browsers and crawlers may treat it as "eternal"
 	private final boolean permanentRedirect = false;
+
+	@Override
+	public void init() throws WebzException {
+		GeneralAppConfig generalConfig = getAppConfig().getAppConfigObject(GeneralAppConfig.class);
+		welcomeExtensions = WebzUtils.parseCsvLine(generalConfig.getWelcomeExtensionsList());
+		welcomeFilenames = WebzUtils.parseCsvLine(generalConfig.getWelcomeFilenamesList());
+	}
 
 	@Override
 	public void serve(HttpServletRequest req, HttpServletResponse resp, final WebzChainContext chainContext) throws IOException,
@@ -118,9 +124,9 @@ public class WelcomeFilter extends BaseWebzFilter {
 			if (metadata != null && !file.isPathnameInvalid() && !metadata.isFile()) {
 
 				for (WebzFile child : file.listChildren()) {
-					for (String extension : defaultExtensions) {
+					for (String extension : welcomeExtensions) {
 
-						for (String filename : defaultFilenames) {
+						for (String filename : welcomeFilenames) {
 							if (checkFilename(child, extension, filename)) {
 								return child;
 							}

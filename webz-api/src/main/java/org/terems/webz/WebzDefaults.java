@@ -12,4 +12,7 @@ public class WebzDefaults {
 	public static final String DEFAULT_MIMETYPE = "application/octet-stream";
 	public static final String DEFAULT_ENCODING = "UTF-8"; // ByteOrderMark.UTF_8.getCharsetName();
 
+	public static final String DEFAULT_WELCOME_FILENAMES_LIST = "index";
+	public static final String DEFAULT_WELCOME_EXTENSIONS_LIST = ".html";
+
 }

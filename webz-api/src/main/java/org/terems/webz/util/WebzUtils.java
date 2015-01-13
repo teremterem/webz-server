@@ -247,4 +247,10 @@ public class WebzUtils {
 		return HTTP_DATE_FORMAT.get().format(date);
 	}
 
+	/** TODO !!! describe !!! **/
+	public static String[] parseCsvLine(String csvLine) {
+		// TODO support proper csv unescaping ?
+		return csvLine.split("\\s*,\\s*");
+	}
+
 }
