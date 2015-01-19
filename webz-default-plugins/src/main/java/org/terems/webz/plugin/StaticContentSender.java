@@ -5,6 +5,8 @@ import java.io.IOException;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.ByteOrderMark;
+import org.apache.commons.io.input.BOMInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzConfig;
@@ -18,7 +20,9 @@ import org.terems.webz.config.MimetypesConfig;
 import org.terems.webz.util.WebzUtils;
 
 public class StaticContentSender {
-	// TODO move StaticContentSender to webz-api (decide what to do with logging)
+
+	public static final ByteOrderMark[] ALL_BOMS = { ByteOrderMark.UTF_8, ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_16LE,
+			ByteOrderMark.UTF_32BE, ByteOrderMark.UTF_32LE };
 
 	private static final Logger LOG = LoggerFactory.getLogger(StaticContentSender.class);
 
@@ -38,33 +42,34 @@ public class StaticContentSender {
 	public WebzMetadata.FileSpecific serveStaticContent(HttpServletRequest req, ServletResponse resp, WebzFile content) throws IOException,
 			WebzException {
 
-		boolean isMethodHead = WebzUtils.isHttpMethodHead(req);
-		WebzFileDownloader downloader = null;
-		WebzMetadata.FileSpecific fileSpecific;
-
-		if (isMethodHead) {
-			WebzMetadata metadata = content.getMetadata();
-			if (metadata == null) {
-				return null;
-			}
-
-			fileSpecific = metadata.getFileSpecific();
-			if (fileSpecific == null) {
-				return null;
-			}
-		} else {
-			downloader = content.getFileDownloader();
-			if (downloader == null) {
-				return null;
-			}
-			fileSpecific = downloader.fileSpecific;
+		WebzFileDownloader downloader = content.getFileDownloader();
+		if (downloader == null) {
+			return null;
+		}
+		WebzMetadata.FileSpecific fileSpecific = downloader.fileSpecific;
+		if (fileSpecific == null) {
+			return null;
 		}
 
-		resp.setContentType(mimetypes.getMimetype(fileSpecific, defaultMimetype));
-		resp.setCharacterEncoding(defaultEncoding); // TODO should I read BOM for this ?
-		resp.setContentLengthLong(fileSpecific.getNumberOfBytes());
+		@SuppressWarnings("resource")
+		BOMInputStream bomIn = new BOMInputStream(downloader.content, false, ALL_BOMS);
+		downloader.content = bomIn;
 
-		if (!isMethodHead) {
+		String encoding = defaultEncoding;
+		long contentLength = fileSpecific.getNumberOfBytes();
+
+		ByteOrderMark bom = bomIn.getBOM();
+		if (bom != null) {
+			encoding = bom.getCharsetName();
+			contentLength -= bom.length();
+		}
+		resp.setContentType(mimetypes.getMimetype(fileSpecific, defaultMimetype));
+		resp.setCharacterEncoding(encoding);
+		resp.setContentLengthLong(contentLength);
+
+		if (WebzUtils.isHttpMethodHead(req)) {
+			downloader.close();
+		} else {
 			try {
 				downloader.copyContentAndClose(resp.getOutputStream());
 
