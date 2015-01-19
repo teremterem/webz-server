@@ -19,6 +19,7 @@ import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzReadException;
 import org.terems.webz.WebzWriteException;
+import org.terems.webz.base.BaseWebzFilter;
 import org.terems.webz.internals.WebzIdentifiable;
 
 /** TODO !!! describe !!! **/
@@ -251,6 +252,16 @@ public class WebzUtils {
 	public static String[] parseCsvLine(String csvLine) {
 		// TODO support proper csv unescaping ?
 		return csvLine.split("\\s*,\\s*");
+	}
+
+	/** TODO !!! describe !!! **/
+	public static boolean isHttpMethodHead(HttpServletRequest req) {
+		return BaseWebzFilter.HTTP_HEAD.equals(req.getMethod());
+	}
+
+	/** TODO !!! describe !!! **/
+	public static boolean isHttpMethodGet(HttpServletRequest req) {
+		return BaseWebzFilter.HTTP_GET.equals(req.getMethod());
 	}
 
 }

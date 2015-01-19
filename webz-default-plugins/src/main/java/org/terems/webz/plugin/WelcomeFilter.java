@@ -41,10 +41,9 @@ public class WelcomeFilter extends BaseWebzFilter {
 	public void redirectFileFolder(HttpServletRequest req, HttpServletResponse resp, final WebzChainContext chainContext)
 			throws IOException, WebzException {
 
-		String requestMethod = req.getMethod();
-		boolean isMethodHead = HTTP_HEAD.equals(requestMethod);
+		boolean isMethodHead = WebzUtils.isHttpMethodHead(req);
 
-		if ((HTTP_GET.equals(requestMethod) || isMethodHead)) {
+		if (isMethodHead || WebzUtils.isHttpMethodGet(req)) {
 
 			// resolving file using default resolver...
 			WebzMetadata metadata = chainContext.resolveFile(req).getMetadata();

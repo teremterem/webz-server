@@ -67,6 +67,7 @@ public class WebzEngine implements WebzServletContainerBridge {
 		if (LOG.isTraceEnabled()) {
 			String lastModified = resp.getHeader(WebzFilter.HEADER_LAST_MODIFIED);
 			String contentLength = resp.getHeader(WebzFilter.HEADER_CONTENT_LENGTH);
+			String contentType = resp.getHeader(WebzFilter.HEADER_CONTENT_TYPE);
 			LOG.trace("\n\n\\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ //\n HTTP "
 					+ resp.getStatus()
 					+ " ("
@@ -74,8 +75,10 @@ public class WebzEngine implements WebzServletContainerBridge {
 					+ ")"
 					+ (contentLength == null ? "" : " - " + contentLength + " bytes")
 					+ "\n// ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\"
-					+ (lastModified == null ? "" : "\n " + WebzFilter.HEADER_LAST_MODIFIED + ": " + lastModified
-							+ "\n\\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ //")
+					+ (lastModified == null ? "" : "\n " + WebzFilter.HEADER_LAST_MODIFIED + ": " + lastModified)
+					+ (contentType == null ? "" : "\n " + WebzFilter.HEADER_CONTENT_TYPE + ": " + contentType)
+					+ (lastModified == null && contentType == null ? ""
+							: "\n\\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ //")
 					+ "\n\n\n");
 		}
 	}

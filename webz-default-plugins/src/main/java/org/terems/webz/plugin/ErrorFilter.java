@@ -63,7 +63,7 @@ public class ErrorFilter extends BaseWebzFilter {
 					resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
 					errorFile = chainContext.getFile(pathTo500file);
-					errorFileMetadata = contentSender.serveStaticContent(resp, errorFile);
+					errorFileMetadata = contentSender.serveStaticContent(req, resp, errorFile);
 
 				} catch (Throwable th2) {
 					exceptionWhileShowingErrorPage = th2;

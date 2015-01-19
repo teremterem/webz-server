@@ -56,13 +56,11 @@ public class StaticContentFilter extends BaseLastModifiedWebzFilter<WebzFile> {
 	protected void serveResource(WebzFile resource, HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext)
 			throws IOException, WebzException {
 
-		// TODO when http method HEAD is used maybe it is better not to send the file content ?
-		WebzMetadata.FileSpecific fileSpecific = contentSender.serveStaticContent(resp, resource);
+		WebzMetadata.FileSpecific fileSpecific = contentSender.serveStaticContent(req, resp, resource);
 
 		if (fileSpecific == null) {
 			// file does not exist or is not a file - invoke the next filter in the chain (filter chain usually ends with NotFoundFilter)
 			serveNotFound(req, resp, chainContext);
 		}
 	}
-
 }

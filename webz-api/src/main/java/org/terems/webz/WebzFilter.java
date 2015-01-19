@@ -25,5 +25,6 @@ public interface WebzFilter extends WebzDestroyable {
 	public static final String HEADER_LAST_MODIFIED = "Last-Modified";
 	public static final String HEADER_IF_MODIFIED_SINCE = "If-Modified-Since";
 	public static final String HEADER_CONTENT_LENGTH = "Content-Length";
+	public static final String HEADER_CONTENT_TYPE = "Content-Type";
 
 }

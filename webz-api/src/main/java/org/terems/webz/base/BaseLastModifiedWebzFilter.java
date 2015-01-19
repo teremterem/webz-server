@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.terems.webz.WebzChainContext;
 import org.terems.webz.WebzContext;
 import org.terems.webz.WebzException;
+import org.terems.webz.util.WebzUtils;
 
 /** TODO !!! describe !!! **/
 public abstract class BaseLastModifiedWebzFilter<R> extends BaseWebzFilter {
@@ -38,8 +39,7 @@ public abstract class BaseLastModifiedWebzFilter<R> extends BaseWebzFilter {
 			return;
 		}
 
-		String method = req.getMethod();
-		if (HTTP_GET.equals(method)) {
+		if (WebzUtils.isHttpMethodGet(req)) {
 
 			Long lastModifiedPrecise = resolveLastModified(resource);
 			if (lastModifiedPrecise == null || lastModifiedPrecise < 0) {
@@ -62,8 +62,9 @@ public abstract class BaseLastModifiedWebzFilter<R> extends BaseWebzFilter {
 				}
 			}
 
-		} else if (HTTP_HEAD.equals(method)) {
+		} else if (WebzUtils.isHttpMethodHead(req)) {
 
+			// TODO this doesn't seem to correspond to HTTP HEAD specification:
 			Long lastModifiedPrecise = resolveLastModified(resource);
 			setLastModifiedIfApplicable(resp, roundUpLastModified(lastModifiedPrecise));
 			serveResource(resource, req, resp, chainContext);
