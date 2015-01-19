@@ -39,7 +39,7 @@ public abstract class BaseLastModifiedWebzFilter<R> extends BaseWebzFilter {
 			return;
 		}
 
-		if (WebzUtils.isHttpMethodGet(req)) {
+		if (WebzUtils.isHttpMethodGet(req) || WebzUtils.isHttpMethodHead(req)) {
 
 			Long lastModifiedPrecise = resolveLastModified(resource);
 			if (lastModifiedPrecise == null || lastModifiedPrecise < 0) {
@@ -61,13 +61,6 @@ public abstract class BaseLastModifiedWebzFilter<R> extends BaseWebzFilter {
 					resp.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
 				}
 			}
-
-		} else if (WebzUtils.isHttpMethodHead(req)) {
-
-			// TODO this doesn't seem to correspond to HTTP HEAD specification:
-			Long lastModifiedPrecise = resolveLastModified(resource);
-			setLastModifiedIfApplicable(resp, roundUpLastModified(lastModifiedPrecise));
-			serveResource(resource, req, resp, chainContext);
 
 		} else {
 			serveResource(resource, req, resp, chainContext);
