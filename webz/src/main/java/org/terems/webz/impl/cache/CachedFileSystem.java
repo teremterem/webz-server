@@ -26,8 +26,8 @@ import org.terems.webz.internals.cache.FileContentHolder;
 import org.terems.webz.internals.cache.WebzByteArrayInputStream;
 import org.terems.webz.util.WebzUtils;
 
-// TODO background thread should periodically check certain number of pathnames against Dropbox to drop the whole FS cache if necessary
-// TODO also do similar check when some metadata is being fetched as a "side-effect" in cache implementations to drop the whole FS cache if necessary
+// TODO background thread should periodically check cached pathnames against Dropbox to drop the entire cache if necessary
+// TODO make sure to check the cache against metadata fetched by "side-effect" in order to also drop the entire cache if necessary
 public class CachedFileSystem extends BaseWebzFileSystemImpl {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CachedFileSystem.class);
@@ -72,8 +72,7 @@ public class CachedFileSystem extends BaseWebzFileSystemImpl {
 	private void dropFileContentAndChildPathnames(String pathname) {
 
 		cacheImpl.dropChildPathnamesHolderFromCache(pathname);
-		// TODO drop whole sub-tree (mind possible gaps in cache caused by evictions - maybe configure child pathnames cache to not evict
-		// anything ever at all?) - think in which cases this operation should be done
+		// TODO drop whole sub-tree (mind possible gaps in cache caused by evictions)
 
 		cacheImpl.dropFileContentHolderFromCache(pathname);
 	}

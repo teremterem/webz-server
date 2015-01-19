@@ -11,10 +11,6 @@ import org.terems.webz.WebzMetadata;
 public interface WebzFileSystemOperations extends WebzPathNormalizerSettable, WebzFileSystemStructureSettable {
 
 	/** TODO !!! describe !!! **/
-	// TODO should WebzReadException and WebzWriteException be mentioned explicitly in copyContentToOutputStream's throws declaration ?
-	// public WebzMetadata.FileSpecific copyContentToOutputStream(String pathname, OutputStream out) throws IOException, WebzException;
-
-	/** TODO !!! describe !!! **/
 	public WebzFileDownloader getFileDownloader(String pathname) throws IOException, WebzException;
 
 	/** TODO !!! describe !!! **/

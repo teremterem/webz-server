@@ -31,6 +31,10 @@ public class WebzEngine implements WebzServletContainerBridge {
 
 			rootWebzApp = globalFactory.newDestroyable(GenericWebzApp.class).init(rootFileSystem, filterClassesList,
 					globalFactory.newDestroyable(GenericWebzObjectFactory.class));
+
+			// TODO UPON WEBZAPP GITHUB REPO VERSION CHANGE: simply recreate Root WebZ App and voilà: the server is ready ;)
+			// http://wiki.eclipse.org/JGit/User_Guide#Repository
+
 		} catch (WebzException e) {
 
 			if (LOG.isErrorEnabled()) {

@@ -18,6 +18,6 @@ public interface WebzFileSystem extends WebzIdentifiable, WebzDestroyable {
 
 	public WebzFileSystemOperations getOperations();
 
-	// TODO any ideas on file blocking/merging approaches when they are edited through WebZ ?
+	// TODO should any kind of optimistic locking be supported when files are edited through "operations" ?
 
 }

@@ -42,13 +42,16 @@ public class StaticContentSender {
 		WebzMetadata.FileSpecific fileSpecific = downloader.fileSpecific;
 
 		resp.setContentType(mimetypes.getMimetype(fileSpecific, defaultMimetype));
-		resp.setCharacterEncoding(defaultEncoding); // TODO should I read BOM for this ??
+		resp.setCharacterEncoding(defaultEncoding); // TODO should I read BOM for this ?
 		resp.setContentLengthLong(fileSpecific.getNumberOfBytes());
 
 		try {
 			downloader.copyContentAndClose(resp.getOutputStream());
+
 		} catch (WebzWriteException e) {
-			LOG.debug("most likely client dropped connection while receiving static content from " + content, e);
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("most likely client dropped connection while receiving static content from " + content, e);
+			}
 		}
 
 		return fileSpecific;

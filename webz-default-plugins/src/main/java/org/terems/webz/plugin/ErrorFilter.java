@@ -42,7 +42,9 @@ public class ErrorFilter extends BaseWebzFilter {
 
 		} catch (Throwable th) {
 
-			LOG.warn(WebzUtils.formatRequestMethodAndUrl(req), th);
+			if (LOG.isWarnEnabled()) {
+				LOG.warn(WebzUtils.formatRequestMethodAndUrl(req), th);
+			}
 
 			if (resp.isCommitted()) {
 
