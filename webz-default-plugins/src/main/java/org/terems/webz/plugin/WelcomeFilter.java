@@ -101,6 +101,7 @@ public class WelcomeFilter extends BaseWebzFilter {
 
 		private boolean checkFilename(WebzFile file, String extension, String filename) {
 
+			// the logic of this method can be micro-optimized...
 			String filePathname = file.getPathname().toLowerCase(Locale.ENGLISH);
 			String expectedFilename = filename.toLowerCase(Locale.ENGLISH) + extension.toLowerCase(Locale.ENGLISH);
 
