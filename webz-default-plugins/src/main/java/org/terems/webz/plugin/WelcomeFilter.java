@@ -38,7 +38,7 @@ public class WelcomeFilter extends BaseWebzFilter {
 		redirectFileFolder(req, resp, chainContext);
 	}
 
-	public void redirectFileFolder(HttpServletRequest req, HttpServletResponse resp, final WebzChainContext chainContext)
+	public void redirectFileFolder(HttpServletRequest req, HttpServletResponse resp, final WebzChainContext nonProxiedChainContext)
 			throws IOException, WebzException {
 
 		boolean isMethodHead = WebzUtils.isHttpMethodHead(req);
@@ -46,7 +46,7 @@ public class WelcomeFilter extends BaseWebzFilter {
 		if (isMethodHead || WebzUtils.isHttpMethodGet(req)) {
 
 			// resolving file using default resolver...
-			WebzMetadata metadata = chainContext.resolveFile(req).getMetadata();
+			WebzMetadata metadata = nonProxiedChainContext.resolveFile(req).getMetadata();
 			if (metadata != null) {
 
 				boolean uriEndsWithSlash = req.getRequestURI().endsWith("/");
@@ -64,7 +64,7 @@ public class WelcomeFilter extends BaseWebzFilter {
 				}
 			}
 		}
-		chainContext.nextPlease(req, resp, new WelcomeContextProxy(chainContext));
+		nonProxiedChainContext.nextPlease(req, resp, new WelcomeContextProxy(nonProxiedChainContext));
 	}
 
 	private void doRedirect(HttpServletRequest req, HttpServletResponse resp, boolean toFolder, boolean isMethodHead) throws IOException {
