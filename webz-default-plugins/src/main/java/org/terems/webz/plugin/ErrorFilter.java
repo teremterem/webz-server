@@ -43,6 +43,7 @@ public class ErrorFilter extends BaseWebzFilter {
 		} catch (Throwable th) {
 
 			if (LOG.isWarnEnabled()) {
+				// TODO maybe switch to ERROR log level here ?
 				LOG.warn(WebzUtils.formatRequestMethodAndUrl(req), th);
 			}
 
