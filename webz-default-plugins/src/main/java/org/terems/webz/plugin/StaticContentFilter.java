@@ -25,6 +25,7 @@ public class StaticContentFilter extends BaseLastModifiedWebzFilter<WebzFile> {
 	@Override
 	public void init() throws WebzException {
 		contentSender = new StaticContentSender(getAppConfig());
+		// TODO convert StaticContentSender into a singleton
 	}
 
 	@Override
