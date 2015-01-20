@@ -84,7 +84,7 @@ public class WelcomeFilter extends BaseWebzFilter {
 		String redirectUrl = urlBuffer.toString();
 
 		resp.setStatus(permanentRedirect ? HttpServletResponse.SC_MOVED_PERMANENTLY : HttpServletResponse.SC_MOVED_TEMPORARILY);
-		resp.setHeader("Location", redirectUrl);
+		resp.setHeader(HEADER_LOCATION, redirectUrl);
 
 		if (!isMethodHead) {
 			resp.getWriter().write("Redirect to " + redirectUrl);

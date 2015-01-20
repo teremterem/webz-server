@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFilter;
+import org.terems.webz.WebzProperties;
+import org.terems.webz.git.impl.WebzGit;
 import org.terems.webz.internals.WebzApp;
 import org.terems.webz.internals.WebzDestroyableObjectFactory;
 import org.terems.webz.internals.WebzFileSystem;
@@ -23,16 +25,20 @@ public class WebzEngine implements WebzServletContainerBridge {
 
 	private WebzDestroyableObjectFactory globalFactory = new GenericWebzObjectFactory();
 	private volatile WebzApp rootWebzApp;
+	private WebzGit git;
 
 	public WebzEngine(Properties rootFileSystemProperties, Collection<Class<? extends WebzFilter>> filterClassesList) {
 
 		try {
+			String gitOriginUrl = rootFileSystemProperties.getProperty(WebzProperties.GIT_ORIGIN_URL_PROPERTY);
+			if (gitOriginUrl != null) {
+				git = new WebzGit(gitOriginUrl, rootFileSystemProperties.getProperty(WebzProperties.FS_BASE_PATH_PROPERTY));
+			}
+
 			WebzFileSystem rootFileSystem = WebzFileSystemManager.getManager(globalFactory).createFileSystem(rootFileSystemProperties);
 
 			rootWebzApp = globalFactory.newDestroyable(GenericWebzApp.class).init(rootFileSystem, filterClassesList,
 					globalFactory.newDestroyable(GenericWebzObjectFactory.class));
-
-			// TODO WEBZ GIT INTEGRATION: https://github.com/centic9/jgit-cookbook
 
 		} catch (WebzException e) {
 
@@ -48,10 +54,41 @@ public class WebzEngine implements WebzServletContainerBridge {
 	@Override
 	public void serve(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException {
 
+		if (git != null && "/pull/from/origin".equals(req.getPathInfo())) {
+
+			git.pull();
+			resp.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+			resp.setHeader(WebzFilter.HEADER_LOCATION, "/");
+
+			return;
+		}
+
 		if (rootWebzApp == null) {
 			throw new WebzException("root WebZ App is already stopped or has not been started yet");
 		}
 
+		traceRequestStart(req);
+
+		rootWebzApp.serve(req, resp);
+
+		traceRequestEnd(req, resp);
+	}
+
+	@Override
+	public void destroy() {
+
+		rootWebzApp = null;
+		LOG.info("WebZ Engine stopped\n\n\n");
+
+		globalFactory.destroy();
+		LOG.info("WebZ Engine destroyed\n\n\n");
+
+		if (git != null) {
+			git.destroy();
+		}
+	}
+
+	private void traceRequestStart(HttpServletRequest req) {
 		if (LOG.isTraceEnabled()) {
 			String modifiedSince = req.getHeader(WebzFilter.HEADER_IF_MODIFIED_SINCE);
 			LOG.trace("\n\n\n\n// ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\\n "
@@ -60,9 +97,9 @@ public class WebzEngine implements WebzServletContainerBridge {
 					+ (modifiedSince == null ? "" : "\n " + WebzFilter.HEADER_IF_MODIFIED_SINCE + ": " + modifiedSince
 							+ "\n// ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\ // ~~~ \\\\") + "\n");
 		}
+	}
 
-		rootWebzApp.serve(req, resp);
-
+	private void traceRequestEnd(HttpServletRequest req, HttpServletResponse resp) {
 		if (LOG.isTraceEnabled()) {
 			String lastModified = resp.getHeader(WebzFilter.HEADER_LAST_MODIFIED);
 			String contentLength = resp.getHeader(WebzFilter.HEADER_CONTENT_LENGTH);
@@ -80,16 +117,6 @@ public class WebzEngine implements WebzServletContainerBridge {
 							: "\n\\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ //")
 					+ "\n\n\n");
 		}
-	}
-
-	@Override
-	public void destroy() {
-
-		rootWebzApp = null;
-		LOG.info("WebZ Engine stopped\n\n\n");
-
-		globalFactory.destroy();
-		LOG.info("WebZ Engine destroyed\n\n\n");
 	}
 
 }
