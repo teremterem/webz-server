@@ -21,7 +21,7 @@ import org.terems.webz.WebzDestroyable;
 import org.terems.webz.WebzException;
 import org.testng.annotations.Test;
 
-public class GenericWebzDestroyableFactoryTest {
+public class GenericWebzObjectFactoryTest {
 
 	private static final String WRONG_NUMBER_OF_UNIQUE_OBJECTS_MSG = "wrong number of unique objects created by factory(ies)";
 
@@ -259,8 +259,7 @@ public class GenericWebzDestroyableFactoryTest {
 				counterMock);
 		// 3 new objects + 1 new DestroyableClass singleton created (using singleton sub-factory)
 
-		GenericWebzObjectFactory subFactory1_sameSingleton = factory.getDestroyableSingleton(GenericWebzObjectFactory.class
-				.getName());
+		GenericWebzObjectFactory subFactory1_sameSingleton = factory.getDestroyableSingleton(GenericWebzObjectFactory.class.getName());
 		// this singleton sub-factory exists already
 		assertSame(subFactory1_sameSingleton, subFactory1_singleton);
 

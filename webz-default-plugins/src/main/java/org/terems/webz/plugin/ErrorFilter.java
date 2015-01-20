@@ -58,31 +58,33 @@ public class ErrorFilter extends BaseWebzFilter {
 				WebzMetadata.FileSpecific errorFileMetadata = null;
 				Throwable exceptionWhileShowingErrorPage = null;
 
-				try {
-					resp.reset();
-					resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				resp.reset();
+				resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-					errorFile = chainContext.getFile(pathTo500file);
-					errorFileMetadata = contentSender.serveStaticContent(req, resp, errorFile);
+				if (pathTo500file != null) {
+					try {
+						errorFile = chainContext.getFile(pathTo500file);
+						errorFileMetadata = contentSender.serveStaticContent(req, resp, errorFile);
 
-				} catch (Throwable th2) {
-					exceptionWhileShowingErrorPage = th2;
-				}
-
-				if (exceptionWhileShowingErrorPage != null) {
-
-					LOG.warn(FAILED_TO_SHOW_ERROR_MSG, exceptionWhileShowingErrorPage);
-					if (rethrowIfCannotHandle) {
-						throw th;
+					} catch (Throwable th2) {
+						exceptionWhileShowingErrorPage = th2;
 					}
-				} else if (errorFileMetadata == null) {
 
-					if (LOG.isWarnEnabled()) {
-						LOG.warn(FAILED_TO_SHOW_ERROR_MSG + ": '" + (errorFile == null ? pathTo500file : errorFile.getPathname())
-								+ "' does not exist");
-					}
-					if (rethrowIfCannotHandle) {
-						throw th;
+					if (exceptionWhileShowingErrorPage != null) {
+
+						LOG.warn(FAILED_TO_SHOW_ERROR_MSG, exceptionWhileShowingErrorPage);
+						if (rethrowIfCannotHandle) {
+							throw th;
+						}
+					} else if (errorFileMetadata == null) {
+
+						if (LOG.isWarnEnabled()) {
+							LOG.warn(FAILED_TO_SHOW_ERROR_MSG + ": '" + (errorFile == null ? pathTo500file : errorFile.getPathname())
+									+ "' does not exist");
+						}
+						if (rethrowIfCannotHandle) {
+							throw th;
+						}
 					}
 				}
 			}

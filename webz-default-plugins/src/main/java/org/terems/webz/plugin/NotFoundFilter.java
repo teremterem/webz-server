@@ -26,7 +26,9 @@ public class NotFoundFilter extends BaseWebzFilter {
 
 		resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
-		contentSender.serveStaticContent(req, resp, chainContext.getFile(pathTo404file));
+		if (pathTo404file != null) {
+			contentSender.serveStaticContent(req, resp, chainContext.getFile(pathTo404file));
+		}
 	}
 
 }

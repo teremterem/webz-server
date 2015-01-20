@@ -18,6 +18,8 @@ public class StatusCodesConfig extends WebzConfigObject {
 		WebzFile file = configFolder.getDescendant(WebzProperties.STATUS_CODES_PROPERTIES_FILE);
 		Properties properties = WebzUtils.loadProperties(file);
 
+		// TODO do not fail if properties file is absent (warn ?)
+
 		pathTo404file = properties.getProperty(WebzProperties.PATH_TO_404_FILE_PROPERTY);
 		pathTo500file = properties.getProperty(WebzProperties.PATH_TO_500_FILE_PROPERTY);
 	}

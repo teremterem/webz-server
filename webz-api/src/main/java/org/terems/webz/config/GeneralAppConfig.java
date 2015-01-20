@@ -23,6 +23,8 @@ public class GeneralAppConfig extends WebzConfigObject {
 		WebzFile file = configFolder.getDescendant(WebzProperties.GENERAL_PROPERTIES_FILE);
 		Properties properties = WebzUtils.loadProperties(file);
 
+		// TODO do not fail if properties file is absent (warn ?)
+
 		appDisplayName = properties.getProperty(WebzProperties.APP_DISPLAY_NAME_PROPERTY);
 		defaultMimetype = properties.getProperty(WebzProperties.DEFAULT_MIMETYPE_PROPERTY, WebzDefaults.DEFAULT_MIMETYPE);
 		defaultEncoding = properties.getProperty(WebzProperties.DEFAULT_ENCODING_PROPERTY, WebzDefaults.DEFAULT_ENCODING);

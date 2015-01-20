@@ -17,6 +17,7 @@
 	<display-name>${project.name}</display-name>
 	<description>${project.description}</description>
 
+	<!--
 	<servlet>
 		<servlet-name>WebzDropbox</servlet-name>
 		<servlet-class>org.terems.webz.servlet.WebzHttpServletEnvelope</servlet-class>
@@ -25,7 +26,7 @@
 			<param-name>rootFileSystemProperties</param-name>
 			<param-value>dbx-webz-pedesis.properties</param-value>
 		</init-param>
-		<!-- <async-supported>true</async-supported> -->
+		<!- <async-supported>true</async-supported> ->
 	</servlet>
 
 	<servlet>
@@ -36,9 +37,22 @@
 			<param-name>rootFileSystemProperties</param-name>
 			<param-value>local-webz-pedesis.properties</param-value>
 		</init-param>
+		<!- <async-supported>true</async-supported> ->
+	</servlet>
+	-->
+
+	<servlet>
+		<servlet-name>WebzGit</servlet-name>
+		<servlet-class>org.terems.webz.servlet.WebzHttpServletEnvelope</servlet-class>
+
+		<init-param>
+			<param-name>rootFileSystemProperties</param-name>
+			<param-value>git-webz-pedesis.properties</param-value>
+		</init-param>
 		<!-- <async-supported>true</async-supported> -->
 	</servlet>
 
+	<!--
 	<servlet-mapping>
 		<servlet-name>WebzDropbox</servlet-name>
 		<url-pattern>/dropbox/*</url-pattern>
@@ -46,6 +60,12 @@
 
 	<servlet-mapping>
 		<servlet-name>WebzLocal</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+	-->
+
+	<servlet-mapping>
+		<servlet-name>WebzGit</servlet-name>
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
 
