@@ -32,7 +32,7 @@ public class WebzEngine implements WebzServletContainerBridge {
 			rootWebzApp = globalFactory.newDestroyable(GenericWebzApp.class).init(rootFileSystem, filterClassesList,
 					globalFactory.newDestroyable(GenericWebzObjectFactory.class));
 
-			// TODO WEBZ GITHUB INTEGRATION: http://wiki.eclipse.org/JGit/User_Guide#Repository
+			// TODO WEBZ GIT INTEGRATION: https://github.com/centic9/jgit-cookbook
 
 		} catch (WebzException e) {
 
