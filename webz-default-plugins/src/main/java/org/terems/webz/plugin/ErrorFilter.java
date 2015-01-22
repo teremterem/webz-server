@@ -1,7 +1,5 @@
 package org.terems.webz.plugin;
 
-import java.io.IOException;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -36,7 +34,7 @@ public class ErrorFilter extends BaseWebzFilter {
 	}
 
 	@Override
-	public void serve(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException, WebzException {
+	public void serve(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws WebzException {
 
 		try {
 			chainContext.nextPlease(req, resp);
@@ -52,7 +50,7 @@ public class ErrorFilter extends BaseWebzFilter {
 
 				LOG.warn(RESPONSE_ALREADY_COMMITTED_MSG);
 				if (rethrowIfCannotHandle) {
-					throw th;
+					throw new WebzException(th);
 				}
 			} else {
 
@@ -76,7 +74,7 @@ public class ErrorFilter extends BaseWebzFilter {
 
 						LOG.warn(FAILED_TO_SHOW_ERROR_MSG, exceptionWhileShowingErrorPage);
 						if (rethrowIfCannotHandle) {
-							throw th;
+							throw new WebzException(th);
 						}
 					} else if (errorFileMetadata == null) {
 
@@ -85,7 +83,7 @@ public class ErrorFilter extends BaseWebzFilter {
 									+ "' does not exist");
 						}
 						if (rethrowIfCannotHandle) {
-							throw th;
+							throw new WebzException(th);
 						}
 					}
 				}

@@ -33,6 +33,7 @@ public class WebzEngine implements WebzServletContainerBridge {
 			String gitOriginUrl = rootFileSystemProperties.getProperty(WebzProperties.GIT_ORIGIN_URL_PROPERTY);
 			if (gitOriginUrl != null) {
 				git = new WebzGit(gitOriginUrl, rootFileSystemProperties.getProperty(WebzProperties.FS_BASE_PATH_PROPERTY));
+				// TODO STORAGE_PATH = System.getEnv("OPENSHIFT_DATA_DIR") == null ? "/home/shekhar/tmp/" : openshiftDataDir;
 			}
 
 			WebzFileSystem rootFileSystem = WebzFileSystemManager.getManager(globalFactory).createFileSystem(rootFileSystemProperties);

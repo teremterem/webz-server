@@ -2,8 +2,8 @@ package org.terems.webz.plugin;
 
 import java.io.IOException;
 
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.input.BOMInputStream;
@@ -39,8 +39,8 @@ public class StaticContentSender {
 		defaultEncoding = appConfig.getDefaultEncoding();
 	}
 
-	public WebzMetadata.FileSpecific serveStaticContent(HttpServletRequest req, ServletResponse resp, WebzFile content) throws IOException,
-			WebzException {
+	public WebzMetadata.FileSpecific serveStaticContent(HttpServletRequest req, HttpServletResponse resp, WebzFile content)
+			throws IOException, WebzException {
 
 		WebzFileDownloader downloader = content.getFileDownloader();
 		if (downloader == null) {
@@ -65,7 +65,10 @@ public class StaticContentSender {
 		}
 		resp.setContentType(mimetypes.getMimetype(fileSpecific, defaultMimetype));
 		resp.setCharacterEncoding(encoding);
-		resp.setContentLengthLong(contentLength);
+
+		resp.setContentLength((int) contentLength);
+		resp.addHeader("Content-Length", Long.toString(contentLength));
+		// with Servlet API 3.1 it could be: resp.setContentLengthLong(contentLength);
 
 		if (WebzUtils.isHttpMethodHead(req)) {
 			downloader.close();
@@ -83,5 +86,4 @@ public class StaticContentSender {
 
 		return fileSpecific;
 	}
-
 }

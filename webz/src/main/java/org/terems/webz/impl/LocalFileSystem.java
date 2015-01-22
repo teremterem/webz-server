@@ -51,7 +51,7 @@ public class LocalFileSystem extends BaseWebzFileSystemImpl {
 		if (children != null) {
 
 			String localBasePath = file.getAbsolutePath();
-			Map<String, WebzMetadata> pathnamesAndMetadata = new HashMap<>();
+			Map<String, WebzMetadata> pathnamesAndMetadata = new HashMap<String, WebzMetadata>();
 			parentChildren.childPathnamesAndMetadata = pathnamesAndMetadata;
 			for (String childName : children) {
 				File child = new File(localBasePath, childName);

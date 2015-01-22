@@ -74,7 +74,7 @@ public class GenericWebzApp implements WebzApp {
 
 	private void initFilterChain(Collection<Class<? extends WebzFilter>> filterClassesList) throws WebzException {
 
-		filterChain = new ArrayList<>(filterClassesList.size());
+		filterChain = new ArrayList<WebzFilter>(filterClassesList.size());
 
 		for (Class<? extends WebzFilter> filterClass : filterClassesList) {
 			filterChain.add(appFactory.newDestroyable(filterClass));

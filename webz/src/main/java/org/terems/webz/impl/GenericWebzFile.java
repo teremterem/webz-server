@@ -162,7 +162,7 @@ public class GenericWebzFile implements WebzFile {
 		}
 
 		WebzFileFactory fileFactory = fileSystem.getFileFactory();
-		Collection<WebzFile> children = new ArrayList<>(childPathnames.size());
+		Collection<WebzFile> children = new ArrayList<WebzFile>(childPathnames.size());
 		for (String childPathname : childPathnames) {
 			children.add(fileFactory.get(childPathname));
 		}

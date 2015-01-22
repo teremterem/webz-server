@@ -137,8 +137,8 @@ public class WebzUtils {
 			throw new NullPointerException("null resource name was supplied - properties cannot be read");
 		}
 
-		try (InputStream in = classLoader.getResourceAsStream(resourceName)) {
-
+		InputStream in = classLoader.getResourceAsStream(resourceName);
+		try {
 			if (in == null) {
 				throw new WebzException("'" + resourceName + "' was not found on classpath");
 			}
@@ -146,6 +146,8 @@ public class WebzUtils {
 
 		} catch (IOException e) {
 			throw new WebzException("failed to read '" + resourceName + "' from classpath: " + e.getMessage(), e);
+		} finally {
+			closeSafely(in);
 		}
 	}
 

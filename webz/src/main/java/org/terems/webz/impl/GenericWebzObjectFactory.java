@@ -24,13 +24,13 @@ public class GenericWebzObjectFactory implements WebzDestroyableObjectFactory {
 
 	private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
-	private volatile Queue<WebzDestroyable> destroyables = new ConcurrentLinkedQueue<>();
+	private volatile Queue<WebzDestroyable> destroyables = new ConcurrentLinkedQueue<WebzDestroyable>();
 
 	/**
 	 * <a href="http://ria101.wordpress.com/2011/12/12/concurrenthashmap-avoid-a-common-misuse/">ConcurrentHashMap – avoid a common
 	 * misuse!</a>
 	 **/
-	private volatile ConcurrentMap<Class<? extends WebzDestroyable>, DestroyableWrapper> singletons = new ConcurrentHashMap<>();
+	private volatile ConcurrentMap<Class<? extends WebzDestroyable>, DestroyableWrapper> singletons = new ConcurrentHashMap<Class<? extends WebzDestroyable>, DestroyableWrapper>();
 
 	@Override
 	public <T extends WebzDestroyable> T newDestroyable(Class<T> destroyableClass) throws WebzException {
@@ -156,7 +156,9 @@ public class GenericWebzObjectFactory implements WebzDestroyableObjectFactory {
 		try {
 			return destroyableClass.newInstance();
 
-		} catch (InstantiationException | IllegalAccessException e) {
+		} catch (InstantiationException e) {
+			throw new WebzException(e);
+		} catch (IllegalAccessException e) {
 			throw new WebzException(e);
 		}
 	}

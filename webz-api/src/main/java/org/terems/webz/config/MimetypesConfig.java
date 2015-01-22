@@ -13,7 +13,7 @@ import org.terems.webz.util.WebzUtils;
 
 public class MimetypesConfig extends WebzConfigObject {
 
-	private Map<String, String> mimetypes = new HashMap<>();
+	private Map<String, String> mimetypes = new HashMap<String, String>();
 
 	@Override
 	public void init(WebzFile configFolder) throws WebzException {

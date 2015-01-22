@@ -143,8 +143,8 @@ public class GenericWebzObjectFactoryTest {
 
 		WebzDestroyable counterMock = mock(WebzDestroyable.class);
 
-		List<SingletonsTestRunnable> singletonRunnables = new ArrayList<>(numOfSingletonThreads);
-		List<NonSingletonsTestRunnable> nonSingletonRunnables = new ArrayList<>(numOfNonSingletonThreads);
+		List<SingletonsTestRunnable> singletonRunnables = new ArrayList<SingletonsTestRunnable>(numOfSingletonThreads);
+		List<NonSingletonsTestRunnable> nonSingletonRunnables = new ArrayList<NonSingletonsTestRunnable>(numOfNonSingletonThreads);
 
 		for (int i = 0; i < numOfSingletonThreads; i++) {
 			singletonRunnables.add(new SingletonsTestRunnable(factory, counterMock));
@@ -153,7 +153,7 @@ public class GenericWebzObjectFactoryTest {
 			nonSingletonRunnables.add(new NonSingletonsTestRunnable(factory, counterMock, numOfNonSingletonRepeats));
 		}
 
-		List<Thread> threads = new ArrayList<>(numOfSingletonThreads + numOfNonSingletonThreads);
+		List<Thread> threads = new ArrayList<Thread>(numOfSingletonThreads + numOfNonSingletonThreads);
 		for (AbstractFactoryTestRunnable runnable : singletonRunnables) {
 			threads.add(new Thread(runnable));
 		}
@@ -190,7 +190,7 @@ public class GenericWebzObjectFactoryTest {
 			assertSame(runnable.sameAnotherSlow, anotherSlowSingleton);
 		}
 
-		Set<WebzDestroyable> uniqueObjects = new HashSet<>(expectedNumberOfUniqueObjecta, 1);
+		Set<WebzDestroyable> uniqueObjects = new HashSet<WebzDestroyable>(expectedNumberOfUniqueObjecta, 1);
 		// for classes that do not override Object's implementation of hashCode() and equals() HashSet will work like IdentityHashSet...
 		uniqueObjects.add(slowSingleton);
 		uniqueObjects.add(anotherSlowSingleton);
@@ -271,7 +271,7 @@ public class GenericWebzObjectFactoryTest {
 		// 1 new DestroyableClass singleton created (using singleton sub-factory)
 		assertSame(sub14_sameSingleton, sub14_singleton);
 
-		Set<WebzDestroyable> uniqueObjects = new HashSet<>();
+		Set<WebzDestroyable> uniqueObjects = new HashSet<WebzDestroyable>();
 		// for classes that do not override Object's implementation of hashCode() and equals() HashSet will work like IdentityHashSet...
 		uniqueObjects.add(top1);
 		uniqueObjects.add(top2_singleton);
@@ -426,7 +426,7 @@ public class GenericWebzObjectFactoryTest {
 			super(factory, counterMock);
 
 			this.numOfRepeats = numOfRepeats;
-			this.destroyables = new ArrayList<>(numOfRepeats * 4);
+			this.destroyables = new ArrayList<WebzDestroyable>(numOfRepeats * 4);
 		}
 
 		@Override
