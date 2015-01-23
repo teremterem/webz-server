@@ -25,6 +25,19 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 	private static final String ROOT_FILE_SYSTEM_PROPERTIES_PARAM = "rootFileSystemProperties";
 
 	@Override
+	public void init() throws ServletException {
+		try {
+			// TODO decide if WebzEngine lazy initialization mechanism is needed at all
+			getWebzEngine();
+
+		} catch (IOException e) {
+			throw new ServletException(e);
+		} catch (WebzException e) {
+			throw new ServletException(e);
+		}
+	}
+
+	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
 		try {

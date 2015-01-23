@@ -155,10 +155,7 @@
 								<jetty.stop stopPort="${jetty.stop.port}" stopKey="${jetty.stop.key}" stopWait="${jetty.stop.wait.milliseconds}"/>
 
 								<jetty.run jettyPort="${jetty.http.port}" stopPort="${jetty.stop.port}" stopKey="${jetty.stop.key}">
-									<!-- starting from Jetty 9.2.2.v20140723 metadata-complete="true" attribute in web.xml became effective -->
-									<!--
-									<webApp contextXml="${basedir}/target/${project.build.finalName}/WEB-INF/jetty-webapp-context.xml"/>
-									-->
+
 									<webApp war="${basedir}/target/${project.build.finalName}.war" contextPath="/"/>
 								</jetty.run>
 
