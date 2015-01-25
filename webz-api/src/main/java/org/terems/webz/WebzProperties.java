@@ -46,7 +46,12 @@ public class WebzProperties extends HashMap<String, String> {
 	public static final String FS_CACHE_PAYLOAD_THRESHOLD_BYTES_PROPERTY = "file.system.cache.payload.threshold.bytes";
 	public static final String FS_BASE_PATH_PROPERTY = "file.system.base.path";
 	public static final String USE_METADATA_INFLATABLE_FILES_PROPERTY = "use.metadata.inflatable.files";
+
 	public static final String GIT_ORIGIN_URL_PROPERTY = "git.origin.url";
+	public static final String GIT_BRANCH_PROPERTY = "git.branch";
+	public static final String GIT_REPO_LOCAL_FOLDER_NAME_PROPERTY = "git.repo.local.folder.name";
+	public static final String LOCAL_STORAGE_BASE_PATH_PROPERTY = "local.storage.base.path";
+	public static final String LOCAL_STORAGE_BASE_PATH_ENV_VAR_PROPERTY = "local.storage.base.path.env.var";
 
 	public static final String GENERAL_PROPERTIES_FILE = "general.properties";
 	public static final String STATUS_CODES_PROPERTIES_FILE = "status-codes.properties";

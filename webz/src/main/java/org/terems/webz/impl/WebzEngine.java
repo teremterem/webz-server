@@ -32,8 +32,10 @@ public class WebzEngine implements WebzServletContainerBridge {
 		try {
 			String gitOriginUrl = rootFileSystemProperties.getProperty(WebzProperties.GIT_ORIGIN_URL_PROPERTY);
 			if (gitOriginUrl != null) {
-				git = new WebzGit(gitOriginUrl, rootFileSystemProperties.getProperty(WebzProperties.FS_BASE_PATH_PROPERTY));
-				// TODO STORAGE_PATH = System.getEnv("OPENSHIFT_DATA_DIR") == null ? "/home/shekhar/tmp/" : openshiftDataDir;
+				git = globalFactory.newDestroyable(WebzGit.class);
+				git.init(rootFileSystemProperties);
+
+				rootFileSystemProperties.setProperty(WebzProperties.FS_BASE_PATH_PROPERTY, git.getLocalBasePath());
 			}
 
 			WebzFileSystem rootFileSystem = WebzFileSystemManager.getManager(globalFactory).createFileSystem(rootFileSystemProperties);
@@ -81,12 +83,10 @@ public class WebzEngine implements WebzServletContainerBridge {
 		rootWebzApp = null;
 		LOG.info("WebZ Engine stopped\n\n\n");
 
+		git = null;
+
 		globalFactory.destroy();
 		LOG.info("WebZ Engine destroyed\n\n\n");
-
-		if (git != null) {
-			git.destroy();
-		}
 	}
 
 	private void traceRequestStart(HttpServletRequest req) {
