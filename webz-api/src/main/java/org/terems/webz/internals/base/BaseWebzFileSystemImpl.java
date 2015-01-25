@@ -31,7 +31,7 @@ public abstract class BaseWebzFileSystemImpl extends BaseWebzPropertiesInitable 
 	public void init(WebzPathNormalizer pathNormalizer, WebzProperties properties) throws WebzException {
 
 		setPathNormalizer(pathNormalizer);
-		basePath = pathNormalizer.normalizePathname(properties.get(WebzProperties.FS_BASE_PATH_PROPERTY));
+		basePath = pathNormalizer.normalizePathname(properties.get(WebzProperties.FS_BASE_PATH_PROPERTY), false);
 
 		init(properties);
 	}

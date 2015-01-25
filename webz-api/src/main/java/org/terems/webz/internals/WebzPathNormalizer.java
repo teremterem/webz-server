@@ -6,7 +6,7 @@ import org.terems.webz.WebzPropertiesInitable;
 public interface WebzPathNormalizer extends WebzPropertiesInitable {
 
 	/** TODO !!! describe !!! **/
-	public String normalizePathname(String nonNormalizedPathname);
+	public String normalizePathname(String nonNormalizedPathname, boolean trimLeadingSlash);
 
 	/** TODO !!! describe !!! **/
 	public boolean isNormalizedPathnameInvalid(String pathname);

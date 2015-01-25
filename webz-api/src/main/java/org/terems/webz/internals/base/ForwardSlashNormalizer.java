@@ -13,7 +13,7 @@ public class ForwardSlashNormalizer extends BaseWebzPropertiesInitable implement
 
 	/** TODO !!! describe !!! **/
 	@Override
-	public String normalizePathname(String nonNormalizedPathname) {
+	public String normalizePathname(String nonNormalizedPathname, boolean trimLeadingSlash) {
 
 		if (nonNormalizedPathname == null) {
 			return null;
@@ -21,7 +21,7 @@ public class ForwardSlashNormalizer extends BaseWebzPropertiesInitable implement
 
 		String pathname = nonNormalizedPathname.replace('\\', FWD_SLASH);
 
-		if (pathname.startsWith(FWD_SLASH_STR)) {
+		if (trimLeadingSlash && pathname.startsWith(FWD_SLASH_STR)) {
 			pathname = pathname.substring(1);
 		}
 		if (pathname.endsWith(FWD_SLASH_STR)) {

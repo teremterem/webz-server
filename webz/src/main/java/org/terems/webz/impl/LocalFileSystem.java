@@ -110,7 +110,7 @@ public class LocalFileSystem extends BaseWebzFileSystemImpl {
 	}
 
 	protected boolean pathnameMatchesFileExactly(String pathnameToValidate, File file) throws IOException {
-		return pathNormalizer.normalizePathname(file.getCanonicalPath()).endsWith(pathnameToValidate);
+		return pathNormalizer.normalizePathname(file.getCanonicalPath(), false).endsWith(pathnameToValidate);
 	}
 
 	protected boolean fileExists(File file, String pathnameToValidate) throws IOException {

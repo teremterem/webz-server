@@ -29,7 +29,7 @@ public class GenericWebzFile implements WebzFile {
 	private boolean inflated = false;
 
 	public GenericWebzFile(String pathname, WebzFileSystem fileSystem) {
-		this.pathname = fileSystem.getPathNormalizer().normalizePathname(pathname);
+		this.pathname = fileSystem.getPathNormalizer().normalizePathname(pathname, true);
 		this.fileSystem = fileSystem;
 	}
 
@@ -66,7 +66,8 @@ public class GenericWebzFile implements WebzFile {
 		assertPathnameNotInvalid();
 		WebzPathNormalizer pathNormalizer = fileSystem.getPathNormalizer();
 
-		return fileSystem.getFileFactory().get(pathNormalizer.concatPathname(pathname, pathNormalizer.normalizePathname(relativePathname)));
+		return fileSystem.getFileFactory().get(
+				pathNormalizer.concatPathname(pathname, pathNormalizer.normalizePathname(relativePathname, true)));
 	}
 
 	@Override
