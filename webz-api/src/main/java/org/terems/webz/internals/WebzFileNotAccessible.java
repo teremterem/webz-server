@@ -16,8 +16,6 @@ import org.terems.webz.WebzWriteException;
 
 public class WebzFileNotAccessible implements WebzFile {
 
-	// TODO refactor WebzFileNotAccessible into something else
-
 	private WebzFile file;
 	private Throwable cause = null;
 

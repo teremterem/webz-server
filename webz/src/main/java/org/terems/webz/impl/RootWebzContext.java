@@ -35,13 +35,12 @@ public class RootWebzContext implements WebzContext, WebzConfig {
 	@Override
 	public WebzFile getFile(String pathInfo) {
 
-		// TODO move security logic to WebzFileFactory level
-
 		WebzFile file = fileFactory.get(pathInfo == null ? "" : pathInfo);
 		try {
 			if (file.belongsToSubtree(getConfigFolder())) {
 				return new WebzFileNotAccessible(file);
 			}
+			// TODO hide all files and folders starting with dot (not just .webz-config)
 
 		} catch (WebzPathnameException e) {
 			return new WebzFileNotAccessible(file, e);
