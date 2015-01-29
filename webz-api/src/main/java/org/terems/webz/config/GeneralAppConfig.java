@@ -1,5 +1,7 @@
 package org.terems.webz.config;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Properties;
 
 import org.terems.webz.WebzDefaults;
@@ -14,8 +16,8 @@ public class GeneralAppConfig extends WebzConfigObject {
 	private String defaultMimetype;
 	private String defaultEncoding;
 
-	private String welcomeExtensionsList;
-	private String welcomeFilenamesList;
+	private Collection<String> welcomeExtensionsLowerCased;
+	private Collection<String> welcomeFilenamesLowerCased;
 
 	@Override
 	public void init(WebzFile configFolder) throws WebzException {
@@ -29,10 +31,20 @@ public class GeneralAppConfig extends WebzConfigObject {
 		defaultMimetype = properties.getProperty(WebzProperties.DEFAULT_MIMETYPE_PROPERTY, WebzDefaults.DEFAULT_MIMETYPE);
 		defaultEncoding = properties.getProperty(WebzProperties.DEFAULT_ENCODING_PROPERTY, WebzDefaults.DEFAULT_ENCODING);
 
-		welcomeExtensionsList = properties.getProperty(WebzProperties.WELCOME_EXTENSIONS_PROPERTY,
-				WebzDefaults.DEFAULT_WELCOME_EXTENSIONS_LIST);
-		welcomeFilenamesList = properties.getProperty(WebzProperties.WELCOME_FILENAMES_PROPERTY,
-				WebzDefaults.DEFAULT_WELCOME_FILENAMES_LIST);
+		welcomeExtensionsLowerCased = populateLowerCasedWelcomeItems(properties.getProperty(WebzProperties.WELCOME_EXTENSIONS_PROPERTY,
+				WebzDefaults.DEFAULT_WELCOME_EXTENSIONS_LIST));
+		welcomeFilenamesLowerCased = populateLowerCasedWelcomeItems(properties.getProperty(WebzProperties.WELCOME_FILENAMES_PROPERTY,
+				WebzDefaults.DEFAULT_WELCOME_FILENAMES_LIST));
+	}
+
+	private Collection<String> populateLowerCasedWelcomeItems(String welcomeItemsCsv) {
+
+		Collection<String> result = new LinkedHashSet<String>();
+
+		for (String item : WebzUtils.parseCsv(welcomeItemsCsv)) {
+			result.add(WebzUtils.toLowerCaseEng(item));
+		}
+		return result;
 	}
 
 	public String getAppDisplayName() {
@@ -47,12 +59,12 @@ public class GeneralAppConfig extends WebzConfigObject {
 		return defaultEncoding;
 	}
 
-	public String getWelcomeExtensionsList() {
-		return welcomeExtensionsList;
+	public Collection<String> getWelcomeExtensionsLowerCased() {
+		return welcomeExtensionsLowerCased;
 	}
 
-	public String getWelcomeFilenamesList() {
-		return welcomeFilenamesList;
+	public Collection<String> getWelcomeFilenamesLowerCased() {
+		return welcomeFilenamesLowerCased;
 	}
 
 }

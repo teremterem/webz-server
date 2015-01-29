@@ -9,7 +9,7 @@ import org.terems.webz.internals.WebzFileSystem;
 
 public class DefaultWebzFileFactory extends BaseWebzDestroyable implements WebzFileFactory {
 
-	// TODO make this factory a first level cache ? (for the sake of file inflation concept)
+	// TODO make this factory a first level cache ? (for the sake of file "inflation" concept)
 
 	private WebzFileSystem fileSystem;
 	private boolean useMetadataInflatableFiles;

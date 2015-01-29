@@ -227,7 +227,11 @@ public class WebzUtils {
 
 	/** TODO !!! describe !!! **/
 	public static String replaceWhitespacesWithDashesSafely(String value) {
-		return value == null ? null : value.trim().replaceAll("\\s+", "-");
+
+		if (value == null) {
+			return null;
+		}
+		return value.trim().replaceAll("\\s+", "-");
 	}
 
 	private static final ThreadLocal<DateFormat> HTTP_DATE_FORMAT = new ThreadLocal<DateFormat>() {
@@ -251,9 +255,13 @@ public class WebzUtils {
 	}
 
 	/** TODO !!! describe !!! **/
-	public static String[] parseCsvLine(String csvLine) {
-		// TODO support proper csv unescaping ?
-		return csvLine.split("\\s*,\\s*");
+	public static String[] parseCsv(String csv) {
+
+		if (csv == null) {
+			return new String[] {};
+		}
+		// TODO support proper csv unescaping
+		return csv.split("\\s*,\\s*");
 	}
 
 	/** TODO !!! describe !!! **/
@@ -264,6 +272,15 @@ public class WebzUtils {
 	/** TODO !!! describe !!! **/
 	public static boolean isHttpMethodGet(HttpServletRequest req) {
 		return BaseWebzFilter.HTTP_GET.equals(req.getMethod());
+	}
+
+	/** TODO !!! describe !!! **/
+	public static String toLowerCaseEng(String value) {
+
+		if (value == null) {
+			return null;
+		}
+		return value.toLowerCase(Locale.ENGLISH);
 	}
 
 }

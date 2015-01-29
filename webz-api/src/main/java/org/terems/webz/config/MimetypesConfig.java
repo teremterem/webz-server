@@ -1,7 +1,6 @@
 package org.terems.webz.config;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
@@ -24,7 +23,7 @@ public class MimetypesConfig extends WebzConfigObject {
 		// TODO do not fail if properties file is absent (warn ?)
 
 		for (Map.Entry<Object, Object> entry : mimetypesProperties.entrySet()) {
-			mimetypes.put(WebzUtils.assertString(entry.getKey()).toLowerCase(Locale.ENGLISH), WebzUtils.assertString(entry.getValue()));
+			mimetypes.put(WebzUtils.toLowerCaseEng(WebzUtils.assertString(entry.getKey())), WebzUtils.assertString(entry.getValue()));
 		}
 	}
 
@@ -35,7 +34,7 @@ public class MimetypesConfig extends WebzConfigObject {
 		if (fileExtension == null) {
 			return defaultMimetype;
 		}
-		String mimetype = mimetypes.get(fileExtension.toLowerCase(Locale.ENGLISH));
+		String mimetype = mimetypes.get(WebzUtils.toLowerCaseEng(fileExtension));
 
 		return mimetype == null ? defaultMimetype : mimetype;
 	}

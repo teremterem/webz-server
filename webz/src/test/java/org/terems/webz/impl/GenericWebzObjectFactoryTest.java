@@ -128,7 +128,7 @@ public class GenericWebzObjectFactoryTest {
 		verify(counterMock, times(4)).destroy();
 	}
 
-	// TODO test exceptions while creating objects as well ?
+	// TODO test exceptions while creating objects as well
 
 	private static final long SLOW_SINGLETON_CONSTRUCTOR_DELAY_MILLIS = 55;
 

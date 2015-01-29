@@ -72,49 +72,44 @@ public class LocalFileSystem extends BaseWebzFileSystemImpl {
 		return new WebzFileDownloader(new LocalFileMetadata(file).getFileSpecific(), new FileInputStream(file));
 	}
 
-	// TODO implement "operations" part of LocalFileSystem
-
-	@Override
-	public WebzMetadata createFolder(String pathname) throws IOException, WebzException {
-		// Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public FileSpecific uploadFile(String pathname, InputStream content, long numBytes) throws IOException, WebzException {
-		// Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public FileSpecific uploadFile(String pathname, InputStream content) throws IOException, WebzException {
-		// Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public WebzMetadata move(String srcPathname, String destPathname) throws IOException, WebzException {
-		// Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public WebzMetadata copy(String srcPathname, String destPathname) throws IOException, WebzException {
-		// Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void delete(String pathname) throws IOException, WebzException {
-		// Auto-generated method stub
-	}
-
 	protected boolean pathnameMatchesFileExactly(String pathnameToValidate, File file) throws IOException {
 		return pathNormalizer.normalizePathname(file.getCanonicalPath(), false).endsWith(pathnameToValidate);
 	}
 
 	protected boolean fileExists(File file, String pathnameToValidate) throws IOException {
 		return file.exists() && pathnameMatchesFileExactly(pathnameToValidate, file);
+	}
+
+	// TODO implement "operations" part of LocalFileSystem
+
+	@Override
+	public WebzMetadata createFolder(String pathname) throws IOException, WebzException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public FileSpecific uploadFile(String pathname, InputStream content, long numBytes) throws IOException, WebzException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public FileSpecific uploadFile(String pathname, InputStream content) throws IOException, WebzException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public WebzMetadata move(String srcPathname, String destPathname) throws IOException, WebzException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public WebzMetadata copy(String srcPathname, String destPathname) throws IOException, WebzException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void delete(String pathname) throws IOException, WebzException {
+		throw new UnsupportedOperationException();
 	}
 
 }

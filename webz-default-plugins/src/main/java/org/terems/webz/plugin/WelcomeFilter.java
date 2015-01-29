@@ -1,7 +1,7 @@
 package org.terems.webz.plugin;
 
 import java.io.IOException;
-import java.util.Locale;
+import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,8 +18,8 @@ import org.terems.webz.util.WebzUtils;
 
 public class WelcomeFilter extends BaseWebzFilter {
 
-	private String[] welcomeExtensions;
-	private String[] welcomeFilenames;
+	private Collection<String> welcomeExtensionsLowerCased;
+	private Collection<String> welcomeFilenamesLowerCased;
 
 	// dilemma: 301 (permanent) redirect is more SEO friendly but some browsers and crawlers may treat it as "eternal"
 	private final boolean permanentRedirect = false;
@@ -27,8 +27,8 @@ public class WelcomeFilter extends BaseWebzFilter {
 	@Override
 	public void init() throws WebzException {
 		GeneralAppConfig generalConfig = getAppConfig().getAppConfigObject(GeneralAppConfig.class);
-		welcomeExtensions = WebzUtils.parseCsvLine(generalConfig.getWelcomeExtensionsList());
-		welcomeFilenames = WebzUtils.parseCsvLine(generalConfig.getWelcomeFilenamesList());
+		welcomeExtensionsLowerCased = generalConfig.getWelcomeExtensionsLowerCased();
+		welcomeFilenamesLowerCased = generalConfig.getWelcomeFilenamesLowerCased();
 	}
 
 	@Override
@@ -99,23 +99,6 @@ public class WelcomeFilter extends BaseWebzFilter {
 			this.chainContext = chainContext;
 		}
 
-		private boolean checkFilename(WebzFile file, String extension, String filename) {
-
-			// the logic of this method can be micro-optimized...
-			String filePathname = file.getPathname().toLowerCase(Locale.ENGLISH);
-			String expectedFilename = filename.toLowerCase(Locale.ENGLISH) + extension.toLowerCase(Locale.ENGLISH);
-
-			if (filePathname.length() < expectedFilename.length()) {
-				return false;
-
-			} else if (filePathname.length() == expectedFilename.length()) {
-
-				return filePathname.equals(expectedFilename);
-			} else {
-				return filePathname.endsWith("/" + expectedFilename);
-			}
-		}
-
 		@Override
 		public WebzFile resolveFile(HttpServletRequest req) throws IOException, WebzException {
 
@@ -125,14 +108,16 @@ public class WelcomeFilter extends BaseWebzFilter {
 			if (metadata != null && !file.isPathnameInvalid() && !metadata.isFile()) {
 
 				for (WebzFile child : file.listChildren()) {
-					for (String extension : welcomeExtensions) {
+					String childPathnameLowerCased = WebzUtils.toLowerCaseEng(child.getPathname());
 
-						for (String filename : welcomeFilenames) {
-							if (checkFilename(child, extension, filename)) {
+					for (String extensionLowerCased : welcomeExtensionsLowerCased) {
+
+						for (String filenameLowerCased : welcomeFilenamesLowerCased) {
+							if (checkFilename(childPathnameLowerCased, filenameLowerCased + extensionLowerCased)) {
 								return child;
 							}
 						}
-						if (checkFilename(child, extension, metadata.getName())) {
+						if (checkFilename(childPathnameLowerCased, WebzUtils.toLowerCaseEng(metadata.getName()) + extensionLowerCased)) {
 							return child;
 						}
 					}
@@ -145,6 +130,18 @@ public class WelcomeFilter extends BaseWebzFilter {
 		@Override
 		protected WebzContext getInnerContext() {
 			return chainContext;
+		}
+
+		private boolean checkFilename(String filePathname, String expectedFilename) {
+
+			if (filePathname.length() < expectedFilename.length()) {
+				return false;
+			}
+			if (filePathname.length() == expectedFilename.length()) {
+
+				return filePathname.equals(expectedFilename);
+			}
+			return filePathname.endsWith("/" + expectedFilename);
 		}
 	}
 
