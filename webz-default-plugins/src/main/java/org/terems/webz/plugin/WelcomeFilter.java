@@ -107,6 +107,8 @@ public class WelcomeFilter extends BaseWebzFilter {
 			WebzMetadata metadata = file.getMetadata();
 			if (metadata != null && !file.isPathnameInvalid() && !metadata.isFile()) {
 
+				String folderNameLowerCased = WebzUtils.toLowerCaseEng(metadata.getName());
+
 				for (WebzFile child : file.listChildren()) {
 					String childPathnameLowerCased = WebzUtils.toLowerCaseEng(child.getPathname());
 
@@ -117,7 +119,7 @@ public class WelcomeFilter extends BaseWebzFilter {
 								return child;
 							}
 						}
-						if (checkFilename(childPathnameLowerCased, WebzUtils.toLowerCaseEng(metadata.getName()) + extensionLowerCased)) {
+						if (checkFilename(childPathnameLowerCased, folderNameLowerCased + extensionLowerCased)) {
 							return child;
 						}
 					}

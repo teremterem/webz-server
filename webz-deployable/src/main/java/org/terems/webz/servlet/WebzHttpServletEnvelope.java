@@ -61,8 +61,8 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 				webzEngine = this.webzEngine;
 				if (webzEngine == null) {
 
-					Properties rootFileSystemProperties = WebzUtils.loadPropertiesFromClasspath(getServletConfig().getInitParameter(
-							ROOT_FILE_SYSTEM_PROPERTIES_PARAM));
+					Properties rootFileSystemProperties = WebzUtils.loadPropertiesFromClasspath(
+							getServletConfig().getInitParameter(ROOT_FILE_SYSTEM_PROPERTIES_PARAM), true);
 
 					// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
 					this.webzEngine = webzEngine = new WebzEngine(rootFileSystemProperties, getDefaultFilterClassesList());

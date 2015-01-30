@@ -21,7 +21,7 @@ public class WebzFileSystemManager extends BaseWebzDestroyable {
 	private WebzObjectFactory factory;
 
 	public WebzFileSystem createFileSystem(Properties properties) throws WebzException {
-		return createFileSystem(properties == null ? null : new WebzProperties(properties));
+		return createFileSystem(new WebzProperties(properties));
 	}
 
 	public WebzFileSystem createFileSystem(WebzProperties webzProperties) throws WebzException {

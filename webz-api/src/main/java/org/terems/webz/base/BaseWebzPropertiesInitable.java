@@ -23,35 +23,21 @@ public abstract class BaseWebzPropertiesInitable extends BaseWebzDestroyable imp
 	/** TODO !!! describe !!! **/
 	@Override
 	public final void init(Properties properties) throws WebzException {
-		init(properties, false);
-	}
 
-	/** TODO !!! describe !!! **/
-	@Override
-	public final void init(Properties properties, boolean failIfNotFound) throws WebzException {
-		init(properties == null ? null : new WebzProperties(properties), failIfNotFound);
+		if (properties == null) {
+			throw new NullPointerException("null Properties");
+		}
+		init(new WebzProperties(properties));
 	}
 
 	/** TODO !!! describe !!! **/
 	@Override
 	public final void init(WebzProperties webzProperties) throws WebzException {
-		init(webzProperties, false);
-	}
-
-	/** TODO !!! describe !!! **/
-	@Override
-	public final void init(WebzProperties webzProperties, boolean failIfNotFound) throws WebzException {
 
 		if (webzProperties == null) {
-			if (failIfNotFound) {
-
-				throw new WebzException("properties not found");
-			} else {
-				this.properties = new WebzProperties();
-			}
-		} else {
-			this.properties = webzProperties;
+			throw new NullPointerException("null WebzProperties");
 		}
+		this.properties = webzProperties;
 		init();
 	}
 

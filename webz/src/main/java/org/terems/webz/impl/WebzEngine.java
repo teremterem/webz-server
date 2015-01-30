@@ -32,6 +32,8 @@ public class WebzEngine implements WebzServletContainerBridge {
 		try {
 			String gitOriginUrl = rootFileSystemProperties.getProperty(WebzProperties.GIT_ORIGIN_URL_PROPERTY);
 			if (gitOriginUrl != null) {
+
+				// TODO hide this logic behind GitFileSystem
 				git = globalFactory.newDestroyable(WebzGit.class);
 				git.init(rootFileSystemProperties);
 
@@ -46,8 +48,7 @@ public class WebzEngine implements WebzServletContainerBridge {
 		} catch (WebzException e) {
 
 			if (LOG.isErrorEnabled()) {
-				LOG.error("failed to init WebZ App '" + (rootWebzApp == null ? null : rootWebzApp.getDisplayName()) + "': " + e.toString(),
-						e);
+				LOG.error("failed to init WebZ App '" + (rootWebzApp == null ? null : rootWebzApp.getDisplayName()) + "'", e);
 			}
 		}
 
@@ -59,6 +60,7 @@ public class WebzEngine implements WebzServletContainerBridge {
 
 		if (git != null && "/pull/from/origin".equals(req.getPathInfo())) {
 
+			// TODO hide this logic behind GitFileSystem
 			git.pull();
 			resp.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
 			resp.setHeader(WebzFilter.HEADER_LOCATION, "/");

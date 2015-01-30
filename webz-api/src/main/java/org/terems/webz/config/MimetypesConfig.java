@@ -18,9 +18,7 @@ public class MimetypesConfig extends WebzConfigObject {
 	public void init(WebzFile configFolder) throws WebzException {
 
 		WebzFile file = configFolder.getDescendant(WebzProperties.MIMETYPES_PROPERTIES_FILE);
-		Properties mimetypesProperties = WebzUtils.loadProperties(file);
-
-		// TODO do not fail if properties file is absent (warn ?)
+		Properties mimetypesProperties = WebzUtils.loadProperties(file, false);
 
 		for (Map.Entry<Object, Object> entry : mimetypesProperties.entrySet()) {
 			mimetypes.put(WebzUtils.toLowerCaseEng(WebzUtils.assertString(entry.getKey())), WebzUtils.assertString(entry.getValue()));
