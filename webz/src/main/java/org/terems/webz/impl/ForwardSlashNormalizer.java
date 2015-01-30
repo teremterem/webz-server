@@ -1,17 +1,15 @@
-package org.terems.webz.internals.base;
+package org.terems.webz.impl;
 
 import java.util.regex.Pattern;
 
 import org.terems.webz.base.BaseWebzPropertiesInitable;
 import org.terems.webz.internals.WebzPathNormalizer;
 
-/** TODO !!! describe !!! **/
 public class ForwardSlashNormalizer extends BaseWebzPropertiesInitable implements WebzPathNormalizer {
 
 	protected static final char FWD_SLASH = '/';
 	protected static final String FWD_SLASH_STR = "" + FWD_SLASH;
 
-	/** TODO !!! describe !!! **/
 	@Override
 	public String normalizePathname(String nonNormalizedPathname, boolean trimLeadingSlash) {
 
@@ -31,17 +29,26 @@ public class ForwardSlashNormalizer extends BaseWebzPropertiesInitable implement
 		return pathname;
 	}
 
-	private final static Pattern MULTIPLE_PATH_SEPARATORS = Pattern.compile(FWD_SLASH_STR + "{2,}");
+	// protecting from multiple path separators ("//", "///" and so on)
+	private final static Pattern AMBIGUOUS_CHAR_SEQUENCES = Pattern.compile(FWD_SLASH + "{2,}");
+	// protecting from "." and ".." path members
+	private final static Pattern RESERVED_PATH_MEMBERS = Pattern.compile("(^|" + FWD_SLASH + ")\\.{1,2}($|" + FWD_SLASH + ")");
 
-	/** TODO !!! describe !!! **/
 	@Override
 	public boolean isNormalizedPathnameInvalid(String pathname) {
 
 		return pathname == null || pathname.startsWith(FWD_SLASH_STR) || pathname.endsWith(FWD_SLASH_STR)
-				|| MULTIPLE_PATH_SEPARATORS.matcher(pathname).find();
+				|| AMBIGUOUS_CHAR_SEQUENCES.matcher(pathname).find() || RESERVED_PATH_MEMBERS.matcher(pathname).find();
 	}
 
-	/** TODO !!! describe !!! **/
+	// pathname is considered hidden if one of its path members start with the dot (for ex. ".webz/general.properties")
+	private final static Pattern HIDDEN_PATH_MEMBERS = Pattern.compile("(^|" + FWD_SLASH + ")\\.");
+
+	@Override
+	public boolean isHidden(String pathname) {
+		return HIDDEN_PATH_MEMBERS.matcher(pathname).find();
+	}
+
 	@Override
 	public boolean belongsToSubtree(String pathname, String subtreePath) {
 
@@ -58,7 +65,6 @@ public class ForwardSlashNormalizer extends BaseWebzPropertiesInitable implement
 		return pathname.length() == subtreePath.length() || pathname.codePointAt(subtreePath.length()) == FWD_SLASH;
 	}
 
-	/** TODO !!! describe !!! **/
 	@Override
 	public String getParentPathname(String pathname) {
 
@@ -74,7 +80,6 @@ public class ForwardSlashNormalizer extends BaseWebzPropertiesInitable implement
 		return pathname.substring(0, separatorIndex);
 	}
 
-	/** TODO !!! describe !!! **/
 	@Override
 	public String concatPathname(String basePath, String relativePathname) {
 

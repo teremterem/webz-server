@@ -39,6 +39,11 @@ public class WebzFileNotAccessible implements WebzFile {
 	}
 
 	@Override
+	public boolean isHidden() throws WebzPathnameException {
+		return file.isHidden();
+	}
+
+	@Override
 	public WebzFile getParent() throws WebzPathnameException {
 		return file.getParent();
 	}

@@ -37,6 +37,7 @@
 		<jetty.stop.port>8079</jetty.stop.port>
 		<jetty.stop.key>jetty-webz</jetty.stop.key>
 		<jetty.stop.wait.milliseconds>5000</jetty.stop.wait.milliseconds>
+		<jetty.sleep.after.stop.milliseconds>100</jetty.sleep.after.stop.milliseconds>
 
 		<!-- versions -->
 

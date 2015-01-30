@@ -20,4 +20,7 @@ public interface WebzPathNormalizer extends WebzPropertiesInitable {
 	/** TODO !!! describe !!! **/
 	public boolean belongsToSubtree(String pathname, String subtreePath);
 
+	/** TODO !!! describe !!! **/
+	public boolean isHidden(String pathname);
+
 }

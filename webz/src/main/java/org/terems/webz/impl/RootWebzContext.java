@@ -37,10 +37,9 @@ public class RootWebzContext implements WebzContext, WebzConfig {
 
 		WebzFile file = fileFactory.get(pathInfo == null ? "" : pathInfo);
 		try {
-			if (file.belongsToSubtree(getConfigFolder())) {
+			if (file.isHidden()) {
 				return new WebzFileNotAccessible(file);
 			}
-			// TODO hide all files and folders starting with dot (not just .webz-config)
 
 		} catch (WebzPathnameException e) {
 			return new WebzFileNotAccessible(file, e);
@@ -65,7 +64,7 @@ public class RootWebzContext implements WebzContext, WebzConfig {
 		WebzFile configFolder = fileFactory.get(WebzProperties.WEBZ_CONFIG_FOLDER);
 		if (configFolder.isPathnameInvalid()) {
 			// should not happen
-			throw new RuntimeException("file system doesn't recognize '" + configFolder.getPathname() + "' as a valid pathname");
+			throw new RuntimeException("WebZ doesn't recognize '" + configFolder.getPathname() + "' as a valid pathname");
 		}
 
 		return configFolder;

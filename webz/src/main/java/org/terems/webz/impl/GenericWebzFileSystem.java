@@ -12,7 +12,6 @@ import org.terems.webz.internals.WebzFileSystemOperations;
 import org.terems.webz.internals.WebzFileSystemStructure;
 import org.terems.webz.internals.WebzObjectFactory;
 import org.terems.webz.internals.WebzPathNormalizer;
-import org.terems.webz.internals.base.ForwardSlashNormalizer;
 
 public class GenericWebzFileSystem extends BaseWebzDestroyable implements WebzFileSystem {
 

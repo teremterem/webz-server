@@ -112,6 +112,7 @@
 								<taskdef classpathref="maven.plugin.classpath" resource="tasks.properties" loaderref="jetty.loader" />
 
 								<jetty.stop stopPort="${jetty.stop.port}" stopKey="${jetty.stop.key}" stopWait="${jetty.stop.wait.milliseconds}"/>
+								<sleep milliseconds="${jetty.sleep.after.stop.milliseconds}"/>
 
 							</target>
 						</configuration>
@@ -129,13 +130,7 @@
 								<taskdef classpathref="maven.plugin.classpath" resource="tasks.properties" loaderref="jetty.loader" />
 
 								<jetty.stop stopPort="${jetty.stop.port}" stopKey="${jetty.stop.key}" stopWait="${jetty.stop.wait.milliseconds}"/>
-
-								<!-- starting from Jetty 9.2.2.v20140723 metadata-complete="true" attribute in web.xml became effective -->
-								<!--
-								<copy file="${basedir}/src/main/webapp/WEB-INF/web.xml"
-									tofile="${additional.web.resources}/WEB-INF/quickstart-web.xml"
-									overwrite="true"/>
-								-->
+								<sleep milliseconds="${jetty.sleep.after.stop.milliseconds}"/>
 
 							</target>
 						</configuration>
@@ -153,6 +148,7 @@
 								<taskdef classpathref="maven.plugin.classpath" resource="tasks.properties" loaderref="jetty.loader" />
 
 								<jetty.stop stopPort="${jetty.stop.port}" stopKey="${jetty.stop.key}" stopWait="${jetty.stop.wait.milliseconds}"/>
+								<sleep milliseconds="${jetty.sleep.after.stop.milliseconds}"/>
 
 								<jetty.run jettyPort="${jetty.http.port}" stopPort="${jetty.stop.port}" stopKey="${jetty.stop.key}">
 

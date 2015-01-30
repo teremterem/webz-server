@@ -15,6 +15,9 @@ public interface WebzFile {
 	public boolean isPathnameInvalid();
 
 	/** TODO !!! describe !!! **/
+	public boolean isHidden() throws WebzPathnameException;
+
+	/** TODO !!! describe !!! **/
 	public WebzFile getParent() throws WebzPathnameException;
 
 	/** TODO !!! describe !!! **/

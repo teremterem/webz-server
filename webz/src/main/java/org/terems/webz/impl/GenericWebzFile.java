@@ -26,6 +26,7 @@ public class GenericWebzFile implements WebzFile {
 	protected WebzFileSystem fileSystem;
 
 	private Boolean pathnameInvalid = null;
+	private Boolean hidden = null;
 	private boolean inflated = false;
 
 	public GenericWebzFile(String pathname, WebzFileSystem fileSystem) {
@@ -42,9 +43,20 @@ public class GenericWebzFile implements WebzFile {
 	public boolean isPathnameInvalid() {
 
 		if (pathnameInvalid == null) {
-			pathnameInvalid = fileSystem.getPathNormalizer().isNormalizedPathnameInvalid(this.pathname);
+			pathnameInvalid = fileSystem.getPathNormalizer().isNormalizedPathnameInvalid(pathname);
 		}
 		return pathnameInvalid;
+	}
+
+	@Override
+	public boolean isHidden() throws WebzPathnameException {
+
+		if (hidden == null) {
+
+			assertPathnameNotInvalid();
+			hidden = fileSystem.getPathNormalizer().isHidden(pathname);
+		}
+		return hidden;
 	}
 
 	@Override
