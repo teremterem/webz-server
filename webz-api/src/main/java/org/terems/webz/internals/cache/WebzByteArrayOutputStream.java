@@ -1,25 +1,26 @@
 package org.terems.webz.internals.cache;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 /**
- * {@code WebzByteArrayOutputStream} is an extension of {@code ByteArrayOutputStream} class that lets us create
- * {@code WebzByteArrayInputStream} instances backed <b>directly</b> by it's internal byte-array buffer (see {@link #createInputStream()}
- * method) and avoid the necessity of copying the whole buffer content by calling the traditional {@code toByteArray()} method.
+ * {@code WebzByteArrayOutputStream} is an extension of {@code ByteArrayOutputStream} class that lets us create {@code ByteArrayInputStream}
+ * instances backed by it's internal byte-array buffer <b>directly</b> (see {@link #createInputStream()}) and avoid copying of the whole
+ * buffer content which happens when traditional {@code toByteArray()} is called.
  **/
 public class WebzByteArrayOutputStream extends ByteArrayOutputStream {
 
 	/**
-	 * Creates an instance of {@code WebzByteArrayInputStream} backed by the internal byte-array buffer of the current
+	 * Creates an instance of {@code ByteArrayInputStream} backed by the internal byte-array buffer of the current
 	 * {@code WebzByteArrayOutputStream} instance.
 	 * <p>
-	 * <b>NOTE:</b> {@code WebzByteArrayOutputStream} instance should not be written to after {@code WebzByteArrayInputStream} instance(s)
-	 * is(are) created from it - otherwise the state of created {@code WebzByteArrayInputStream} instance(s) will be undefined...
+	 * <b>NOTE:</b> {@code WebzByteArrayOutputStream} instance should not be written to after {@code ByteArrayInputStream} instance(s)
+	 * is(are) created from it - otherwise the state of created {@code ByteArrayInputStream} instance(s) will be undefined...
 	 * 
-	 * @return newly created {@code WebzByteArrayInputStream} instance.
+	 * @return newly created {@code ByteArrayInputStream} instance.
 	 **/
-	public WebzByteArrayInputStream createInputStream() {
-		return new WebzByteArrayInputStream(this.buf, 0, this.count);
+	public ByteArrayInputStream createInputStream() {
+		return new ByteArrayInputStream(this.buf, 0, this.count);
 	}
 
 	/**

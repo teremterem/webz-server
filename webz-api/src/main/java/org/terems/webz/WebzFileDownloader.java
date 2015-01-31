@@ -9,16 +9,16 @@ import org.terems.webz.util.WebzUtils;
 public class WebzFileDownloader {
 
 	/** TODO !!! describe !!! **/
-	public WebzMetadata.FileSpecific fileSpecific;
+	public final WebzMetadata.FileSpecific fileSpecific;
 
 	/** TODO !!! describe !!! **/
-	public InputStream content;
+	public final InputStream content;
 
 	/** TODO !!! describe !!! **/
 	public long copyContentAndClose(OutputStream out) throws WebzReadException, WebzWriteException {
 
 		try {
-			return copyContent(out);
+			return WebzUtils.copyInToOut(content, out);
 		} finally {
 			close();
 		}
@@ -27,11 +27,6 @@ public class WebzFileDownloader {
 	/** TODO !!! describe !!! **/
 	public void close() {
 		WebzUtils.closeSafely(content);
-	}
-
-	/** Defined as a separate method for more convenient overriding... **/
-	protected long copyContent(OutputStream out) throws WebzReadException, WebzWriteException {
-		return WebzUtils.copyInToOut(content, out);
 	}
 
 	/** TODO !!! describe !!! **/

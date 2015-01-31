@@ -2,7 +2,6 @@ package org.terems.webz.impl.cache;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Map;
 
@@ -14,7 +13,6 @@ import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzProperties;
-import org.terems.webz.WebzWriteException;
 import org.terems.webz.internals.ParentChildrenMetadata;
 import org.terems.webz.internals.WebzFileSystemCache;
 import org.terems.webz.internals.WebzFileSystemImpl;
@@ -23,7 +21,6 @@ import org.terems.webz.internals.WebzPathNormalizer;
 import org.terems.webz.internals.base.BaseWebzFileSystemImpl;
 import org.terems.webz.internals.cache.ChildPathnamesHolder;
 import org.terems.webz.internals.cache.FileContentHolder;
-import org.terems.webz.internals.cache.WebzByteArrayInputStream;
 import org.terems.webz.util.WebzUtils;
 
 // TODO background thread should periodically check cached pathnames against Dropbox to drop the entire cache if necessary
@@ -165,14 +162,7 @@ public class CachedFileSystem extends BaseWebzFileSystemImpl {
 				return null;
 			}
 
-			final WebzByteArrayInputStream webzIn = payloadHolder.content.createInputStream();
-			return new WebzFileDownloader(fileSpecific, webzIn) {
-
-				@Override
-				protected long copyContent(OutputStream out) throws WebzWriteException {
-					return webzIn.writeAvailableToOutputStream(out);
-				}
-			};
+			return new WebzFileDownloader(fileSpecific, payloadHolder.content.createInputStream());
 		}
 	}
 

@@ -51,9 +51,7 @@ public class StaticContentSender {
 			return null;
 		}
 
-		@SuppressWarnings("resource")
 		BOMInputStream bomIn = new BOMInputStream(downloader.content, false, ALL_BOMS);
-		downloader.content = bomIn;
 
 		String encoding = defaultEncoding;
 		long contentLength = fileSpecific.getNumberOfBytes();
@@ -70,17 +68,18 @@ public class StaticContentSender {
 		resp.addHeader("Content-Length", Long.toString(contentLength));
 		// with Servlet API 3.1 it could be: resp.setContentLengthLong(contentLength);
 
-		if (WebzUtils.isHttpMethodHead(req)) {
-			downloader.close();
-		} else {
-			try {
-				downloader.copyContentAndClose(resp.getOutputStream());
-
-			} catch (WebzWriteException e) {
-				if (LOG.isDebugEnabled()) {
-					LOG.debug("most likely client dropped connection while receiving static content from " + content, e);
-				}
+		try {
+			if (!WebzUtils.isHttpMethodHead(req)) {
+				WebzUtils.copyInToOut(bomIn, resp.getOutputStream());
 			}
+
+		} catch (WebzWriteException e) {
+
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("most likely client dropped connection while receiving static content from " + content, e);
+			}
+		} finally {
+			WebzUtils.closeSafely(bomIn);
 		}
 		resp.flushBuffer();
 
