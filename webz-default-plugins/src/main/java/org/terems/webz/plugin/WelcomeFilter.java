@@ -129,11 +129,6 @@ public class WelcomeFilter extends BaseWebzFilter {
 			return file;
 		}
 
-		@Override
-		protected WebzContext getInnerContext() {
-			return chainContext;
-		}
-
 		private boolean checkFilename(String filePathname, String expectedFilename) {
 
 			if (filePathname.length() < expectedFilename.length()) {
@@ -144,6 +139,11 @@ public class WelcomeFilter extends BaseWebzFilter {
 				return filePathname.equals(expectedFilename);
 			}
 			return filePathname.endsWith("/" + expectedFilename);
+		}
+
+		@Override
+		protected WebzContext getInnerContext() {
+			return chainContext;
 		}
 	}
 

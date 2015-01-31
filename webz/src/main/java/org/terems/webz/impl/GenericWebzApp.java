@@ -16,9 +16,9 @@ import org.terems.webz.WebzContext;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFilter;
 import org.terems.webz.WebzMetadata;
-import org.terems.webz.base.WebzConfigProxy;
 import org.terems.webz.base.WebzContextProxy;
 import org.terems.webz.config.GeneralAppConfig;
+import org.terems.webz.config.WebzConfigObject;
 import org.terems.webz.internals.WebzApp;
 import org.terems.webz.internals.WebzDestroyableObjectFactory;
 import org.terems.webz.internals.WebzFileFactory;
@@ -80,11 +80,11 @@ public class GenericWebzApp implements WebzApp {
 			filterChain.add(appFactory.newDestroyable(filterClass));
 		}
 
-		WebzConfig filterConfig = new WebzConfigProxy() {
+		WebzConfig filterConfig = new WebzConfig() {
 
 			@Override
-			protected WebzConfig getInnerConfig() {
-				return rootContext;
+			public <T extends WebzConfigObject> T getAppConfigObject(Class<T> configObjectClass) throws WebzException {
+				return rootContext.getAppConfigObject(configObjectClass);
 			}
 		};
 

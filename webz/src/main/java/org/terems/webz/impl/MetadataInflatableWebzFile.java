@@ -3,13 +3,16 @@ package org.terems.webz.impl;
 import java.io.IOException;
 
 import org.terems.webz.WebzException;
+import org.terems.webz.WebzFile;
 import org.terems.webz.WebzMetadata;
-import org.terems.webz.internals.WebzFileSystem;
+import org.terems.webz.base.WebzFileProxy;
 
-public class MetadataInflatableWebzFile extends GenericWebzFile {
+public class MetadataInflatableWebzFile extends WebzFileProxy {
 
-	public MetadataInflatableWebzFile(String pathname, WebzFileSystem fileSystem) {
-		super(pathname, fileSystem);
+	private WebzFile file;
+
+	public MetadataInflatableWebzFile(WebzFile file) {
+		this.file = file;
 	}
 
 	@Override
@@ -18,6 +21,11 @@ public class MetadataInflatableWebzFile extends GenericWebzFile {
 		inflate();
 
 		return super.getMetadata();
+	}
+
+	@Override
+	protected WebzFile getInnerFile() {
+		return file;
 	}
 
 }

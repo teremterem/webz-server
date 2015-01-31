@@ -25,8 +25,12 @@ public class DefaultWebzFileFactory extends BaseWebzDestroyable implements WebzF
 
 	@Override
 	public WebzFile get(String pathname) {
-		return useMetadataInflatableFiles ? new MetadataInflatableWebzFile(pathname, fileSystem)
-				: new GenericWebzFile(pathname, fileSystem);
+
+		WebzFile file = new GenericWebzFile(pathname, fileSystem);
+		if (useMetadataInflatableFiles) {
+			return new MetadataInflatableWebzFile(file);
+		}
+		return file;
 	}
 
 }
