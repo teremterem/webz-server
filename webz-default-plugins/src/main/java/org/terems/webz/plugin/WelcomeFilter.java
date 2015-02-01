@@ -35,42 +35,35 @@ public class WelcomeFilter extends BaseWebzFilter {
 	}
 
 	@Override
-	public void serve(HttpServletRequest req, HttpServletResponse resp, final WebzChainContext chainContext) throws IOException,
-			WebzException {
-
-		redirectFileFolder(req, resp, chainContext);
-	}
-
-	public void redirectFileFolder(HttpServletRequest req, HttpServletResponse resp, final WebzChainContext nonProxiedChainContext)
-			throws IOException, WebzException {
+	public void serve(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException, WebzException {
 
 		boolean isMethodHead = WebzUtils.isHttpMethodHead(req);
 
 		if (isMethodHead || WebzUtils.isHttpMethodGet(req)) {
 
-			// resolving file using default resolver...
-			WebzMetadata metadata = nonProxiedChainContext.resolveFile(req).getMetadata();
+			WebzMetadata metadata = chainContext.resolveFile(req).getMetadata();
 			if (metadata != null) {
 
 				boolean uriEndsWithSlash = req.getRequestURI().endsWith("/");
 
 				if (!uriEndsWithSlash && metadata.isFolder()) {
 
-					doRedirect(req, resp, true, isMethodHead);
+					redirectToFileOrFolder(req, resp, true, isMethodHead);
 					return;
 
 				} else if (uriEndsWithSlash && metadata.isFile()) {
 
-					doRedirect(req, resp, false, isMethodHead);
+					redirectToFileOrFolder(req, resp, false, isMethodHead);
 					return;
 
 				}
 			}
 		}
-		nonProxiedChainContext.nextPlease(req, resp, new WelcomeContextProxy(nonProxiedChainContext));
+		chainContext.nextPlease(req, resp, new WelcomeContextProxy(chainContext));
 	}
 
-	private void doRedirect(HttpServletRequest req, HttpServletResponse resp, boolean toFolder, boolean isMethodHead) throws IOException {
+	private void redirectToFileOrFolder(HttpServletRequest req, HttpServletResponse resp, boolean toFolder, boolean isMethodHead)
+			throws IOException {
 
 		StringBuffer urlBuffer = req.getRequestURL();
 		if (toFolder) {
@@ -96,10 +89,10 @@ public class WelcomeFilter extends BaseWebzFilter {
 
 	private class WelcomeContextProxy extends WebzContextProxy {
 
-		private WebzChainContext chainContext;
+		private WebzContext innerContext;
 
-		private WelcomeContextProxy(WebzChainContext chainContext) {
-			this.chainContext = chainContext;
+		private WelcomeContextProxy(WebzContext innerContext) {
+			this.innerContext = innerContext;
 		}
 
 		@Override
@@ -132,7 +125,6 @@ public class WelcomeFilter extends BaseWebzFilter {
 					}
 				}
 			}
-
 			return file;
 		}
 
@@ -146,13 +138,12 @@ public class WelcomeFilter extends BaseWebzFilter {
 					childrenMap.put(WebzUtils.toLowerCaseEng(childPathname.substring(childPathname.lastIndexOf('/') + 1)), child);
 				}
 			}
-
 			return childrenMap;
 		}
 
 		@Override
 		protected WebzContext getInnerContext() {
-			return chainContext;
+			return innerContext;
 		}
 	}
 
