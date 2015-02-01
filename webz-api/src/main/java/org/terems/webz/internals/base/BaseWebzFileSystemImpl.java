@@ -13,7 +13,6 @@ import org.terems.webz.internals.FreshParentChildrenMetadata;
 import org.terems.webz.internals.ParentChildrenMetadata;
 import org.terems.webz.internals.WebzFileSystemCache;
 import org.terems.webz.internals.WebzFileSystemImpl;
-import org.terems.webz.internals.WebzFileSystemStructure;
 import org.terems.webz.internals.WebzPathNormalizer;
 
 /**
@@ -22,7 +21,6 @@ import org.terems.webz.internals.WebzPathNormalizer;
 public abstract class BaseWebzFileSystemImpl extends BaseWebzPropertiesInitable implements WebzFileSystemImpl {
 
 	protected WebzPathNormalizer pathNormalizer;
-	protected WebzFileSystemStructure structure = this;
 	protected String uniqueId;
 
 	protected String basePath;
@@ -30,20 +28,10 @@ public abstract class BaseWebzFileSystemImpl extends BaseWebzPropertiesInitable 
 	@Override
 	public void init(WebzPathNormalizer pathNormalizer, WebzProperties properties) throws WebzException {
 
-		setPathNormalizer(pathNormalizer);
-		basePath = pathNormalizer.normalizePathname(properties.get(WebzProperties.FS_BASE_PATH_PROPERTY), false);
+		this.pathNormalizer = pathNormalizer;
+		this.basePath = pathNormalizer.normalizePathname(properties.get(WebzProperties.FS_BASE_PATH_PROPERTY), false);
 
 		init(properties);
-	}
-
-	@Override
-	public void setPathNormalizer(WebzPathNormalizer pathNormalizer) {
-		this.pathNormalizer = pathNormalizer;
-	}
-
-	@Override
-	public void setFileSystemStructure(WebzFileSystemStructure structure) {
-		this.structure = structure;
 	}
 
 	@Override

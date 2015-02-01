@@ -18,7 +18,6 @@ import org.terems.webz.internals.FreshParentChildrenMetadata;
 import org.terems.webz.internals.ParentChildrenMetadata;
 import org.terems.webz.internals.WebzFileSystemCache;
 import org.terems.webz.internals.WebzFileSystemImpl;
-import org.terems.webz.internals.WebzFileSystemStructure;
 import org.terems.webz.internals.WebzPathNormalizer;
 import org.terems.webz.util.WebzUtils;
 
@@ -116,11 +115,6 @@ public class WebzFileSystemImplTracer extends BaseWebzPropertiesInitable impleme
 	}
 
 	@Override
-	public void setPathNormalizer(WebzPathNormalizer pathNormalizer) {
-		fsImpl.setPathNormalizer(pathNormalizer);
-	}
-
-	@Override
 	public WebzFileDownloader getFileDownloader(String pathname) throws IOException, WebzException {
 
 		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".getFileDownloader('" + pathname + "');", fsImpl));
@@ -167,11 +161,6 @@ public class WebzFileSystemImplTracer extends BaseWebzPropertiesInitable impleme
 
 		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".delete('" + pathname + "');", fsImpl));
 		fsImpl.delete(pathname);
-	}
-
-	@Override
-	public void setFileSystemStructure(WebzFileSystemStructure structure) {
-		fsImpl.setFileSystemStructure(structure);
 	}
 
 	@Override

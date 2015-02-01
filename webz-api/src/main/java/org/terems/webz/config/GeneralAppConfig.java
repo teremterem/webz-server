@@ -26,13 +26,13 @@ public class GeneralAppConfig extends WebzConfigObject {
 		Properties properties = WebzUtils.loadProperties(file, false);
 
 		appDisplayName = properties.getProperty(WebzProperties.APP_DISPLAY_NAME_PROPERTY);
-		defaultMimetype = properties.getProperty(WebzProperties.DEFAULT_MIMETYPE_PROPERTY, WebzDefaults.DEFAULT_MIMETYPE);
-		defaultEncoding = properties.getProperty(WebzProperties.DEFAULT_ENCODING_PROPERTY, WebzDefaults.DEFAULT_ENCODING);
+		defaultMimetype = properties.getProperty(WebzProperties.DEFAULT_MIMETYPE_PROPERTY, WebzDefaults.MIMETYPE);
+		defaultEncoding = properties.getProperty(WebzProperties.DEFAULT_ENCODING_PROPERTY, WebzDefaults.ENCODING);
 
 		welcomeExtensionsLowerCased = populateLowerCasedWelcomeItems(properties.getProperty(WebzProperties.WELCOME_EXTENSIONS_PROPERTY,
-				WebzDefaults.DEFAULT_WELCOME_EXTENSIONS_LIST));
+				WebzDefaults.WELCOME_EXTENSIONS_LIST));
 		welcomeFilenamesLowerCased = populateLowerCasedWelcomeItems(properties.getProperty(WebzProperties.WELCOME_FILENAMES_PROPERTY,
-				WebzDefaults.DEFAULT_WELCOME_FILENAMES_LIST));
+				WebzDefaults.WELCOME_FILENAMES_LIST));
 	}
 
 	private Collection<String> populateLowerCasedWelcomeItems(String welcomeItemsCsv) {

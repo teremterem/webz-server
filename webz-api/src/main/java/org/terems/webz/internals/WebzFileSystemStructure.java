@@ -9,7 +9,7 @@ import org.terems.webz.WebzFile;
 import org.terems.webz.WebzMetadata;
 
 /** TODO !!! describe !!! **/
-public interface WebzFileSystemStructure extends WebzPathNormalizerSettable {
+public interface WebzFileSystemStructure {
 
 	/** TODO !!! describe !!! **/
 	public void inflate(WebzFile file) throws IOException, WebzException;
@@ -24,8 +24,9 @@ public interface WebzFileSystemStructure extends WebzPathNormalizerSettable {
 	public ParentChildrenMetadata getParentChildrenMetadata(String parentPathname) throws IOException, WebzException;
 
 	/**
-	 * @return null if folder hash has not changed, otherwise - FreshParentChildrenMetadata object that encapsulates ParentChildrenMetadata;
-	 *         however encapsulated ParentChildrenMetadata may be null if there is no such file or folder...
+	 * @return {@code null} if folder hash has not changed, otherwise - {@code FreshParentChildrenMetadata} object that encapsulates
+	 *         {@code ParentChildrenMetadata} (<b>NOTE:</b> encapsulated {@code ParentChildrenMetadata} may be {@code null} if there is no
+	 *         such file or folder)
 	 **/
 	public FreshParentChildrenMetadata getParentChildrenMetadataIfChanged(String parentPathname, Object previousFolderHash)
 			throws IOException, WebzException;

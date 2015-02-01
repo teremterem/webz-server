@@ -8,7 +8,7 @@ import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzMetadata;
 
 /** TODO !!! describe !!! **/
-public interface WebzFileSystemOperations extends WebzPathNormalizerSettable, WebzFileSystemStructureSettable {
+public interface WebzFileSystemOperations {
 
 	/** TODO !!! describe !!! **/
 	public WebzFileDownloader getFileDownloader(String pathname) throws IOException, WebzException;

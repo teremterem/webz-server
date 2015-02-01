@@ -2,12 +2,15 @@ package org.terems.webz.plugin;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.terems.webz.WebzChainContext;
 import org.terems.webz.WebzContext;
+import org.terems.webz.WebzDefaults;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
 import org.terems.webz.WebzMetadata;
@@ -107,19 +110,23 @@ public class WelcomeFilter extends BaseWebzFilter {
 			WebzMetadata metadata = file.getMetadata();
 			if (metadata != null && !file.isPathnameInvalid() && !metadata.isFile()) {
 
-				String folderNameLowerCased = WebzUtils.toLowerCaseEng(metadata.getName());
+				String parentFolderNameLowerCased = null;
 
-				for (WebzFile child : file.listChildren()) {
-					String childPathnameLowerCased = WebzUtils.toLowerCaseEng(child.getPathname());
+				Map<String, WebzFile> childrenMap = buildChildrenMap(file);
 
-					for (String extensionLowerCased : welcomeExtensionsLowerCased) {
+				for (String welcomeExtensionLowerCased : welcomeExtensionsLowerCased) {
 
-						for (String filenameLowerCased : welcomeFilenamesLowerCased) {
-							if (checkFilename(childPathnameLowerCased, filenameLowerCased + extensionLowerCased)) {
-								return child;
+					for (String welcomeFilenameLowerCased : welcomeFilenamesLowerCased) {
+
+						if (WebzDefaults.USE_PARENT_FOLDER_NAME.equals(welcomeFilenameLowerCased)) {
+							if (parentFolderNameLowerCased == null) {
+								parentFolderNameLowerCased = WebzUtils.toLowerCaseEng(metadata.getName());
 							}
+							welcomeFilenameLowerCased = parentFolderNameLowerCased;
 						}
-						if (checkFilename(childPathnameLowerCased, folderNameLowerCased + extensionLowerCased)) {
+						WebzFile child = childrenMap.get(welcomeFilenameLowerCased + welcomeExtensionLowerCased);
+
+						if (child != null) {
 							return child;
 						}
 					}
@@ -129,16 +136,18 @@ public class WelcomeFilter extends BaseWebzFilter {
 			return file;
 		}
 
-		private boolean checkFilename(String filePathname, String expectedFilename) {
+		private Map<String, WebzFile> buildChildrenMap(WebzFile file) throws IOException, WebzException {
+			Map<String, WebzFile> childrenMap = new HashMap<String, WebzFile>();
 
-			if (filePathname.length() < expectedFilename.length()) {
-				return false;
-			}
-			if (filePathname.length() == expectedFilename.length()) {
+			for (WebzFile child : file.listChildren()) {
+				String childPathname = child.getPathname();
 
-				return filePathname.equals(expectedFilename);
+				if (childPathname != null) {
+					childrenMap.put(WebzUtils.toLowerCaseEng(childPathname.substring(childPathname.lastIndexOf('/') + 1)), child);
+				}
 			}
-			return filePathname.endsWith("/" + expectedFilename);
+
+			return childrenMap;
 		}
 
 		@Override
