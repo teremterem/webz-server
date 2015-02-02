@@ -26,6 +26,12 @@ public class WebzProperties extends HashMap<String, String> {
 		}
 	}
 
+	/** TODO !!! describe !!! **/
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public WebzProperties(WebzProperties properties) {
+		this((Map) properties);
+	}
+
 	public WebzProperties() {
 		super();
 	}

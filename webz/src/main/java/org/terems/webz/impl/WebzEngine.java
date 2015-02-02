@@ -11,8 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFilter;
-import org.terems.webz.WebzProperties;
-import org.terems.webz.git.impl.WebzGit;
 import org.terems.webz.internals.WebzApp;
 import org.terems.webz.internals.WebzDestroyableObjectFactory;
 import org.terems.webz.internals.WebzFileSystem;
@@ -25,21 +23,10 @@ public class WebzEngine implements WebzServletContainerBridge {
 
 	private WebzDestroyableObjectFactory globalFactory = new GenericWebzObjectFactory();
 	private volatile WebzApp rootWebzApp;
-	private WebzGit git;
 
 	public WebzEngine(Properties rootFileSystemProperties, Collection<Class<? extends WebzFilter>> filterClassesList) {
 
 		try {
-			String gitOriginUrl = rootFileSystemProperties.getProperty(WebzProperties.GIT_ORIGIN_URL_PROPERTY);
-			if (gitOriginUrl != null) {
-
-				// TODO hide this logic behind GitFileSystem
-				git = globalFactory.newDestroyable(WebzGit.class);
-				git.init(rootFileSystemProperties);
-
-				rootFileSystemProperties.setProperty(WebzProperties.FS_BASE_PATH_PROPERTY, git.getLocalBasePath());
-			}
-
 			WebzFileSystem rootFileSystem = WebzFileSystemManager.getManager(globalFactory).createFileSystem(rootFileSystemProperties);
 
 			rootWebzApp = globalFactory.newDestroyable(GenericWebzApp.class).init(rootFileSystem, filterClassesList,
@@ -58,16 +45,6 @@ public class WebzEngine implements WebzServletContainerBridge {
 	@Override
 	public void serve(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException {
 
-		if (git != null && "/pull/from/origin".equals(req.getPathInfo())) {
-
-			// TODO hide this logic behind GitFileSystem
-			git.pull();
-			resp.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
-			resp.setHeader(WebzFilter.HEADER_LOCATION, "/");
-
-			return;
-		}
-
 		if (rootWebzApp == null) {
 			throw new WebzException("root WebZ App is already stopped or has not been started yet");
 		}
@@ -84,8 +61,6 @@ public class WebzEngine implements WebzServletContainerBridge {
 
 		rootWebzApp = null;
 		LOG.info("WebZ Engine stopped\n\n\n");
-
-		git = null;
 
 		globalFactory.destroy();
 		LOG.info("WebZ Engine destroyed\n\n\n");

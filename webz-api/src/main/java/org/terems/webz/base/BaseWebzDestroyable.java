@@ -3,7 +3,7 @@ package org.terems.webz.base;
 import org.terems.webz.WebzDestroyable;
 
 /**
- * Basic implementation of {@code BaseWebzDestroyable} to be extended by concrete implementations...
+ * Basic implementation of {@code WebzDestroyable} which does nothing upon {@code destroy()}.
  **/
 public abstract class BaseWebzDestroyable implements WebzDestroyable {
 

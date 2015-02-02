@@ -2,20 +2,15 @@ package org.terems.webz.config;
 
 import java.io.IOException;
 
-import org.terems.webz.WebzDestroyable;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
+import org.terems.webz.base.BaseWebzDestroyable;
 
 /** TODO !!! describe !!! **/
-public abstract class WebzConfigObject implements WebzDestroyable {
+public abstract class WebzConfigObject extends BaseWebzDestroyable {
 
 	/** TODO !!! describe !!! **/
 	public abstract void init(WebzFile configFolder) throws IOException, WebzException;
-
-	/** TODO !!! describe !!! **/
-	@Override
-	public void destroy() {
-	}
 
 	private volatile boolean initialized;
 	private final Object mutex = new Object();

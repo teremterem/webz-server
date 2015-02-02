@@ -13,6 +13,7 @@ import org.terems.webz.internals.FreshParentChildrenMetadata;
 import org.terems.webz.internals.ParentChildrenMetadata;
 import org.terems.webz.internals.WebzFileSystemCache;
 import org.terems.webz.internals.WebzFileSystemImpl;
+import org.terems.webz.internals.WebzObjectFactory;
 import org.terems.webz.internals.WebzPathNormalizer;
 
 /**
@@ -23,7 +24,7 @@ public abstract class BaseWebzFileSystemImpl extends BaseWebzPropertiesInitable 
 	private WebzPathNormalizer pathNormalizer;
 
 	@Override
-	public void init(WebzPathNormalizer pathNormalizer, WebzProperties properties) throws WebzException {
+	public void init(WebzPathNormalizer pathNormalizer, WebzProperties properties, WebzObjectFactory factory) throws WebzException {
 
 		this.pathNormalizer = pathNormalizer;
 		init(properties);

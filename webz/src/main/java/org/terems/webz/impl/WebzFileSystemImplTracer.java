@@ -13,15 +13,16 @@ import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzMetadata.FileSpecific;
 import org.terems.webz.WebzProperties;
-import org.terems.webz.base.BaseWebzPropertiesInitable;
+import org.terems.webz.base.BaseWebzDestroyable;
 import org.terems.webz.internals.FreshParentChildrenMetadata;
 import org.terems.webz.internals.ParentChildrenMetadata;
 import org.terems.webz.internals.WebzFileSystemCache;
 import org.terems.webz.internals.WebzFileSystemImpl;
+import org.terems.webz.internals.WebzObjectFactory;
 import org.terems.webz.internals.WebzPathNormalizer;
 import org.terems.webz.util.WebzUtils;
 
-public class WebzFileSystemImplTracer extends BaseWebzPropertiesInitable implements WebzFileSystemImpl {
+public class WebzFileSystemImplTracer extends BaseWebzDestroyable implements WebzFileSystemImpl {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WebzFileSystemImplTracer.class);
 
@@ -169,8 +170,8 @@ public class WebzFileSystemImplTracer extends BaseWebzPropertiesInitable impleme
 	}
 
 	@Override
-	public void init(WebzPathNormalizer pathNormalizer, WebzProperties properties) throws WebzException {
-		fsImpl.init(pathNormalizer, properties);
+	public void init(WebzPathNormalizer pathNormalizer, WebzProperties properties, WebzObjectFactory factory) throws WebzException {
+		fsImpl.init(pathNormalizer, properties, factory);
 	}
 
 }

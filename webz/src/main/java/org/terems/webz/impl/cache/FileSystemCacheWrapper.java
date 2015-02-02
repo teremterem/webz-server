@@ -59,7 +59,7 @@ public class FileSystemCacheWrapper extends BaseWebzFileSystemImpl {
 		if (LOG.isInfoEnabled()) {
 			LOG.info("'" + uniqueId + "' file system cache wrapper was created for '" + fileSystemImpl.getUniqueId() + "'");
 		}
-		super.init(pathNormalizer, properties);
+		super.init(pathNormalizer, properties, factory);
 		return this;
 	}
 
