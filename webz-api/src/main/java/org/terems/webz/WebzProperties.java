@@ -5,7 +5,10 @@ import java.util.Map;
 
 import org.terems.webz.util.WebzUtils;
 
-/** TODO !!! describe !!! **/
+/**
+ * {@code WebzProperties} is an alternative to traditional {@code java.util.Properties} class. Its main benefit is that it doesn't extend
+ * {@code java.util.Hashtable} and will not become a bottleneck in case of concurrent reading.
+ **/
 @SuppressWarnings("serial")
 public class WebzProperties extends HashMap<String, String> {
 
