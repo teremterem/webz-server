@@ -34,6 +34,8 @@ public class FileSystemCacheWrapper extends BaseWebzFileSystemImpl {
 
 	private int filePayloadSizeThreshold;
 
+	private String uniqueId;
+
 	public FileSystemCacheWrapper init(WebzFileSystemImpl fileSystemImpl, WebzPathNormalizer pathNormalizer, WebzProperties properties,
 			WebzObjectFactory factory) throws WebzException {
 
@@ -52,13 +54,18 @@ public class FileSystemCacheWrapper extends BaseWebzFileSystemImpl {
 		cacheImpl = ((WebzFileSystemCache) factory.newDestroyable(properties.get(WebzProperties.FS_CACHE_IMPL_CLASS_PROPERTY,
 				WebzDefaults.FS_CACHE_IMPL_CLASS))).init(fileSystemImpl, filePayloadSizeThreshold);
 
-		this.uniqueId = cacheImpl.getCacheTypeName() + "-for-" + fileSystemImpl.getUniqueId();
+		uniqueId = cacheImpl.getCacheTypeName() + "-for-" + fileSystemImpl.getUniqueId();
 
 		if (LOG.isInfoEnabled()) {
-			LOG.info("'" + this.uniqueId + "' file system cache was created to wrap '" + fileSystemImpl.getUniqueId() + "'");
+			LOG.info("'" + uniqueId + "' file system cache wrapper was created for '" + fileSystemImpl.getUniqueId() + "'");
 		}
 		super.init(pathNormalizer, properties);
 		return this;
+	}
+
+	@Override
+	public String getUniqueId() {
+		return uniqueId;
 	}
 
 	@Override

@@ -20,25 +20,20 @@ import org.terems.webz.internals.WebzPathNormalizer;
  **/
 public abstract class BaseWebzFileSystemImpl extends BaseWebzPropertiesInitable implements WebzFileSystemImpl {
 
-	protected WebzPathNormalizer pathNormalizer;
-	protected String uniqueId;
-
-	protected String basePath;
+	private WebzPathNormalizer pathNormalizer;
 
 	@Override
 	public void init(WebzPathNormalizer pathNormalizer, WebzProperties properties) throws WebzException {
 
 		this.pathNormalizer = pathNormalizer;
-		this.basePath = pathNormalizer.normalizePathname(properties.get(WebzProperties.FS_BASE_PATH_PROPERTY), false);
-
 		init(properties);
 	}
 
-	@Override
-	public String getUniqueId() {
-		return uniqueId;
+	protected WebzPathNormalizer getPathNormalizer() {
+		return pathNormalizer;
 	}
 
+	/** Do nothing by default... **/
 	@Override
 	public void inflate(WebzFile file) throws IOException, WebzException {
 	}

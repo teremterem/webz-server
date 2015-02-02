@@ -19,7 +19,6 @@ public class NotFoundFilter extends BaseWebzFilter {
 	public void init() throws WebzException {
 		pathTo404file = getAppConfig().getAppConfigObject(StatusCodesConfig.class).getPathTo404file();
 		contentSender = new StaticContentSender(getAppConfig());
-		// TODO convert StaticContentSender into a singleton
 	}
 
 	@Override

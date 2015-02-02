@@ -30,7 +30,6 @@ public class ErrorFilter extends BaseWebzFilter {
 	public void init() throws WebzException {
 		pathTo500file = getAppConfig().getAppConfigObject(StatusCodesConfig.class).getPathTo500file();
 		contentSender = new StaticContentSender(getAppConfig());
-		// TODO convert StaticContentSender into a singleton
 	}
 
 	@Override

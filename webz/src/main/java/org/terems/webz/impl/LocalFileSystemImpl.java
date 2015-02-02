@@ -13,6 +13,7 @@ import org.terems.webz.WebzException;
 import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzMetadata.FileSpecific;
+import org.terems.webz.WebzProperties;
 import org.terems.webz.internals.ParentChildrenMetadata;
 import org.terems.webz.internals.base.BaseWebzFileSystemImpl;
 
@@ -20,13 +21,23 @@ public class LocalFileSystemImpl extends BaseWebzFileSystemImpl {
 
 	private static final Logger LOG = LoggerFactory.getLogger(LocalFileSystemImpl.class);
 
+	private String basePath;
+	private String uniqueId;
+
 	@Override
 	protected void init() {
+
+		basePath = getPathNormalizer().normalizePathname(getProperties().get(WebzProperties.FS_BASE_PATH_PROPERTY), false);
 		uniqueId = "localhost-" + basePath;
 
 		if (LOG.isInfoEnabled()) {
 			LOG.info("'" + uniqueId + "' file system was created");
 		}
+	}
+
+	@Override
+	public String getUniqueId() {
+		return uniqueId;
 	}
 
 	@Override
@@ -55,7 +66,7 @@ public class LocalFileSystemImpl extends BaseWebzFileSystemImpl {
 			parentChildren.childPathnamesAndMetadata = pathnamesAndMetadata;
 			for (String childName : children) {
 				File child = new File(localBasePath, childName);
-				pathnamesAndMetadata.put(pathNormalizer.concatPathname(parentPathname, childName), new LocalFileMetadata(child));
+				pathnamesAndMetadata.put(getPathNormalizer().concatPathname(parentPathname, childName), new LocalFileMetadata(child));
 			}
 		}
 		return parentChildren;
@@ -73,7 +84,7 @@ public class LocalFileSystemImpl extends BaseWebzFileSystemImpl {
 	}
 
 	protected boolean pathnameMatchesFileExactly(String pathnameToValidate, File file) throws IOException {
-		return pathNormalizer.normalizePathname(file.getCanonicalPath(), false).endsWith(pathnameToValidate);
+		return getPathNormalizer().normalizePathname(file.getCanonicalPath(), false).endsWith(pathnameToValidate);
 	}
 
 	protected boolean fileExists(File file, String pathnameToValidate) throws IOException {
