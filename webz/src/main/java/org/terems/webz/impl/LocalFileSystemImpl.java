@@ -16,9 +16,9 @@ import org.terems.webz.WebzMetadata.FileSpecific;
 import org.terems.webz.internals.ParentChildrenMetadata;
 import org.terems.webz.internals.base.BaseWebzFileSystemImpl;
 
-public class LocalFileSystem extends BaseWebzFileSystemImpl {
+public class LocalFileSystemImpl extends BaseWebzFileSystemImpl {
 
-	private static final Logger LOG = LoggerFactory.getLogger(LocalFileSystem.class);
+	private static final Logger LOG = LoggerFactory.getLogger(LocalFileSystemImpl.class);
 
 	@Override
 	protected void init() {

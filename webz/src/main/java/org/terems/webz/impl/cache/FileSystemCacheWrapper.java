@@ -25,25 +25,25 @@ import org.terems.webz.util.WebzUtils;
 
 // TODO background thread should periodically check cached pathnames against Dropbox to drop the entire cache if necessary
 // TODO make sure to check the cache against metadata fetched by "side-effect" in order to also drop the entire cache if necessary
-public class CachedFileSystem extends BaseWebzFileSystemImpl {
+public class FileSystemCacheWrapper extends BaseWebzFileSystemImpl {
 
-	private static final Logger LOG = LoggerFactory.getLogger(CachedFileSystem.class);
+	private static final Logger LOG = LoggerFactory.getLogger(FileSystemCacheWrapper.class);
 
 	private WebzFileSystemImpl fileSystemImpl;
 	private WebzFileSystemCache cacheImpl;
 
 	private int filePayloadSizeThreshold;
 
-	public CachedFileSystem init(WebzFileSystemImpl fileSystemImpl, WebzPathNormalizer pathNormalizer, WebzProperties properties,
+	public FileSystemCacheWrapper init(WebzFileSystemImpl fileSystemImpl, WebzPathNormalizer pathNormalizer, WebzProperties properties,
 			WebzObjectFactory factory) throws WebzException {
 
 		// TODO additional mode #1: payload cache disabled completely
 		// TODO additional mode #2: payload cache works for any payload sizes without the threshold ?
 
-		if (fileSystemImpl instanceof CachedFileSystem) {
-			throw new IllegalArgumentException(
-					"an instance of BaseFileSystemCache should not be wrapped with another instance of BaseFileSystemCache - an attempt was made to wrap "
-							+ fileSystemImpl.getUniqueId() + " with an instance of " + getClass());
+		if (fileSystemImpl instanceof FileSystemCacheWrapper) {
+			throw new IllegalArgumentException("an instance of " + FileSystemCacheWrapper.class.getSimpleName()
+					+ " should not be wrapped with another instance of " + FileSystemCacheWrapper.class.getSimpleName()
+					+ " - an attempt was made to wrap '" + fileSystemImpl.getUniqueId() + "' with an instance of " + getClass());
 		}
 		this.fileSystemImpl = fileSystemImpl;
 

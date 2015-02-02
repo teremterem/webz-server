@@ -4,7 +4,7 @@ import org.terems.webz.WebzDefaults;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzProperties;
 import org.terems.webz.base.BaseWebzDestroyable;
-import org.terems.webz.impl.cache.CachedFileSystem;
+import org.terems.webz.impl.cache.FileSystemCacheWrapper;
 import org.terems.webz.internals.WebzFileFactory;
 import org.terems.webz.internals.WebzFileSystem;
 import org.terems.webz.internals.WebzFileSystemImpl;
@@ -39,10 +39,10 @@ public class GenericWebzFileSystem extends BaseWebzDestroyable implements WebzFi
 				String.valueOf(WebzDefaults.FS_CACHE_ENABLED)));
 		if (cacheEnabled) {
 
-			CachedFileSystem cachedFileSystem = factory.newDestroyable(CachedFileSystem.class);
-			cachedFileSystem.init(fsImpl, pathNormalizer, properties, factory);
+			FileSystemCacheWrapper fsCacheWrapper = factory.newDestroyable(FileSystemCacheWrapper.class);
+			fsCacheWrapper.init(fsImpl, pathNormalizer, properties, factory);
 
-			fsImpl = cachedFileSystem;
+			fsImpl = fsCacheWrapper;
 		}
 		structure = fsImpl;
 		operations = fsImpl;
