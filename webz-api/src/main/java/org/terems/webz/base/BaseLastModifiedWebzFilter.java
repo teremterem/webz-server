@@ -26,6 +26,7 @@ public abstract class BaseLastModifiedWebzFilter<R> extends BaseWebzFilter {
 	/** TODO !!! describe !!! **/
 	protected void serveNotFound(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException,
 			WebzException {
+		// resource does not exist - invoke the next filter in the chain (filter chain usually ends with NotFoundFilter)
 		chainContext.nextPlease(req, resp);
 	}
 

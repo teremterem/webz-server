@@ -63,4 +63,5 @@ public class StaticContentFilter extends BaseLastModifiedWebzFilter<WebzFile> {
 			serveNotFound(req, resp, chainContext);
 		}
 	}
+
 }
