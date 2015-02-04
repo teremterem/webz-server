@@ -7,11 +7,11 @@
 	<artifactId>webz-api</artifactId>
 	<packaging>jar</packaging>
 	<name>WebZ API</name>
-	<description>WebZ platform for web sites, API</description>
+	<description>WebZ Platform, API</description>
 
 	<parent>
 		<groupId>org.terems</groupId>
-		<artifactId>terems-org</artifactId>
+		<artifactId>webz-platform</artifactId>
 		<version>0.9.PEDESIS-SNAPSHOT</version>
     </parent>
 

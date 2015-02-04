@@ -6,12 +6,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>webz</artifactId>
 	<packaging>jar</packaging>
-	<name>WebZ (Engine)</name>
-	<description>WebZ platform for web sites, core module (the engine)</description>
+	<name>WebZ (Core)</name>
+	<description>WebZ Platform, Core Module</description>
 
 	<parent>
 		<groupId>org.terems</groupId>
-		<artifactId>terems-org</artifactId>
+		<artifactId>webz-platform</artifactId>
 		<version>0.9.PEDESIS-SNAPSHOT</version>
     </parent>
 

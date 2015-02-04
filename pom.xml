@@ -5,11 +5,11 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.terems</groupId>
-	<artifactId>terems-org</artifactId>
+	<artifactId>webz-platform</artifactId>
 	<packaging>pom</packaging>
 	<version>0.9.PEDESIS-SNAPSHOT</version>
-	<name>Terem's .org</name>
-	<description>parent project for app(s) and modules</description>
+	<name>WebZ Platform</name>
+	<description>WebZ Platform, Parent Project</description>
 	<organization>
 		<name>Terem's .org</name>
 		<url>http://terems.org</url>

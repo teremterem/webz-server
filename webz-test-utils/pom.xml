@@ -7,11 +7,11 @@
 	<artifactId>webz-test-utils</artifactId>
 	<packaging>jar</packaging>
 	<name>WebZ Test Utils</name>
-	<description>WebZ utilities for unit testing</description>
+	<description>WebZ Utilities For Unit Testing</description>
 
 	<parent>
 		<groupId>org.terems</groupId>
-		<artifactId>terems-org</artifactId>
+		<artifactId>webz-platform</artifactId>
 		<version>0.9.PEDESIS-SNAPSHOT</version>
     </parent>
 

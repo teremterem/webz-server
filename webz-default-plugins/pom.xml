@@ -6,12 +6,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>webz-default-plugins</artifactId>
 	<packaging>jar</packaging>
-	<name>WebZ Default Plugins</name>
-	<description>WebZ platform for web sites, default plugins</description>
+	<name>WebZ Default Filters</name>
+	<description>WebZ Platform, Default Filters</description>
 
 	<parent>
 		<groupId>org.terems</groupId>
-		<artifactId>terems-org</artifactId>
+		<artifactId>webz-platform</artifactId>
 		<version>0.9.PEDESIS-SNAPSHOT</version>
     </parent>
 

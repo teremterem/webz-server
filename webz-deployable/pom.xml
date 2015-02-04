@@ -7,11 +7,11 @@
 	<artifactId>webz-deployable</artifactId>
 	<packaging>war</packaging>
 	<name>WebZ Deployable</name>
-	<description>WebZ platform for web sites, deployable web application "envelope" of the platform</description>
+	<description>WebZ Platform, Servlet "Envelope"</description>
 
 	<parent>
 		<groupId>org.terems</groupId>
-		<artifactId>terems-org</artifactId>
+		<artifactId>webz-platform</artifactId>
 		<version>0.9.PEDESIS-SNAPSHOT</version>
     </parent>
 
