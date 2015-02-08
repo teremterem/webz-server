@@ -7,11 +7,11 @@
 	<artifactId>webz-default-plugins</artifactId>
 	<packaging>jar</packaging>
 	<name>WebZ Default Filters</name>
-	<description>WebZ Platform, Default Filters</description>
+	<description>WebZ Server, Default Filters</description>
 
 	<parent>
 		<groupId>org.terems</groupId>
-		<artifactId>webz-platform</artifactId>
+		<artifactId>webz-server</artifactId>
 		<version>0.9.PEDESIS-SNAPSHOT</version>
     </parent>
 

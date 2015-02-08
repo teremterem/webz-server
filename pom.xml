@@ -5,14 +5,14 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.terems</groupId>
-	<artifactId>webz-platform</artifactId>
+	<artifactId>webz-server</artifactId>
 	<packaging>pom</packaging>
 	<version>0.9.PEDESIS-SNAPSHOT</version>
-	<name>WebZ Platform</name>
-	<description>WebZ Platform, Parent Project</description>
+	<name>WebZ Server</name>
+	<description>WebZ Server, Parent Project</description>
 	<organization>
 		<name>Terem's .org</name>
-		<url>http://terems.org</url>
+		<url>http://terems.org/</url>
 	</organization>
 
 <!-- TODO stop using Jetty before making WebZ available under GPL (otherwise it can only be either EPL or Apache License) !!! -->
@@ -22,7 +22,6 @@
 		<module>webz-api</module>
 		<module>webz</module>
 		<module>webz-default-plugins</module>
-		<module>webz-dropbox</module>
 		<module>webz-deployable</module>
 
 		<module>webz-test-utils</module>
