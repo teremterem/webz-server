@@ -15,8 +15,6 @@
 		<url>http://terems.org/</url>
 	</organization>
 
-<!-- TODO stop using Jetty before making WebZ available under GPL (otherwise it can only be either EPL or Apache License) !!! -->
-
 	<modules>
 
 		<module>webz-api</module>
