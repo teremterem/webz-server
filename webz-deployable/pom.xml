@@ -29,42 +29,12 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>webz-default-plugins</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>webz-dropbox</artifactId>
-		</dependency>
 
 		<!-- Servlet API -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
-
-		<!-- Dropbox -->
-		<dependency>
-		  <groupId>com.dropbox.core</groupId>
-		  <artifactId>dropbox-core-sdk</artifactId>
-		</dependency>
-
-		<!-- Jetty (for the sake of viewing it's source code) - scope: "provided" (in parent pom.xml) -->
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-ant</artifactId>
-		</dependency>
-		<!--
-		<dependency>
-			<groupId>org.eclipse.jetty.aggregate</groupId>
-			<artifactId>jetty-all</artifactId>
-		</dependency>
-		-->
-
-		<!-- starting from Jetty 9.2.2.v20140723 metadata-complete="true" attribute in web.xml became effective -->
-		<!--
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-quickstart</artifactId>
-		</dependency>
-		-->
 
 		<!-- Testing -->
 		<dependency>
@@ -96,73 +66,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
-			</plugin>
-			<plugin>
-
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<executions>
-
-					<execution>
-						<id>jetty-stop-pre-clean</id>
-						<phase>pre-clean</phase>
-						<configuration>
-							<target>
-
-								<taskdef classpathref="maven.plugin.classpath" resource="tasks.properties" loaderref="jetty.loader" />
-
-								<jetty.stop stopPort="${jetty.stop.port}" stopKey="${jetty.stop.key}" stopWait="${jetty.stop.wait.milliseconds}"/>
-								<sleep milliseconds="${jetty.sleep.after.stop.milliseconds}"/>
-
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-
-					<execution>
-						<id>jetty-stop-prepare-package</id>
-						<phase>prepare-package</phase>
-						<configuration>
-							<target>
-
-								<taskdef classpathref="maven.plugin.classpath" resource="tasks.properties" loaderref="jetty.loader" />
-
-								<jetty.stop stopPort="${jetty.stop.port}" stopKey="${jetty.stop.key}" stopWait="${jetty.stop.wait.milliseconds}"/>
-								<sleep milliseconds="${jetty.sleep.after.stop.milliseconds}"/>
-
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-
-					<!-- start Jetty and deploy webz-deployable.war using Ant... -->
-					<execution>
-						<id>default-cli</id>
-						<configuration>
-							<target>
-
-								<taskdef classpathref="maven.plugin.classpath" resource="tasks.properties" loaderref="jetty.loader" />
-
-								<jetty.stop stopPort="${jetty.stop.port}" stopKey="${jetty.stop.key}" stopWait="${jetty.stop.wait.milliseconds}"/>
-								<sleep milliseconds="${jetty.sleep.after.stop.milliseconds}"/>
-
-								<jetty.run jettyPort="${jetty.http.port}" stopPort="${jetty.stop.port}" stopKey="${jetty.stop.key}">
-
-									<webApp war="${basedir}/target/${project.build.finalName}.war" contextPath="/"/>
-								</jetty.run>
-
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-
-				</executions>
 			</plugin>
 		</plugins>
 	</build>

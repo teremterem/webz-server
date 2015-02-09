@@ -32,41 +32,23 @@
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<jetty.http.port>8080</jetty.http.port>
-		<jetty.stop.port>8079</jetty.stop.port>
-		<jetty.stop.key>jetty-webz</jetty.stop.key>
-		<jetty.stop.wait.milliseconds>5000</jetty.stop.wait.milliseconds>
-		<jetty.sleep.after.stop.milliseconds>100</jetty.sleep.after.stop.milliseconds>
-
 		<!-- versions -->
 
-		<jetty.version>9.2.6.v20141205</jetty.version>
 		<servlet.api.version>3.0.1</servlet.api.version><!-- 3.1.0 -->
 
-		<dropbox.version>[1.7,1.8)</dropbox.version>
-		<ehcache.version>2.8.3</ehcache.version>
-		<jgit.version>3.6.1.201501031845-r</jgit.version>
-
-		<commons.codec.version>1.9</commons.codec.version>
 		<commons.io.version>2.4</commons.io.version>
-		<commons.lang3.version>3.3.2</commons.lang3.version>
 
-		<guava.version>15.0.0.v201403281430</guava.version><!-- 17.0 -->
-		<wikitext.version>2.2.0.N20140702-2138</wikitext.version>
-
-		<slf4j.log4j12.version>1.7.7</slf4j.log4j12.version>
+		<slf4j.log4j12.version>1.7.10</slf4j.log4j12.version>
 		<log4j.version>1.2.17</log4j.version>
 
-		<maven.compiler.plugin.version>3.1</maven.compiler.plugin.version>
+		<maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
 		<maven.eclipse.plugin.version>2.9</maven.eclipse.plugin.version>
-		<maven.war.plugin.version>2.4</maven.war.plugin.version>
+		<maven.war.plugin.version>2.6</maven.war.plugin.version>
 
-		<maven.antrun.plugin.version>1.7</maven.antrun.plugin.version>
+		<testng.version>6.8.21</testng.version>
+		<mockito.version>1.10.19</mockito.version>
 
-		<testng.version>6.8.8</testng.version>
-		<mockito.version>1.9.5</mockito.version>
-
-		<javassist.version>3.18.2-GA</javassist.version>
+		<javassist.version>3.19.0-GA</javassist.version>
 		<objenesis.version>2.1</objenesis.version>
 
 	</properties>
@@ -91,11 +73,6 @@
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>webz-dropbox</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>${project.groupId}</groupId>
 				<artifactId>webz-deployable</artifactId>
 				<version>${project.version}</version>
 			</dependency>
@@ -114,89 +91,6 @@
 				<artifactId>commons-io</artifactId>
 				<version>${commons.io.version}</version>
 			</dependency>
-			<!--
-			<dependency>
-				<groupId>commons-codec</groupId>
-				<artifactId>commons-codec</artifactId>
-				<version>${commons.codec.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-lang3</artifactId>
-				<version>${commons.lang3.version}</version>
-			</dependency>
-			-->
-
-			<!-- Dropbox -->
-			<dependency>
-				<groupId>com.dropbox.core</groupId>
-				<artifactId>dropbox-core-sdk</artifactId>
-				<version>${dropbox.version}</version>
-			</dependency>
-
-			<!-- Ehcache -->
-			<dependency>
-				<groupId>net.sf.ehcache</groupId>
-				<artifactId>ehcache</artifactId>
-				<version>${ehcache.version}</version>
-			</dependency>
-
-			<!-- JGit -->
-			<dependency>
-				<groupId>org.eclipse.jgit</groupId>
-				<artifactId>org.eclipse.jgit</artifactId>
-				<version>${jgit.version}</version>
-			</dependency>
-
-			<!-- Mylyn WikiText -->
-			<!--
-			<dependency>
-			    <groupId>com.google.guava</groupId>
-			    <artifactId>guava</artifactId>
-			    <version>${guava.version}</version>
-			</dependency>
-			<!- ! ->
-			<dependency>
-				<groupId>org.eclipse.mylyn</groupId>
-				<artifactId>wikitext.core</artifactId>
-				<version>${wikitext.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.mylyn</groupId>
-				<artifactId>wikitext.confluence.core</artifactId>
-				<version>${wikitext.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.mylyn</groupId>
-				<artifactId>wikitext.html.core</artifactId>
-				<version>${wikitext.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.mylyn</groupId>
-				<artifactId>wikitext.markdown.core</artifactId>
-				<version>${wikitext.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.mylyn</groupId>
-				<artifactId>wikitext.mediawiki.core</artifactId>
-				<version>${wikitext.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.mylyn</groupId>
-				<artifactId>wikitext.textile.core</artifactId>
-				<version>${wikitext.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.mylyn</groupId>
-				<artifactId>wikitext.tracwiki.core</artifactId>
-				<version>${wikitext.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.mylyn</groupId>
-				<artifactId>wikitext.twiki.core</artifactId>
-				<version>${wikitext.version}</version>
-			</dependency>
-			-->
 
 			<!-- Logging -->
 			<dependency>
@@ -209,22 +103,6 @@
 				<artifactId>log4j</artifactId>
 				<version>${log4j.version}</version>
 			</dependency>
-
-			<!-- Jetty (for the sake of viewing it's source code) -->
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-ant</artifactId>
-				<version>${jetty.version}</version>
-				<scope>provided</scope>
-			</dependency>
-			<!--
-			<dependency>
-				<groupId>org.eclipse.jetty.aggregate</groupId>
-				<artifactId>jetty-all</artifactId>
-				<version>${jetty.version}</version>
-				<scope>provided</scope>
-			</dependency>
-			-->
 
 			<!-- Testing -->
 			<dependency>
@@ -321,28 +199,6 @@
 						<failOnMissingWebXml>false</failOnMissingWebXml>
 						-->
 					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-antrun-plugin</artifactId>
-					<version>${maven.antrun.plugin.version}</version>
-					<dependencies>
-						<dependency>
-							<groupId>org.eclipse.jetty</groupId>
-							<artifactId>jetty-ant</artifactId>
-							<version>${jetty.version}</version>
-							<exclusions>
-								<exclusion>
-									<groupId>ant</groupId>
-									<artifactId>ant</artifactId>
-								</exclusion>
-								<exclusion>
-									<groupId>ant</groupId>
-									<artifactId>ant-launcher</artifactId>
-								</exclusion>
-							</exclusions>
-						</dependency>
-					</dependencies>
 				</plugin>
 			</plugins>
 		</pluginManagement>
