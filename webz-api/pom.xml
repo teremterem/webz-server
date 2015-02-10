@@ -9,6 +9,24 @@
 	<name>WebZ API</name>
 	<description>WebZ Server, API</description>
 
+	<url>http://ww.webz.bz/</url>
+
+	<developers>
+		<developer>
+			<name>Oleksandr Tereschenko</name>
+			<email>oleksandr@terems.org</email>
+		</developer>
+	</developers>
+	<licenses>
+		<license>
+			<name>GNU Affero GPLv3</name>
+			<url>http://www.gnu.org/licenses/agpl-3.0.html</url>
+		</license>
+	</licenses>
+	<scm>
+		<url>https://github.com/terems-org/webz-server</url>
+	</scm>
+
 	<parent>
 		<groupId>org.terems</groupId>
 		<artifactId>webz-server</artifactId>

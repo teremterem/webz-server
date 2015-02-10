@@ -10,10 +10,24 @@
 	<version>0.9.PEDESIS-SNAPSHOT</version>
 	<name>WebZ Server</name>
 	<description>WebZ Server, Parent Project</description>
-	<organization>
-		<name>Terem's .org</name>
-		<url>http://terems.org/</url>
-	</organization>
+
+	<url>http://ww.webz.bz/</url>
+
+	<developers>
+		<developer>
+			<name>Oleksandr Tereschenko</name>
+			<email>oleksandr@terems.org</email>
+		</developer>
+	</developers>
+	<licenses>
+		<license>
+			<name>GNU Affero GPLv3</name>
+			<url>http://www.gnu.org/licenses/agpl-3.0.html</url>
+		</license>
+	</licenses>
+	<scm>
+		<url>https://github.com/terems-org/webz-server</url>
+	</scm>
 
 	<modules>
 
