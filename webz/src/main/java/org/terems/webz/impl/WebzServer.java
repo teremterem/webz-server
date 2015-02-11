@@ -35,14 +35,14 @@ import org.terems.webz.internals.WebzFileSystem;
 import org.terems.webz.internals.WebzServletContainerBridge;
 import org.terems.webz.util.WebzUtils;
 
-public class WebzEngine implements WebzServletContainerBridge {
+public class WebzServer implements WebzServletContainerBridge {
 
-	private static final Logger LOG = LoggerFactory.getLogger(WebzEngine.class);
+	private static final Logger LOG = LoggerFactory.getLogger(WebzServer.class);
 
 	private WebzDestroyableObjectFactory globalFactory = new GenericWebzObjectFactory();
 	private volatile WebzApp rootWebzApp;
 
-	public WebzEngine(Properties rootFileSystemProperties, Collection<Class<? extends WebzFilter>> filterClassesList) {
+	public WebzServer(Properties rootFileSystemProperties, Collection<Class<? extends WebzFilter>> filterClassesList) {
 
 		try {
 			WebzFileSystem rootFileSystem = WebzFileSystemManager.getManager(globalFactory).createFileSystem(rootFileSystemProperties);
@@ -57,7 +57,7 @@ public class WebzEngine implements WebzServletContainerBridge {
 			}
 		}
 
-		LOG.info("WebZ Engine started\n\n\n");
+		LOG.info("WebZ Server started\n\n\n");
 	}
 
 	@Override
@@ -78,10 +78,10 @@ public class WebzEngine implements WebzServletContainerBridge {
 	public void destroy() {
 
 		rootWebzApp = null;
-		LOG.info("WebZ Engine stopped\n\n\n");
+		LOG.info("WebZ Server stopped\n\n\n");
 
 		globalFactory.destroy();
-		LOG.info("WebZ Engine destroyed\n\n\n");
+		LOG.info("WebZ Server destroyed\n\n\n");
 	}
 
 	private void traceRequestStart(HttpServletRequest req) {

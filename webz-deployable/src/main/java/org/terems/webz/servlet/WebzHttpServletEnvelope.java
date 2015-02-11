@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFilter;
-import org.terems.webz.impl.WebzEngine;
+import org.terems.webz.impl.WebzServer;
 import org.terems.webz.plugin.ErrorFilter;
 import org.terems.webz.plugin.NotFoundFilter;
 import org.terems.webz.plugin.StaticContentFilter;
@@ -45,8 +45,8 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 	@Override
 	public void init() throws ServletException {
 		try {
-			// TODO decide if WebzEngine lazy initialization mechanism is needed at all
-			getWebzEngine();
+			// TODO decide if WebzServer lazy initialization mechanism is needed at all
+			webzServer();
 
 		} catch (IOException e) {
 			throw new ServletException(e);
@@ -59,7 +59,7 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
 		try {
-			getWebzEngine().serve(req, resp);
+			webzServer().serve(req, resp);
 
 		} catch (WebzException e) {
 			throw new ServletException(e);
@@ -69,41 +69,41 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 	/**
 	 * <a href="http://en.wikipedia.org/wiki/Double-checked_locking#Usage_in_Java">Double-checked locking - Usage in Java</a>
 	 **/
-	private WebzEngine getWebzEngine() throws IOException, WebzException {
+	private WebzServer webzServer() throws IOException, WebzException {
 
-		WebzEngine webzEngine = this.webzEngine;
-		if (webzEngine == null) {
+		WebzServer webzServer = this.webzServer;
+		if (webzServer == null) {
 
-			synchronized (webzEngineMutex) {
+			synchronized (webzServerMutex) {
 
-				webzEngine = this.webzEngine;
-				if (webzEngine == null) {
+				webzServer = this.webzServer;
+				if (webzServer == null) {
 
 					Properties rootFileSystemProperties = WebzUtils.loadPropertiesFromClasspath(
 							getServletConfig().getInitParameter(ROOT_FILE_SYSTEM_PROPERTIES_PARAM), true);
 
 					// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
-					this.webzEngine = webzEngine = new WebzEngine(rootFileSystemProperties, getDefaultFilterClassesList());
+					this.webzServer = webzServer = new WebzServer(rootFileSystemProperties, getDefaultFilterClassesList());
 					// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
 				}
 			}
 		}
-		return webzEngine;
+		return webzServer;
 	}
 
-	private volatile WebzEngine webzEngine;
-	private final Object webzEngineMutex = new Object();
+	private volatile WebzServer webzServer;
+	private final Object webzServerMutex = new Object();
 
 	@Override
 	public void destroy() {
 
-		synchronized (webzEngineMutex) {
+		synchronized (webzServerMutex) {
 
-			WebzEngine webzEngine = this.webzEngine;
-			if (webzEngine != null) {
+			WebzServer webzServer = this.webzServer;
+			if (webzServer != null) {
 
-				this.webzEngine = null;
-				webzEngine.destroy();
+				this.webzServer = null;
+				webzServer.destroy();
 			}
 		}
 	}
