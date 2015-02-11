@@ -1,6 +1,6 @@
 /*
  * WebZ Server is a server that can serve web pages from various sources.
- * Copyright (C) 2013-2015  Oleksandr Tereschenko <http://ww.webz.bz/>
+ * Copyright (C) 2013-2015  Oleksandr Tereschenko <http://www.terems.org/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
