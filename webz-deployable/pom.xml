@@ -45,7 +45,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>webz-default-plugins</artifactId>
+			<artifactId>webz-default-filters</artifactId>
 		</dependency>
 
 		<!-- Servlet API -->

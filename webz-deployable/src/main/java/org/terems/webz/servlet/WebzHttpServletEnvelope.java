@@ -30,11 +30,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFilter;
+import org.terems.webz.filter.ErrorFilter;
+import org.terems.webz.filter.NotFoundFilter;
+import org.terems.webz.filter.StaticContentFilter;
+import org.terems.webz.filter.WelcomeFilter;
 import org.terems.webz.impl.WebzServer;
-import org.terems.webz.plugin.ErrorFilter;
-import org.terems.webz.plugin.NotFoundFilter;
-import org.terems.webz.plugin.StaticContentFilter;
-import org.terems.webz.plugin.WelcomeFilter;
 import org.terems.webz.util.WebzUtils;
 
 @SuppressWarnings("serial")

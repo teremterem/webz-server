@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>webz-default-plugins</artifactId>
+	<artifactId>webz-default-filters</artifactId>
 	<packaging>jar</packaging>
 	<name>WebZ Default Filters</name>
 	<description>WebZ Server, Default Filters</description>

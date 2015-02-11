@@ -33,7 +33,7 @@
 
 		<module>webz-api</module>
 		<module>webz</module>
-		<module>webz-default-plugins</module>
+		<module>webz-default-filters</module>
 		<module>webz-deployable</module>
 
 		<module>webz-test-utils</module>
@@ -80,7 +80,7 @@
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>webz-default-plugins</artifactId>
+				<artifactId>webz-default-filters</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
