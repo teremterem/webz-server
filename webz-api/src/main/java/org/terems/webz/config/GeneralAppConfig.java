@@ -28,6 +28,7 @@ import org.terems.webz.WebzFile;
 import org.terems.webz.WebzProperties;
 import org.terems.webz.util.WebzUtils;
 
+/** TODO !!! describe !!! **/
 public class GeneralAppConfig extends WebzConfigObject {
 
 	private String appDisplayName;
@@ -36,6 +37,31 @@ public class GeneralAppConfig extends WebzConfigObject {
 
 	private Collection<String> welcomeExtensionsLowerCased;
 	private Collection<String> welcomeFilenamesLowerCased;
+
+	/** TODO !!! describe !!! **/
+	public String getAppDisplayName() {
+		return appDisplayName;
+	}
+
+	/** TODO !!! describe !!! **/
+	public String getDefaultMimetype() {
+		return defaultMimetype;
+	}
+
+	/** TODO !!! describe !!! **/
+	public String getDefaultEncoding() {
+		return defaultEncoding;
+	}
+
+	/** TODO !!! describe !!! **/
+	public Collection<String> getWelcomeExtensionsLowerCased() {
+		return welcomeExtensionsLowerCased;
+	}
+
+	/** TODO !!! describe !!! **/
+	public Collection<String> getWelcomeFilenamesLowerCased() {
+		return welcomeFilenamesLowerCased;
+	}
 
 	@Override
 	public void init(WebzFile configFolder) throws WebzException {
@@ -61,26 +87,6 @@ public class GeneralAppConfig extends WebzConfigObject {
 			result.add(WebzUtils.toLowerCaseEng(item));
 		}
 		return result;
-	}
-
-	public String getAppDisplayName() {
-		return appDisplayName;
-	}
-
-	public String getDefaultMimetype() {
-		return defaultMimetype;
-	}
-
-	public String getDefaultEncoding() {
-		return defaultEncoding;
-	}
-
-	public Collection<String> getWelcomeExtensionsLowerCased() {
-		return welcomeExtensionsLowerCased;
-	}
-
-	public Collection<String> getWelcomeFilenamesLowerCased() {
-		return welcomeFilenamesLowerCased;
 	}
 
 }

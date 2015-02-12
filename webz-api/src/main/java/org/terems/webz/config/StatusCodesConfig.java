@@ -25,10 +25,21 @@ import org.terems.webz.WebzFile;
 import org.terems.webz.WebzProperties;
 import org.terems.webz.util.WebzUtils;
 
+/** TODO !!! describe !!! **/
 public class StatusCodesConfig extends WebzConfigObject {
 
 	private String pathTo404file;
 	private String pathTo500file;
+
+	/** TODO !!! describe !!! **/
+	public String getPathTo404file() {
+		return pathTo404file;
+	}
+
+	/** TODO !!! describe !!! **/
+	public String getPathTo500file() {
+		return pathTo500file;
+	}
 
 	@Override
 	public void init(WebzFile configFolder) throws WebzException {
@@ -38,14 +49,6 @@ public class StatusCodesConfig extends WebzConfigObject {
 
 		pathTo404file = properties.getProperty(WebzProperties.PATH_TO_404_FILE_PROPERTY);
 		pathTo500file = properties.getProperty(WebzProperties.PATH_TO_500_FILE_PROPERTY);
-	}
-
-	public String getPathTo404file() {
-		return pathTo404file;
-	}
-
-	public String getPathTo500file() {
-		return pathTo500file;
 	}
 
 }

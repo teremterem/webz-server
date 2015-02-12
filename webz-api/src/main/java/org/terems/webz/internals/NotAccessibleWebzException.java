@@ -20,7 +20,6 @@ package org.terems.webz.internals;
 
 import org.terems.webz.WebzException;
 
-/** TODO !!! describe !!! **/
 @SuppressWarnings("serial")
 public class NotAccessibleWebzException extends WebzException {
 

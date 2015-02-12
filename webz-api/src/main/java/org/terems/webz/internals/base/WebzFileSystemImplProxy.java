@@ -37,10 +37,8 @@ import org.terems.webz.internals.WebzFileSystemImpl;
 import org.terems.webz.internals.WebzObjectFactory;
 import org.terems.webz.internals.WebzPathNormalizer;
 
-/** TODO !!! describe !!! **/
 public abstract class WebzFileSystemImplProxy extends BaseWebzDestroyable implements WebzFileSystemImpl {
 
-	/** TODO !!! describe !!! **/
 	protected abstract WebzFileSystemImpl getInnerFileSystemImpl();
 
 	@Override

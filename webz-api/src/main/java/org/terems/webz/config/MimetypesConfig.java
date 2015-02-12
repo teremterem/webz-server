@@ -28,21 +28,12 @@ import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzProperties;
 import org.terems.webz.util.WebzUtils;
 
+/** TODO !!! describe !!! **/
 public class MimetypesConfig extends WebzConfigObject {
 
 	private Map<String, String> mimetypes = new HashMap<String, String>();
 
-	@Override
-	public void init(WebzFile configFolder) throws WebzException {
-
-		WebzFile file = configFolder.getDescendant(WebzProperties.MIMETYPES_PROPERTIES_FILE);
-		Properties mimetypesProperties = WebzUtils.loadProperties(file, false);
-
-		for (Map.Entry<Object, Object> entry : mimetypesProperties.entrySet()) {
-			mimetypes.put(WebzUtils.toLowerCaseEng(WebzUtils.assertString(entry.getKey())), WebzUtils.assertString(entry.getValue()));
-		}
-	}
-
+	/** TODO !!! describe !!! **/
 	public String getMimetype(WebzMetadata metadata, String defaultMimetype) throws WebzException {
 
 		String fileExtension = WebzUtils.getFileExtension(metadata);
@@ -53,6 +44,17 @@ public class MimetypesConfig extends WebzConfigObject {
 		String mimetype = mimetypes.get(WebzUtils.toLowerCaseEng(fileExtension));
 
 		return mimetype == null ? defaultMimetype : mimetype;
+	}
+
+	@Override
+	public void init(WebzFile configFolder) throws WebzException {
+
+		WebzFile file = configFolder.getDescendant(WebzProperties.MIMETYPES_PROPERTIES_FILE);
+		Properties mimetypesProperties = WebzUtils.loadProperties(file, false);
+
+		for (Map.Entry<Object, Object> entry : mimetypesProperties.entrySet()) {
+			mimetypes.put(WebzUtils.toLowerCaseEng(WebzUtils.assertString(entry.getKey())), WebzUtils.assertString(entry.getValue()));
+		}
 	}
 
 }
