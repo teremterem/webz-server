@@ -1,5 +1,5 @@
 /*
- * WebZ Server is a server that can serve web pages from various sources.
+ * WebZ Server can serve web pages from various local and remote file sources.
  * Copyright (C) 2013-2015  Oleksandr Tereschenko <http://www.terems.org/>
  *
  * This program is free software: you can redistribute it and/or modify
