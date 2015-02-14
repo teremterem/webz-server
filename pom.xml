@@ -31,7 +31,6 @@
 
 	<modules>
 
-		<module>webz-api</module>
 		<module>webz</module>
 		<module>webz-default-filters</module>
 		<module>webz-deployable</module>
