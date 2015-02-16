@@ -107,13 +107,11 @@
 		        <artifactId>tomcat-embed-logging-juli</artifactId>
 		        <version>${tomcat.version}</version>
 		    </dependency>
-		    <!--
 		    <dependency>
 		        <groupId>org.apache.tomcat.embed</groupId>
 		        <artifactId>tomcat-embed-jasper</artifactId>
 		        <version>${tomcat.version}</version>
 		    </dependency>
-		    -->
     
 			<!-- Servlet API -->
 			<dependency>
