@@ -107,11 +107,13 @@
 		        <artifactId>tomcat-embed-logging-juli</artifactId>
 		        <version>${tomcat.version}</version>
 		    </dependency>
+		    <!--
 		    <dependency>
 		        <groupId>org.apache.tomcat.embed</groupId>
 		        <artifactId>tomcat-embed-jasper</artifactId>
 		        <version>${tomcat.version}</version>
 		    </dependency>
+		    -->
     
 			<!-- Servlet API -->
 			<dependency>
@@ -216,7 +218,7 @@
 						<programs>
 							<program>
 								<mainClass>launch.Main</mainClass>
-								<name>webapp</name>
+								<name>webz</name>
 							</program>
 						</programs>
 					</configuration>
