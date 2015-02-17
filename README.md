@@ -9,7 +9,7 @@
 
 Right now I'm working on a faster "download and run" option...
 
-However, here is how the server can be built and started in few easy steps using maven:
+Anyways, here is how the server can be built and started in few easy steps using maven:
 * *In progress...*
 
 ----
