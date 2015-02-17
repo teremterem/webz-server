@@ -7,4 +7,4 @@
 которое ты сам же себе и выбираешь...
 ```
 
-I'm currently working on a quick "download and run" option, but here is how the server can currently be built and started in few easy steps using maven:
+I'm currently working on a quick "download and run" option, but here is how the server can be currently built and started in few easy steps using maven:
