@@ -12,10 +12,10 @@ public class Main {
 		Tomcat tomcat = new Tomcat();
 
 		// The port that we should run on can be set into an environment variable
-		// Look for that variable and default to 80 if it isn't there.
+		// Look for that variable and default to 8887 if it isn't there.
 		String webPort = System.getenv("PORT");
 		if (webPort == null || webPort.isEmpty()) {
-			webPort = "80";
+			webPort = "8887";
 		}
 
 		tomcat.setPort(Integer.valueOf(webPort));
