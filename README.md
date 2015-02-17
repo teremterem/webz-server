@@ -12,4 +12,4 @@ However, here is how the server can be currently built and started in few easy s
 * *In progress...*
 
 ----
-***P.S.** Checkout [WebZ API](https://github.com/terems-org/webz-api#webz-api-v09-beta-pedesis) - server's complete API under Apache License v2.0*
+***P.S.*** *Checkout [WebZ API](https://github.com/terems-org/webz-api#webz-api-v09-beta-pedesis) - server's complete API under Apache License v2.0*
