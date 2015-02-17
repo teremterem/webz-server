@@ -11,4 +11,4 @@ Right now I'm working on a faster "download and run" option... However, here is 
 * *In progress...*
 
 ----
-P.S. Also checkout [WebZ API]() - server's complete API.
+P.S. Also checkout [WebZ API](https://github.com/terems-org/webz-api#webz-api-v09-beta-pedesis) - server's complete API.
