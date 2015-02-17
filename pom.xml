@@ -26,7 +26,7 @@
 		</license>
 	</licenses>
 	<scm>
-		<url>https://github.com/terems-org/webz-server</url>
+		<url>https://github.com/terems-org/webz-server.git</url>
 	</scm>
 
 	<modules>
