@@ -6,3 +6,5 @@
 между настроением (то есть душой) и тем проявлением реальности,  
 которое ты сам же себе и выбираешь...
 ```
+
+I'm currently working on a quick "download and run" option, but here is how the server can currently be built and started in few easy steps:
