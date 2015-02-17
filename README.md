@@ -8,3 +8,7 @@
 ```
 
 Right now I'm working on a faster "download and run" option... However, here is how the server can be currently built and started in few easy steps using maven:
+* In progress...
+
+----
+P.S. Also checkout [WebZ API]() - server's complete API.
