@@ -7,7 +7,8 @@
 которое ты сам же себе и выбираешь...
 ```
 
-Right now I'm working on a faster "download and run" option...  
+Right now I'm working on a faster "download and run" option...
+
 However, here is how the server can be built and started in few easy steps using maven:
 * *In progress...*
 
