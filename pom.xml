@@ -277,7 +277,7 @@
 					<version>${maven.assembly.plugin.version}</version>
 					<configuration>
 						<descriptors>
-							<descriptor>src/main/resources/webz-assembly.xml</descriptor>
+							<descriptor>webz-assembly.xml</descriptor>
 						</descriptors>
 					</configuration>
 					<executions>
