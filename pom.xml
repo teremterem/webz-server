@@ -72,6 +72,18 @@
 
 	</properties>
 
+	<repositories>
+		<!-- TODO: remove this when WebZ API is *released* at Sonatype: -->
+		<repository>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<id>snapshots-sonatype</id>
+			<name>snapshot</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</repository>
+	</repositories>
+
 	<dependencyManagement>
 		<dependencies>
 
