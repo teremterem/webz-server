@@ -10,7 +10,7 @@
 Right now I'm working on a faster "download and run" option...
 
 Anyways, here is how the server can be built and started in few easy steps using maven:
-* *In progress...*
+* *comming soon...*
 
 ----
 *P.S. Check out [WebZ API](https://github.com/terems-org/webz-api#webz-api-v09-beta-pedesis) - server's complete API available under Apache License v2.0.*
