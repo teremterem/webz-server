@@ -8,7 +8,15 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 
-		String webappDirLocation = "../webz/";
+		File webzWar = new File("webz.war");
+		if (!webzWar.exists()) {
+
+			File upperWebzWar = new File("../webz.war");
+			if (upperWebzWar.exists()) {
+				webzWar = upperWebzWar;
+			}
+		}
+
 		Tomcat tomcat = new Tomcat();
 
 		// The port that we should run on can be set into an environment variable
@@ -20,8 +28,8 @@ public class Main {
 
 		tomcat.setPort(Integer.valueOf(webPort));
 
-		tomcat.addWebapp("/", new File(webappDirLocation).getAbsolutePath());
-		System.out.println("configuring app with basedir: " + new File("./" + webappDirLocation).getAbsolutePath());
+		tomcat.addWebapp("/", webzWar.getAbsolutePath());
+		System.out.println("Deploying WebZ from: " + webzWar);
 
 		tomcat.start();
 		tomcat.getServer().await();
