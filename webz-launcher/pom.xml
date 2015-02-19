@@ -4,10 +4,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>webz-deployable</artifactId>
-	<packaging>war</packaging>
-	<name>WebZ Deployable</name>
-	<description>WebZ Server, Servlet "Envelope"</description>
+	<artifactId>webz-launcher</artifactId>
+	<packaging>jar</packaging>
+	<name>WebZ Launcher</name>
+	<description>WebZ Server Launcher</description>
 
 	<url>http://ww.webz.bz/</url>
 
@@ -37,21 +37,28 @@
 
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>webz-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>webz</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>webz-default-filters</artifactId>
+			<artifactId>webz-deployable</artifactId>
+			<type>war</type>
 		</dependency>
 
-		<!-- Servlet API -->
+		<!-- Apache Tomcat -->
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-logging-juli</artifactId>
+		</dependency>
+		<dependency><!-- is it possible to remove jasper from tomcat completely? -->
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-jasper</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.eclipse.jdt.core.compiler</groupId>
+					<artifactId>ecj</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- Testing -->
@@ -72,6 +79,9 @@
 	</dependencies>
 
 	<build>
+		<!--
+		<finalName>webz-server</finalName>
+		-->
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -82,8 +92,12 @@
 				<artifactId>maven-eclipse-plugin</artifactId>
 			</plugin>
 			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>appassembler-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
+				<artifactId>maven-assembly-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>

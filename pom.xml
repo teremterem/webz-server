@@ -103,6 +103,7 @@
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>webz-deployable</artifactId>
+				<type>war</type>
 				<version>${project.version}</version>
 			</dependency>
 
