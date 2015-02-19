@@ -34,6 +34,7 @@
 		<module>webz</module>
 		<module>webz-default-filters</module>
 		<module>webz-deployable</module>
+		<module>webz-launcher</module>
 
 		<module>webz-test-utils</module>
 
@@ -59,13 +60,13 @@
 		<maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
 		<maven.eclipse.plugin.version>2.9</maven.eclipse.plugin.version>
 
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
 		<slf4j.log4j12.version>1.7.10</slf4j.log4j12.version>
 		<log4j.version>1.2.17</log4j.version>
 
 		<testng.version>6.8.21</testng.version>
 		<mockito.version>1.10.19</mockito.version>
-
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 	</properties>
 
@@ -217,6 +218,35 @@
 					</configuration>
 				</plugin>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-eclipse-plugin</artifactId>
+					<version>${maven.eclipse.plugin.version}</version>
+					<configuration>
+						<downloadSources>true</downloadSources>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>${maven.war.plugin.version}</version>
+					<configuration>
+				        <webResources>
+				            <resource>
+				                <filtering>true</filtering>
+				                <directory>src/main/webapp</directory>
+				                <includes>
+				                    <include>**/*.xml</include>
+				                </includes>
+				            </resource>
+				        </webResources>
+				        <warSourceDirectory>src/main/webapp</warSourceDirectory>
+				        <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+						<!--
+						<failOnMissingWebXml>false</failOnMissingWebXml>
+						-->
+					</configuration>
+				</plugin>
+				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>appassembler-maven-plugin</artifactId>
 					<version>${appassembler.maven.plugin.version}</version>
@@ -250,35 +280,6 @@
 							</goals>
 						</execution>
 					</executions>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-eclipse-plugin</artifactId>
-					<version>${maven.eclipse.plugin.version}</version>
-					<configuration>
-						<downloadSources>true</downloadSources>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-war-plugin</artifactId>
-					<version>${maven.war.plugin.version}</version>
-					<configuration>
-				        <webResources>
-				            <resource>
-				                <filtering>true</filtering>
-				                <directory>src/main/webapp</directory>
-				                <includes>
-				                    <include>**/*.xml</include>
-				                </includes>
-				            </resource>
-				        </webResources>
-				        <warSourceDirectory>src/main/webapp</warSourceDirectory>
-				        <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
-						<!--
-						<failOnMissingWebXml>false</failOnMissingWebXml>
-						-->
-					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
