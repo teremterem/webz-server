@@ -1,10 +1,10 @@
-package launch;
+package org.terems;
 
 import java.io.File;
 
 import org.apache.catalina.startup.Tomcat;
 
-public class Main {
+public class WebzLauncher {
 
 	public static void main(String[] args) throws Exception {
 

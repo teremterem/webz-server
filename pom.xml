@@ -226,10 +226,11 @@
 					<version>${appassembler.maven.plugin.version}</version>
 					<configuration>
 						<assembleDirectory>target</assembleDirectory>
+						<repositoryLayout>flat</repositoryLayout>
 						<programs>
 							<program>
-								<mainClass>launch.Main</mainClass>
-								<name>webz</name>
+								<mainClass>org.terems.WebzLauncher</mainClass>
+								<name>start</name>
 							</program>
 						</programs>
 					</configuration>
