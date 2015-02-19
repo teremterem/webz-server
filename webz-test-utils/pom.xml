@@ -30,7 +30,7 @@
 	<parent>
 		<groupId>org.terems</groupId>
 		<artifactId>webz-server</artifactId>
-		<version>0.9.PEDESIS-SNAPSHOT</version>
+		<version>0.9.1-SNAPSHOT</version>
     </parent>
 
 	<dependencies>

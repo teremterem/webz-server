@@ -7,7 +7,7 @@
 	<groupId>org.terems</groupId>
 	<artifactId>webz-server</artifactId>
 	<packaging>pom</packaging>
-	<version>0.9.PEDESIS-SNAPSHOT</version>
+	<version>0.9.1-SNAPSHOT</version>
 	<name>WebZ Server</name>
 	<description>WebZ Server, Parent Project</description>
 
@@ -34,7 +34,6 @@
 		<module>webz</module>
 		<module>webz-default-filters</module>
 		<module>webz-deployable</module>
-		<module>webz-launcher</module>
 
 		<module>webz-test-utils</module>
 
