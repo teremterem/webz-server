@@ -44,32 +44,30 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- versions -->
-		
-		<tomcat.version>7.0.34</tomcat.version>
-		<appassembler.maven.plugin.version>1.1.1</appassembler.maven.plugin.version>
-
-		<servlet.api.version>3.0.1</servlet.api.version><!-- 3.1.0 -->
 
 		<commons.io.version>2.4</commons.io.version>
 
+		<javassist.version>3.19.0-GA</javassist.version>
+		<objenesis.version>2.1</objenesis.version>
+		
+		<maven.war.plugin.version>2.6</maven.war.plugin.version>
+		<appassembler.maven.plugin.version>1.9</appassembler.maven.plugin.version>
+		<maven.assembly.plugin.version>2.5.3</maven.assembly.plugin.version>
+
+		<tomcat.version>7.0.34</tomcat.version>
+
 		<!-- ~ -->
 
-		<slf4j.log4j12.version>1.7.10</slf4j.log4j12.version>
-		<log4j.version>1.2.17</log4j.version>
+		<servlet.api.version>3.0.1</servlet.api.version><!-- 3.1.0 -->
 
 		<maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
 		<maven.eclipse.plugin.version>2.9</maven.eclipse.plugin.version>
 
+		<slf4j.log4j12.version>1.7.10</slf4j.log4j12.version>
+		<log4j.version>1.2.17</log4j.version>
+
 		<testng.version>6.8.21</testng.version>
 		<mockito.version>1.10.19</mockito.version>
-
-		<!-- ~ -->
-
-		<maven.war.plugin.version>2.6</maven.war.plugin.version>
-		<maven.assembly.plugin.version>2.5.3</maven.assembly.plugin.version>
-
-		<javassist.version>3.19.0-GA</javassist.version>
-		<objenesis.version>2.1</objenesis.version>
 
 	</properties>
 
@@ -226,7 +224,19 @@
 					<version>${appassembler.maven.plugin.version}</version>
 					<configuration>
 						<assembleDirectory>target</assembleDirectory>
+						<!--
+						<binFolder>bin</binFolder>
+						-->
 						<repositoryLayout>flat</repositoryLayout>
+						<repositoryName>lib</repositoryName>
+						<!--
+						<configurationSourceDirectory>src/main/config</configurationSourceDirectory>
+						-->
+						<configurationDirectory>.</configurationDirectory>
+						<copyConfigurationDirectory>true</copyConfigurationDirectory>
+						<binFileExtensions>
+							<unix>.sh</unix>
+						</binFileExtensions>
 						<programs>
 							<program>
 								<mainClass>org.terems.WebzLauncher</mainClass>
