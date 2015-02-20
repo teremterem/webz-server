@@ -4,10 +4,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>webz-distribution</artifactId>
+	<artifactId>webz-server-packager</artifactId>
 	<packaging>war</packaging>
-	<name>WebZ Distribution</name>
-	<description>WebZ Server Packaging Module</description>
+	<name>WebZ Server Packager</name>
+	<description>Module That Packages WebZ Server</description>
 
 	<url>http://ww.webz.bz/</url>
 
