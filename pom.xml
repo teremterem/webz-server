@@ -45,7 +45,7 @@
 
 		<javassist.version>3.19.0-GA</javassist.version>
 		<objenesis.version>2.1</objenesis.version>
-		
+
 		<maven.war.plugin.version>2.6</maven.war.plugin.version>
 		<appassembler.maven.plugin.version>1.9</appassembler.maven.plugin.version>
 		<maven.assembly.plugin.version>2.5.3</maven.assembly.plugin.version>
