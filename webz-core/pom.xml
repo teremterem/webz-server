@@ -4,9 +4,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>webz</artifactId>
+	<artifactId>webz-core</artifactId>
 	<packaging>jar</packaging>
-	<name>WebZ (Core)</name>
+	<name>WebZ Core</name>
 	<description>WebZ Server, Core Module</description>
 
 	<url>http://ww.webz.bz/</url>

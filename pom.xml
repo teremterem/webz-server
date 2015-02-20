@@ -31,9 +31,10 @@
 
 	<modules>
 
-		<module>webz</module>
+		<module>webz-core</module>
 		<module>webz-default-filters</module>
-		<module>webz-deployable</module>
+		<module>webz-wrappers</module>
+		<module>webz-distribution</module>
 
 		<module>webz-test-utils</module>
 
@@ -91,7 +92,7 @@
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>webz</artifactId>
+				<artifactId>webz-core</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
@@ -101,7 +102,12 @@
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>webz-deployable</artifactId>
+				<artifactId>webz-wrappers</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>webz-distribution</artifactId>
 				<type>war</type>
 				<version>${project.version}</version>
 			</dependency>

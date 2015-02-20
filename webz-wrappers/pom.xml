@@ -4,10 +4,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>webz-deployable</artifactId>
-	<packaging>war</packaging>
-	<name>WebZ Deployable</name>
-	<description>WebZ Server, Servlet "Envelope"</description>
+	<artifactId>webz-wrappers</artifactId>
+	<packaging>jar</packaging>
+	<name>WebZ Wrappers</name>
+	<description>Wrappers For WebZ Server (Servlet "Envelope" + WebzLauncher)</description>
 
 	<url>http://ww.webz.bz/</url>
 
@@ -38,34 +38,24 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>webz-api</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>webz</artifactId>
+			<artifactId>webz-core</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>webz-default-filters</artifactId>
-		</dependency>
+			<scope>provided</scope>
+		</dependency><!-- TODO: remove this dependency when WebZ Filters are not configured by WebzHttpServletEnvelope any more -->
 
 		<!-- Apache Tomcat -->
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-logging-juli</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-jasper</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.eclipse.jdt.core.compiler</groupId>
-					<artifactId>ecj</artifactId>
-				</exclusion>
-			</exclusions>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- Servlet API -->
@@ -92,32 +82,6 @@
 	</dependencies>
 
 	<build>
-		<resources>
-			<!-- copied from parent pom (because "child" resource declarations replace "parent" ones without merging): -->
-			<resource>
-				<filtering>true</filtering>
-				<directory>src/main/resources</directory>
-			</resource>
-			<resource>
-				<filtering>false</filtering>
-				<directory>src/main/java</directory>
-				<includes>
-					<include>**</include>
-				</includes>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
-			</resource>
-			<!-- TODO: fetch LICENSE from the parent project automatically,
-						delete it's copy from the current module and make sure it is also still picked up by maven-war-plugin-->
-			<resource>
-				<filtering>false</filtering>
-				<directory>.</directory>
-				<includes>
-					<include>LICENSE</include>
-				</includes>
-			</resource>
-		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -126,18 +90,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>appassembler-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
