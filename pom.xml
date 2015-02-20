@@ -33,7 +33,7 @@
 
 		<module>webz-core</module>
 		<module>webz-default-filters</module>
-		<module>webz-wrappers</module>
+		<module>webz-server-wrappers</module>
 		<module>webz-server-packager</module>
 
 		<module>webz-test-utils</module>
@@ -102,7 +102,7 @@
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>webz-wrappers</artifactId>
+				<artifactId>webz-server-wrappers</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

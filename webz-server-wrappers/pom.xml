@@ -4,9 +4,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>webz-wrappers</artifactId>
+	<artifactId>webz-server-wrappers</artifactId>
 	<packaging>jar</packaging>
-	<name>WebZ Wrappers</name>
+	<name>WebZ Server Wrappers</name>
 	<description>Wrappers For WebZ Server (Servlet "Envelope" + WebzLauncher)</description>
 
 	<url>http://ww.webz.bz/</url>
