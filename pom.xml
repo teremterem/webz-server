@@ -232,6 +232,14 @@
 					<configuration>
 				        <webResources>
 				            <resource>
+				                <filtering>false</filtering>
+				                <directory>.</directory>
+<!-- REMINDER: check if LICENSE is actually added to the web archive(s) - maven won't fail even if not... -->
+				                <includes>
+				                    <include>LICENSE</include>
+				                </includes>
+				            </resource>
+				            <resource>
 				                <filtering>true</filtering>
 				                <directory>src/main/webapp</directory>
 				                <includes>

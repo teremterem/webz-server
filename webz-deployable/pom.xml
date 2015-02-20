@@ -92,6 +92,32 @@
 	</dependencies>
 
 	<build>
+		<resources>
+			<!-- copied from parent pom (because "child" resource declarations replace "parent" ones without merging): -->
+			<resource>
+				<filtering>true</filtering>
+				<directory>src/main/resources</directory>
+			</resource>
+			<resource>
+				<filtering>false</filtering>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**</include>
+				</includes>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</resource>
+			<!-- TODO: fetch LICENSE from the parent project automatically,
+						delete it's copy from the current module and make sure it is also still picked up by maven-war-plugin-->
+			<resource>
+				<filtering>false</filtering>
+				<directory>.</directory>
+				<includes>
+					<include>LICENSE</include>
+				</includes>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
