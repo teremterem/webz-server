@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		<init-param>
 			<param-name>rootFileSystemProperties</param-name>
-			<param-value>webz.properties</param-value>
+			<param-value>webz-internals.properties</param-value>
 		</init-param>
 		<load-on-startup>0</load-on-startup>
 	</servlet>

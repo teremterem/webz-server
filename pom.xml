@@ -303,6 +303,7 @@
 						<repositoryLayout>flat</repositoryLayout>
 						<repositoryName>lib</repositoryName>
 						<!--
+						<useWildcardClassPath>false</useWildcardClassPath>
 						<configurationSourceDirectory>src/main/config</configurationSourceDirectory>
 						<configurationDirectory>etc</configurationDirectory>
 						-->
