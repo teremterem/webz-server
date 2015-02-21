@@ -51,22 +51,24 @@
 		<appassembler.maven.plugin.version>1.9</appassembler.maven.plugin.version>
 		<maven.assembly.plugin.version>2.5.3</maven.assembly.plugin.version>
 
-		<tomcat.version>7.0.34</tomcat.version>
-
-		<!-- ~ -->
-
-		<servlet.api.version>3.0.1</servlet.api.version><!-- 3.1.0 -->
-
-		<maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
-		<maven.eclipse.plugin.version>2.9</maven.eclipse.plugin.version>
-
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<tomcat.version>7.0.59</tomcat.version>
 
 		<slf4j.log4j12.version>1.7.10</slf4j.log4j12.version>
 		<log4j.version>1.2.17</log4j.version>
 
 		<testng.version>6.8.21</testng.version>
 		<mockito.version>1.10.19</mockito.version>
+
+		<!-- ~ -->
+
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<servlet.api.version>3.0.1</servlet.api.version><!-- 3.1.0 -->
+
+		<maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
+		<maven.eclipse.plugin.version>2.9</maven.eclipse.plugin.version>
+
+		<maven.resources.plugin.version>2.7</maven.resources.plugin.version>
 
 	</properties>
 
@@ -211,6 +213,31 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>${maven.resources.plugin.version}</version>
+					<executions>
+						<execution>
+							<id>copy-resources</id>
+							<phase>validate</phase>
+							<goals>
+								<goal>copy-resources</goal>
+							</goals>
+							<configuration>
+								<outputDirectory>${basedir}/target/classes/META-INF</outputDirectory>
+								<resources>
+									<resource>
+										<directory>.</directory>
+										<filtering>false</filtering>
+										<includes>
+											<include>LICENSE</include>
+										</includes>
+									</resource>
+								</resources>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
 					<inherited>true</inherited>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
@@ -236,11 +263,14 @@
 					<artifactId>maven-war-plugin</artifactId>
 					<version>${maven.war.plugin.version}</version>
 					<configuration>
+
+						<packagingExcludes>WEB-INF/lib/tomcat-embed-*.jar</packagingExcludes>					
+
 				        <webResources>
 				            <resource>
 				                <filtering>false</filtering>
 				                <directory>.</directory>
-<!-- REMINDER: check if LICENSE is actually added to the web archive(s) - maven won't fail even if not... -->
+				                <targetPath>META-INF</targetPath>
 				                <includes>
 				                    <include>LICENSE</include>
 				                </includes>
@@ -269,16 +299,19 @@
 						<!--
 						<binFolder>bin</binFolder>
 						-->
+						<licenseHeaderFile>src/assembly/LICENSE-header</licenseHeaderFile>						
 						<repositoryLayout>flat</repositoryLayout>
 						<repositoryName>lib</repositoryName>
 						<!--
 						<configurationSourceDirectory>src/main/config</configurationSourceDirectory>
+						<configurationDirectory>etc</configurationDirectory>
 						-->
-						<configurationDirectory>.</configurationDirectory>
 						<copyConfigurationDirectory>true</copyConfigurationDirectory>
+						<!--
 						<binFileExtensions>
-							<unix>.sh</unix>
+							<unix></unix>
 						</binFileExtensions>
+						-->
 						<programs>
 							<program>
 								<mainClass>org.terems.WebzLauncher</mainClass>
@@ -300,8 +333,10 @@
 					<artifactId>maven-assembly-plugin</artifactId>
 					<version>${maven.assembly.plugin.version}</version>
 					<configuration>
+						<finalName>webz-server-${project.version}</finalName>
+						<appendAssemblyId>false</appendAssemblyId>
 						<descriptors>
-							<descriptor>webz-assembly.xml</descriptor>
+							<descriptor>src/assembly/webz-server-assembly.xml</descriptor>
 						</descriptors>
 					</configuration>
 					<executions>

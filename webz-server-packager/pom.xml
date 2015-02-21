@@ -7,7 +7,7 @@
 	<artifactId>webz-server-packager</artifactId>
 	<packaging>war</packaging>
 	<name>WebZ Server Packager</name>
-	<description>Module That Packages WebZ Server</description>
+	<description>packages webz-server.war and bundles it together with Tomcat into webz-server.zip</description>
 
 	<url>http://ww.webz.bz/</url>
 
@@ -75,32 +75,9 @@
 	</dependencies>
 
 	<build>
-		<resources>
-			<!-- copied from parent pom (because "child" resource declarations replace "parent" ones without merging): -->
-			<resource>
-				<filtering>true</filtering>
-				<directory>src/main/resources</directory>
-			</resource>
-			<resource>
-				<filtering>false</filtering>
-				<directory>src/main/java</directory>
-				<includes>
-					<include>**</include>
-				</includes>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
-			</resource>
-			<!-- TODO: fetch LICENSE from the parent project automatically,
-						delete it's copy from the current module and also make sure that it is still picked up by maven-war-plugin -->
-			<resource>
-				<filtering>false</filtering>
-				<directory>.</directory>
-				<includes>
-					<include>LICENSE</include>
-				</includes>
-			</resource>
-		</resources>
+
+		<finalName>webz-${project.version}</finalName>
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
