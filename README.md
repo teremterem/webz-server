@@ -7,7 +7,7 @@
 которое ты сам же себе и выбираешь...
 ```
 
-*Detailed project description comming soon...*
+*Detailed project description is comming...*
 
 > ***NOTE:*** *Some time later a contributor license agreement will be applied to this particular repo. [This article](https://julien.ponge.org/blog/in-defense-of-contributor-license-agreements/) explains why it is a good idea to consider using contributor license agreements for certain open source projects.*
 
