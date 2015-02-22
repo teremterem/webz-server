@@ -79,6 +79,9 @@
 	</dependencies>
 
 	<build>
+
+		<finalName>webz-server-${project.version}</finalName>
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -92,14 +95,15 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
-					<finalName>webz-server-${project.version}</finalName>
 					<appendAssemblyId>false</appendAssemblyId>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<manifest>
-						<mainClass>org.terems.WebzLauncher</mainClass>
-					</manifest>
+					<descriptors>
+						<descriptor>src/assembly/jar-with-packed-dependencies.xml</descriptor>
+					</descriptors>
+					<archive>
+						<manifest>
+							<mainClass>org.terems.WebzLauncher</mainClass>
+						</manifest>
+					</archive>
 				</configuration>
 			</plugin>
 		</plugins>
