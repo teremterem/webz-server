@@ -7,7 +7,7 @@ Right now I'm working on a faster "download and run" option...
 Anyways, here is how the server can be built and started in few easy steps using maven:
 * *Comming soon...*
 
-----
+*P.S. Check out [WebZ API](https://github.com/terems-org/webz-api#webz-api-v09-beta-pedesis) - server's complete API available under Apache License v2.0.*
 
 ```
 настроение - это душа,  
@@ -15,5 +15,3 @@ Anyways, here is how the server can be built and started in few easy steps using
 между настроением (то есть душой) и тем проявлением реальности,  
 которое ты сам же себе и выбираешь...
 ```
-
-*P.S. Check out [WebZ API](https://github.com/terems-org/webz-api#webz-api-v09-beta-pedesis) - server's complete API available under Apache License v2.0.*
