@@ -21,7 +21,7 @@
 	</developers>
 	<licenses>
 		<license>
-			<name>GNU Affero GPLv3</name>
+			<name>GNU Affero GPL v3.0</name>
 			<url>http://www.gnu.org/licenses/agpl-3.0.html</url>
 		</license>
 	</licenses>
@@ -33,7 +33,7 @@
 
 		<module>webz-core</module>
 		<module>webz-default-filters</module>
-		<module>webz-server-wrappers</module>
+		<module>webz-war</module>
 		<module>webz-server-packager</module>
 
 		<module>webz-test-utils</module>
@@ -48,7 +48,6 @@
 		<objenesis.version>2.1</objenesis.version>
 
 		<maven.war.plugin.version>2.6</maven.war.plugin.version>
-		<appassembler.maven.plugin.version>1.9</appassembler.maven.plugin.version>
 		<maven.assembly.plugin.version>2.5.3</maven.assembly.plugin.version>
 
 		<tomcat.version>7.0.59</tomcat.version>
@@ -104,13 +103,13 @@
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>webz-server-wrappers</artifactId>
+				<artifactId>webz-war</artifactId>
+				<type>war</type>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>webz-server-packager</artifactId>
-				<type>war</type>
 				<version>${project.version}</version>
 			</dependency>
 
@@ -263,9 +262,6 @@
 					<artifactId>maven-war-plugin</artifactId>
 					<version>${maven.war.plugin.version}</version>
 					<configuration>
-
-						<packagingExcludes>WEB-INF/lib/tomcat-embed-*.jar</packagingExcludes>					
-
 				        <webResources>
 				            <resource>
 				                <filtering>false</filtering>
@@ -285,61 +281,12 @@
 				        </webResources>
 				        <warSourceDirectory>src/main/webapp</warSourceDirectory>
 				        <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
-						<!--
-						<failOnMissingWebXml>false</failOnMissingWebXml>
-						-->
 					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>appassembler-maven-plugin</artifactId>
-					<version>${appassembler.maven.plugin.version}</version>
-					<configuration>
-						<assembleDirectory>target</assembleDirectory>
-						<!--
-						<binFolder>bin</binFolder>
-						-->
-						<licenseHeaderFile>src/assembly/LICENSE-header</licenseHeaderFile>						
-						<repositoryLayout>flat</repositoryLayout>
-						<repositoryName>lib</repositoryName>
-						<!--
-						<useWildcardClassPath>false</useWildcardClassPath>
-						<configurationSourceDirectory>src/main/config</configurationSourceDirectory>
-						<configurationDirectory>etc</configurationDirectory>
-						-->
-						<copyConfigurationDirectory>true</copyConfigurationDirectory>
-						<!--
-						<binFileExtensions>
-							<unix></unix>
-						</binFileExtensions>
-						-->
-						<programs>
-							<program>
-								<mainClass>org.terems.WebzLauncher</mainClass>
-								<name>start</name>
-							</program>
-						</programs>
-					</configuration>
-					<executions>
-						<execution>
-							<phase>package</phase>
-							<goals>
-								<goal>assemble</goal>
-							</goals>
-						</execution>
-					</executions>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-assembly-plugin</artifactId>
 					<version>${maven.assembly.plugin.version}</version>
-					<configuration>
-						<finalName>webz-server-${project.version}</finalName>
-						<appendAssemblyId>false</appendAssemblyId>
-						<descriptors>
-							<descriptor>src/assembly/webz-server-assembly.xml</descriptor>
-						</descriptors>
-					</configuration>
 					<executions>
 						<execution>
 							<id>make-assembly</id> <!-- this is used for inheritance merges -->

@@ -5,9 +5,9 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>webz-server-packager</artifactId>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>WebZ Server Packager</name>
-	<description>packages webz-server.war and bundles it together with Tomcat into webz-server.zip</description>
+	<description>Packages webz-server.war together with Tomcat inside a runnable jar</description>
 
 	<url>http://ww.webz.bz/</url>
 
@@ -19,7 +19,7 @@
 	</developers>
 	<licenses>
 		<license>
-			<name>GNU Affero GPLv3</name>
+			<name>GNU Affero GPL v3.0</name>
 			<url>http://www.gnu.org/licenses/agpl-3.0.html</url>
 		</license>
 	</licenses>
@@ -37,19 +37,8 @@
 
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>webz-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>webz-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>webz-default-filters</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>webz-server-wrappers</artifactId>
+			<artifactId>webz-war</artifactId>
+			<type>war</type>
 		</dependency>
 
 		<!-- Apache Tomcat -->
@@ -72,12 +61,24 @@
 			</exclusions>
 		</dependency>
 
+		<!-- Testing -->
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>webz-test-utils</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>
-
-		<finalName>webz-${project.version}</finalName>
-
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -89,15 +90,17 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>appassembler-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<finalName>webz-server-${project.version}</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<manifest>
+						<mainClass>org.terems.WebzLauncher</mainClass>
+					</manifest>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
