@@ -126,6 +126,8 @@ public class WebzLauncher {
 		int httpPortNumber = Integer.valueOf(port);
 		// TODO make WebZ Server log port number instead of Tomcat
 
+		// TODO + make WebZ log into a file in general
+
 		tomcat.setPort(httpPortNumber);
 
 		Context webzContext = tomcat.addWebapp("", webzWarFile.getAbsolutePath());
