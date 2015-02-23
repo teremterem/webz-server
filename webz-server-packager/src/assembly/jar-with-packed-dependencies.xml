@@ -18,10 +18,25 @@
 			</includes>
 		</dependencySet>
 		<dependencySet>
+			<outputDirectory>tomcat/</outputDirectory>
+			<useProjectArtifact>false</useProjectArtifact>
+			<unpack>false</unpack>
+			<scope>runtime</scope>
+			<excludes>
+				<exclude>org.terems:webz-war</exclude>
+			</excludes>
+			<outputFileNameMapping>
+				${artifact.build.finalName}.${artifact.extension}
+			</outputFileNameMapping>
+		</dependencySet>
+		<dependencySet>
 			<outputDirectory>/</outputDirectory>
 			<useProjectArtifact>false</useProjectArtifact>
 			<unpack>false</unpack>
 			<scope>runtime</scope>
+			<includes>
+				<include>org.terems:webz-war</include>
+			</includes>
 			<outputFileNameMapping>
 				${artifact.build.finalName}.${artifact.extension}
 			</outputFileNameMapping>
