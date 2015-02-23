@@ -47,4 +47,10 @@
 			</outputFileNameMapping>
 		</dependencySet>
 	</dependencySets>
+	<files>
+		<file>
+			<source>LICENSE</source>
+			<outputDirectory>META-INF/</outputDirectory>
+		</file>
+	</files>
 </assembly>

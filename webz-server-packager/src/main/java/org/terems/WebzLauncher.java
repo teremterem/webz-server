@@ -57,6 +57,8 @@ public class WebzLauncher {
 
 	public static void main(String[] args) throws URISyntaxException, IOException, ServletException, LifecycleException {
 
+		HelloFromWebZ.main(args);
+
 		File thisJarFile = getThisJarFile();
 
 		initTempFolder(thisJarFile);
@@ -64,7 +66,7 @@ public class WebzLauncher {
 		File webzWarFile = fetchWebzWar(thisJarFile);
 
 		createFolder(tempFolder, "webapps");
-		// Tomcat wants this folder to be there
+		// Tomcat wants this folder to be there before it starts
 
 		tomcat.setBaseDir(tempFolder.getAbsolutePath());
 		tomcat.setSilent(true);
@@ -105,6 +107,7 @@ public class WebzLauncher {
 		}));
 
 		tomcat.start();
+		// TODO tomcat.getConnector().
 
 		try {
 			FileUtils.forceDeleteOnExit(tempFolder);
