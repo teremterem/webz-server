@@ -97,7 +97,7 @@
 				<configuration>
 					<appendAssemblyId>false</appendAssemblyId>
 					<descriptors>
-						<descriptor>src/assembly/jar-with-packed-dependencies.xml</descriptor>
+						<descriptor>src/assembly/webz-server-jar.xml</descriptor>
 					</descriptors>
 					<archive>
 						<manifest>

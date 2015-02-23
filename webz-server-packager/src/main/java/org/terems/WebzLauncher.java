@@ -23,26 +23,27 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.security.CodeSource;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Enumeration;
-import java.util.Iterator;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+
+import org.apache.catalina.Context;
+import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.tomcat.JarScanner;
+import org.apache.tomcat.JarScannerCallback;
 
 public class WebzLauncher {
 
 	private static final String DEFAULT_HTTP_PORT = "8887";
 
-	private static final String TOMCAT_JARS_FOLDER = "tomcat/";
 	private static final Pattern WEBZ_WAR_PATTERN = Pattern.compile("webz-[^/\\\\]*.war");
 
 	private static final String LAUNCH_FAILURE_MSG_PREFIX = "Failed to launch WebZ Server: ";
@@ -51,7 +52,7 @@ public class WebzLauncher {
 
 	private static File tempFolder;
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws URISyntaxException, IOException, ServletException, LifecycleException {
 
 		CodeSource codeSource = WebzLauncher.class.getProtectionDomain().getCodeSource();
 		if (codeSource == null) {
@@ -61,9 +62,6 @@ public class WebzLauncher {
 
 		initTempFolder(thisJarFile);
 
-		// ~
-
-		Collection<File> tomcatJarFiles = new ArrayList<File>();
 		File webzWarFile = null;
 
 		JarFile thisJar = null;
@@ -77,13 +75,10 @@ public class WebzLauncher {
 				if (!jarEntry.isDirectory()) {
 					String jarEntryName = jarEntry.getName();
 
-					if (jarEntryName.startsWith(TOMCAT_JARS_FOLDER)) {
+					if (WEBZ_WAR_PATTERN.matcher(jarEntryName).matches()) {
 
-						tomcatJarFiles.add(putResourceIntoTemp(jarEntryName, jarEntryName.substring(TOMCAT_JARS_FOLDER.length())));
-
-					} else if (webzWarFile == null && WEBZ_WAR_PATTERN.matcher(jarEntryName).matches()) {
-
-						webzWarFile = putResourceIntoTemp(jarEntryName, jarEntryName);
+						webzWarFile = putWebzWarIntoTemp(jarEntryName);
+						break;
 
 					}
 				}
@@ -102,7 +97,18 @@ public class WebzLauncher {
 			throw new RuntimeException(LAUNCH_FAILURE_MSG_PREFIX + "webz.war was not found in the jar");
 		}
 
-		Tomcat tomcat = putJarsToClasspathAndCreateTomcat(tomcatJarFiles);
+		final Tomcat tomcat = new Tomcat();
+		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					tomcat.stop();
+					tomcat.destroy();
+				} catch (LifecycleException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}));
 
 		tomcat.setBaseDir(tempFolder.getAbsolutePath());
 		tomcat.setSilent(true);
@@ -115,7 +121,13 @@ public class WebzLauncher {
 
 		tomcat.setPort(Integer.valueOf(port));
 
-		tomcat.addWebapp("/", webzWarFile.getAbsolutePath());
+		Context webzContext = tomcat.addWebapp("", webzWarFile.getAbsolutePath());
+		webzContext.setJarScanner(new JarScanner() {
+			@Override
+			public void scan(ServletContext context, ClassLoader classloader, JarScannerCallback callback, Set<String> jarsToSkip) {
+				// no need to scan jars - saving CPU time...
+			}
+		});
 
 		tomcat.start();
 		tomcat.getServer().await();
@@ -124,53 +136,44 @@ public class WebzLauncher {
 	private static void initTempFolder(File thisJarFile) throws URISyntaxException {
 
 		File parentFolder = thisJarFile.getParentFile();
-
 		String thisJarName = thisJarFile.getName();
+
 		if (thisJarName == null || thisJarName.length() <= 0) {
 			throw new RuntimeException(LAUNCH_FAILURE_MSG_PREFIX + "empty or null launching jar name");
 		}
 		if (thisJarName.toLowerCase().endsWith(".jar")) {
 			thisJarName = thisJarName.substring(0, thisJarName.length() - 4);
 		}
-		tempFolder = new File(parentFolder, thisJarName + "-temp");
-		tempFolder.deleteOnExit();
+		tempFolder = createFolder(parentFolder, thisJarName + "-temp");
+	}
 
-		if (tempFolder.exists()) {
+	private static File createFolder(File parentFolder, String name) {
 
-			if (!tempFolder.isDirectory()) {
-				throw new RuntimeException(LAUNCH_FAILURE_MSG_PREFIX + "temp folder path already exists and is NOT a folder: "
-						+ tempFolder.getAbsolutePath());
+		File folder = new File(parentFolder, name);
+		folder.deleteOnExit();
+
+		if (folder.exists()) {
+
+			if (!folder.isDirectory()) {
+				throw new RuntimeException(LAUNCH_FAILURE_MSG_PREFIX + folder.getAbsolutePath() + " already exists and is NOT a folder");
 			}
 
-		} else if (!tempFolder.mkdir()) {
-			throw new RuntimeException(LAUNCH_FAILURE_MSG_PREFIX + "failed to create temp folder: " + tempFolder.getAbsolutePath());
+		} else if (!folder.mkdir()) {
+			throw new RuntimeException(LAUNCH_FAILURE_MSG_PREFIX + "failed to create folder: " + folder.getAbsolutePath());
 		}
+
+		return folder;
 	}
 
-	private static Tomcat putJarsToClasspathAndCreateTomcat(Collection<File> jarFiles) throws MalformedURLException,
-			ClassNotFoundException, InstantiationException, IllegalAccessException {
+	private static File putWebzWarIntoTemp(String webzWarName) {
 
-		URL[] jarFileUrls = new URL[jarFiles.size()];
-
-		Iterator<File> it = jarFiles.iterator();
-		for (int i = 0; it.hasNext(); i++, it.next()) {
-			jarFileUrls[i] = it.next().toURI().toURL();
-		}
-		URLClassLoader childLoader = URLClassLoader.newInstance(jarFileUrls, WebzLauncher.class.getClassLoader());
-
-		Class<?> tomcatClass = Class.forName("org.apache.catalina.startup.Tomcat", true, childLoader);
-
-		return (Tomcat) tomcatClass.newInstance();
-	}
-
-	private static File putResourceIntoTemp(String resourceName, String asFileName) {
-
-		InputStream in = WebzLauncher.class.getResourceAsStream("/" + resourceName);
+		String resourceName = "/" + webzWarName;
+		InputStream in = WebzLauncher.class.getResourceAsStream(resourceName);
 		if (in == null) {
 			throw new RuntimeException(LAUNCH_FAILURE_MSG_PREFIX + resourceName + " was not found in the jar");
 		}
 
-		File file = new File(tempFolder, asFileName);
+		File file = new File(createFolder(tempFolder, "webapps"), webzWarName);
 		file.deleteOnExit();
 
 		OutputStream out = null;
@@ -203,6 +206,7 @@ public class WebzLauncher {
 				// ignore
 			}
 		}
+
 		return file;
 	}
 

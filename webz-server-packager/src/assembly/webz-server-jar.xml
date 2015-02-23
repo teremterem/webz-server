@@ -2,7 +2,7 @@
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
 
-	<id>jar-with-packed-dependencies</id>
+	<id>webz-server-jar</id>
 	<formats>
 		<format>jar</format>
 	</formats>
@@ -13,21 +13,9 @@
 			<useProjectArtifact>true</useProjectArtifact>
 			<unpack>true</unpack>
 			<scope>runtime</scope>
-			<includes>
-				<include>org.terems:webz-server-packager</include>
-			</includes>
-		</dependencySet>
-		<dependencySet>
-			<outputDirectory>tomcat/</outputDirectory>
-			<useProjectArtifact>false</useProjectArtifact>
-			<unpack>false</unpack>
-			<scope>runtime</scope>
 			<excludes>
 				<exclude>org.terems:webz-war</exclude>
 			</excludes>
-			<outputFileNameMapping>
-				${artifact.build.finalName}.${artifact.extension}
-			</outputFileNameMapping>
 		</dependencySet>
 		<dependencySet>
 			<outputDirectory>/</outputDirectory>

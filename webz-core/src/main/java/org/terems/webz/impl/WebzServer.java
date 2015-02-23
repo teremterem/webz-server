@@ -57,7 +57,7 @@ public class WebzServer implements WebzServletContainerBridge {
 			}
 		}
 
-		LOG.info("WebZ Server started\n\n\n");
+		LOG.info("WebZ Server started\n");
 	}
 
 	@Override
@@ -78,10 +78,10 @@ public class WebzServer implements WebzServletContainerBridge {
 	public void destroy() {
 
 		rootWebzApp = null;
-		LOG.info("WebZ Server stopped\n\n\n");
+		LOG.info("WebZ Server stopped\n");
 
 		globalFactory.destroy();
-		LOG.info("WebZ Server destroyed\n\n\n");
+		LOG.info("WebZ Server destroyed\n");
 	}
 
 	private void traceRequestStart(HttpServletRequest req) {
