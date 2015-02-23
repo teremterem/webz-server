@@ -18,11 +18,13 @@
 
 package org.terems;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.CodeSource;
 import java.util.Enumeration;
@@ -39,6 +41,8 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.JarScanner;
 import org.apache.tomcat.JarScannerCallback;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 
 public class WebzLauncher {
 
@@ -47,8 +51,6 @@ public class WebzLauncher {
 	private static final Pattern WEBZ_WAR_PATTERN = Pattern.compile("webz-[^/\\\\]*.war");
 
 	private static final String LAUNCH_FAILURE_MSG_PREFIX = "Failed to launch WebZ Server: ";
-
-	private static final int DEFAULT_BUFFER_SIZE = 8192;
 
 	private static File tempFolder;
 
@@ -97,7 +99,11 @@ public class WebzLauncher {
 			throw new RuntimeException(LAUNCH_FAILURE_MSG_PREFIX + "webz.war was not found in the jar");
 		}
 
+		createFolder(tempFolder, "webapps");
+		// Tomcat wants this folder to be there
+
 		final Tomcat tomcat = new Tomcat();
+
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -117,9 +123,10 @@ public class WebzLauncher {
 		if (port == null || port.isEmpty()) {
 			port = DEFAULT_HTTP_PORT;
 		}
+		int httpPortNumber = Integer.valueOf(port);
 		// TODO make WebZ Server log port number instead of Tomcat
 
-		tomcat.setPort(Integer.valueOf(port));
+		tomcat.setPort(httpPortNumber);
 
 		Context webzContext = tomcat.addWebapp("", webzWarFile.getAbsolutePath());
 		webzContext.setJarScanner(new JarScanner() {
@@ -130,6 +137,20 @@ public class WebzLauncher {
 		});
 
 		tomcat.start();
+
+		try {
+			FileUtils.forceDeleteOnExit(tempFolder);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			if (Desktop.isDesktopSupported()) {
+				Desktop.getDesktop().browse(new URI("http://localhost" + (httpPortNumber == 80 ? "" : ":" + httpPortNumber) + "/"));
+			}
+		} catch (Throwable th) {
+			// ignore
+		}
+
 		tomcat.getServer().await();
 	}
 
@@ -144,13 +165,12 @@ public class WebzLauncher {
 		if (thisJarName.toLowerCase().endsWith(".jar")) {
 			thisJarName = thisJarName.substring(0, thisJarName.length() - 4);
 		}
-		tempFolder = createFolder(parentFolder, thisJarName + "-temp");
+		tempFolder = createFolder(parentFolder, "." + thisJarName + ".temp");
 	}
 
 	private static File createFolder(File parentFolder, String name) {
 
 		File folder = new File(parentFolder, name);
-		folder.deleteOnExit();
 
 		if (folder.exists()) {
 
@@ -173,21 +193,12 @@ public class WebzLauncher {
 			throw new RuntimeException(LAUNCH_FAILURE_MSG_PREFIX + resourceName + " was not found in the jar");
 		}
 
-		File file = new File(createFolder(tempFolder, "webapps"), webzWarName);
-		file.deleteOnExit();
+		File file = new File(tempFolder, webzWarName);
 
 		OutputStream out = null;
 		try {
 			out = new FileOutputStream(file);
-
-			byte[] buff = new byte[DEFAULT_BUFFER_SIZE];
-			while (true) {
-				int bytes = in.read(buff);
-				if (bytes < 1) {
-					break;
-				}
-				out.write(buff, 0, bytes);
-			}
+			IOUtils.copy(in, out);
 
 		} catch (IOException e) {
 			throw new RuntimeException(LAUNCH_FAILURE_MSG_PREFIX + e.getMessage(), e);

@@ -112,6 +112,21 @@
 				<artifactId>webz-server-packager</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+    
+			<!-- Servlet API -->
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>javax.servlet-api</artifactId>
+				<version>${servlet.api.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<!-- Apache -->
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>${commons.io.version}</version>
+			</dependency>
 
 			<!-- Apache Tomcat -->
 			<dependency>
@@ -129,21 +144,6 @@
 		        <artifactId>tomcat-embed-jasper</artifactId>
 		        <version>${tomcat.version}</version>
 		    </dependency>
-    
-			<!-- Servlet API -->
-			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>javax.servlet-api</artifactId>
-				<version>${servlet.api.version}</version>
-				<scope>provided</scope>
-			</dependency>
-
-			<!-- Apache -->
-			<dependency>
-				<groupId>commons-io</groupId>
-				<artifactId>commons-io</artifactId>
-				<version>${commons.io.version}</version>
-			</dependency>
 
 			<!-- Logging -->
 			<dependency>
