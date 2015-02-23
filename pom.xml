@@ -112,7 +112,7 @@
 				<artifactId>webz-server-packager</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-    
+
 			<!-- Servlet API -->
 			<dependency>
 				<groupId>javax.servlet</groupId>
