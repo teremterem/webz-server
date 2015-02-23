@@ -109,7 +109,7 @@ public class LocalFileSystemImpl extends BaseWebzFileSystemImpl {
 		return file.exists() && pathnameMatchesFileExactly(pathnameToValidate, file);
 	}
 
-	// TODO implement "operations" part of LocalFileSystem
+	// TODO implement "operations" part of LocalFileSystemImpl
 
 	@Override
 	public WebzMetadata createFolder(String pathname) throws IOException, WebzException {

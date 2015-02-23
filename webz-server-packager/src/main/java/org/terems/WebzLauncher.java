@@ -52,69 +52,19 @@ public class WebzLauncher {
 
 	private static final String LAUNCH_FAILURE_MSG_PREFIX = "Failed to launch WebZ Server: ";
 
+	private static Tomcat tomcat = new Tomcat();
 	private static File tempFolder;
 
 	public static void main(String[] args) throws URISyntaxException, IOException, ServletException, LifecycleException {
 
-		CodeSource codeSource = WebzLauncher.class.getProtectionDomain().getCodeSource();
-		if (codeSource == null) {
-			throw new RuntimeException(LAUNCH_FAILURE_MSG_PREFIX + "CodeSource is null");
-		}
-		File thisJarFile = new File(codeSource.getLocation().toURI());
+		File thisJarFile = getThisJarFile();
 
 		initTempFolder(thisJarFile);
 
-		File webzWarFile = null;
-
-		JarFile thisJar = null;
-		try {
-			thisJar = new JarFile(thisJarFile);
-
-			Enumeration<JarEntry> jarEntries = thisJar.entries();
-			while (jarEntries.hasMoreElements()) {
-
-				JarEntry jarEntry = jarEntries.nextElement();
-				if (!jarEntry.isDirectory()) {
-					String jarEntryName = jarEntry.getName();
-
-					if (WEBZ_WAR_PATTERN.matcher(jarEntryName).matches()) {
-
-						webzWarFile = putWebzWarIntoTemp(jarEntryName);
-						break;
-
-					}
-				}
-			}
-		} finally {
-			if (thisJar != null) {
-				try {
-					thisJar.close();
-				} catch (IOException e) {
-					// ignore
-				}
-			}
-		}
-
-		if (webzWarFile == null) {
-			throw new RuntimeException(LAUNCH_FAILURE_MSG_PREFIX + "webz.war was not found in the jar");
-		}
+		File webzWarFile = fetchWebzWar(thisJarFile);
 
 		createFolder(tempFolder, "webapps");
 		// Tomcat wants this folder to be there
-
-		final Tomcat tomcat = new Tomcat();
-
-		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					tomcat.stop();
-					tomcat.destroy();
-				} catch (LifecycleException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		}));
 
 		tomcat.setBaseDir(tempFolder.getAbsolutePath());
 		tomcat.setSilent(true);
@@ -138,6 +88,22 @@ public class WebzLauncher {
 			}
 		});
 
+		runTomcat(httpPortNumber);
+	}
+
+	private static void runTomcat(int httpPortNumber) throws LifecycleException {
+		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					tomcat.stop();
+					tomcat.destroy();
+				} catch (LifecycleException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}));
+
 		tomcat.start();
 
 		try {
@@ -154,6 +120,53 @@ public class WebzLauncher {
 		}
 
 		tomcat.getServer().await();
+	}
+
+	private static File fetchWebzWar(File thisJarFile) throws IOException {
+
+		File webzWarFile = null;
+		JarFile thisJar = null;
+		try {
+			thisJar = new JarFile(thisJarFile);
+
+			Enumeration<JarEntry> jarEntries = thisJar.entries();
+			while (jarEntries.hasMoreElements()) {
+
+				JarEntry jarEntry = jarEntries.nextElement();
+				if (!jarEntry.isDirectory()) {
+					String jarEntryName = jarEntry.getName();
+
+					if (WEBZ_WAR_PATTERN.matcher(jarEntryName).matches()) {
+
+						webzWarFile = putWebzWarIntoTemp(jarEntryName);
+						break;
+					}
+				}
+			}
+		} finally {
+			if (thisJar != null) {
+				try {
+					thisJar.close();
+				} catch (IOException e) {
+					// ignore
+				}
+			}
+		}
+
+		if (webzWarFile == null) {
+			throw new RuntimeException(LAUNCH_FAILURE_MSG_PREFIX + "webz.war was not found in the jar");
+		}
+		return webzWarFile;
+	}
+
+	private static File getThisJarFile() throws URISyntaxException {
+
+		CodeSource codeSource = WebzLauncher.class.getProtectionDomain().getCodeSource();
+		if (codeSource == null) {
+			throw new RuntimeException(LAUNCH_FAILURE_MSG_PREFIX + "CodeSource is null");
+		}
+		File thisJarFile = new File(codeSource.getLocation().toURI());
+		return thisJarFile;
 	}
 
 	private static void initTempFolder(File thisJarFile) throws URISyntaxException {
