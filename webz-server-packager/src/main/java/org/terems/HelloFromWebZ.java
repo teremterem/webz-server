@@ -22,7 +22,7 @@ public class HelloFromWebZ {
 
 	private static void createAndShowMainWindow() {
 
-		JFrame frame = new JFrame("WebZ Server v0.9 (Pedesis)");
+		JFrame frame = new JFrame("WebZ Server v0.9 beta (Pedesis)");
 
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
