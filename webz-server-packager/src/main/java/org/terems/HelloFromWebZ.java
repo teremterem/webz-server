@@ -25,8 +25,7 @@ import org.apache.tomcat.util.http.fileupload.IOUtils;
 public class HelloFromWebZ {
 
 	private static final String FAVICON_RESOURCE_PREFIX = "/favicon/favicon";
-	private static final String[] FAVICON_RESOURCE_SUFFIXES = { "/favicon16.png", "/favicon32.png", "/favicon64.png", "/favicon128.png",
-			"/favicon256.png", "/favicon512.png", "/favicon1024.png" };
+	private static final String[] FAVICON_RESOURCE_SUFFIXES = { "16.png", "32.png", "64.png", "128.png", "256.png", "512.png", "1024.png" };
 
 	private static void createAndShowMainWindow() {
 

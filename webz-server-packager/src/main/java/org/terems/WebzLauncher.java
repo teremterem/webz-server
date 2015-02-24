@@ -70,7 +70,6 @@ public class WebzLauncher {
 
 		tomcat.setBaseDir(tempFolder.getAbsolutePath());
 		tomcat.setSilent(true);
-		// TODO why did setSilent(true) stop having effect? either figure it out or remove this invocation completely...
 
 		String port = System.getenv("PORT");
 		if (port == null || port.isEmpty()) {
