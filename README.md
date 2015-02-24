@@ -9,6 +9,6 @@
 
 *Detailed project description is comming...*
 
-> ***NOTE:*** *Some time later a* ***contributor license agreement*** *will be applied to this particular repo.* ***[This article](https://julien.ponge.org/blog/in-defense-of-contributor-license-agreements/)*** *explains why it is a good idea to consider using contributor license agreements for certain open source projects.*
+> ***NOTE:*** *Some time later a* ***contributor license agreement*** *will be applied to this particular repo. [This article](https://julien.ponge.org/blog/in-defense-of-contributor-license-agreements/) explains why it is a good idea to consider using contributor license agreements for certain open source projects.*
 
-*P.S. Check out* ***[WebZ API](https://github.com/terems-org/webz-api)*** *- server's complete API available under Apache License v2.0.*
+*P.S. Check out [WebZ API](https://github.com/terems-org/webz-api) - server's complete API available under Apache License v2.0.*
