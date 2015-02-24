@@ -69,16 +69,14 @@ public class WebzLauncher {
 		// Tomcat wants this folder to be there before it starts
 
 		tomcat.setBaseDir(tempFolder.getAbsolutePath());
-		tomcat.setSilent(true);
 
 		String port = System.getenv("PORT");
 		if (port == null || port.isEmpty()) {
 			port = DEFAULT_HTTP_PORT;
 		}
 		int httpPortNumber = Integer.valueOf(port);
-		// TODO make WebZ Server log port number instead of Tomcat
 
-		// TODO + make WebZ log into a file in general
+		// TODO make WebZ log into a file
 
 		tomcat.setPort(httpPortNumber);
 
