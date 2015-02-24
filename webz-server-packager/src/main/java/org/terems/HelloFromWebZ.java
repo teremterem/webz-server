@@ -24,7 +24,8 @@ import org.apache.tomcat.util.http.fileupload.IOUtils;
 
 public class HelloFromWebZ {
 
-	private static final String[] ICON_RESOURCE_NAMES = { "/favicon16.png", "/favicon32.png", "/favicon64.png", "/favicon128.png",
+	private static final String FAVICON_RESOURCE_PREFIX = "/favicon/favicon";
+	private static final String[] FAVICON_RESOURCE_SUFFIXES = { "/favicon16.png", "/favicon32.png", "/favicon64.png", "/favicon128.png",
 			"/favicon256.png", "/favicon512.png", "/favicon1024.png" };
 
 	private static void createAndShowMainWindow() {
@@ -39,6 +40,9 @@ public class HelloFromWebZ {
 		}
 
 		JPanel panel = new JPanel();
+		// ~
+		// panel.setBorder(BorderFactory.createLineBorder(Color.red));
+		// ~
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
 		frame.getContentPane().setLayout(new GridBagLayout());
@@ -58,7 +62,8 @@ public class HelloFromWebZ {
 		panel.add(shutdownLabel);
 
 		frame.setResizable(false);
-		frame.setSize(new Dimension(600, 200));
+		frame.setMinimumSize(new Dimension(600, 200));
+		frame.pack();
 
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
@@ -70,14 +75,14 @@ public class HelloFromWebZ {
 
 	private static List<Image> fetchFavicons() {
 
-		List<Image> favicons = new ArrayList<Image>(ICON_RESOURCE_NAMES.length);
+		List<Image> favicons = new ArrayList<Image>(FAVICON_RESOURCE_SUFFIXES.length);
 
 		ByteArrayOutputStream faviconOut = new ByteArrayOutputStream();
-		for (String iconResourceName : ICON_RESOURCE_NAMES) {
+		for (String faviconSuffix : FAVICON_RESOURCE_SUFFIXES) {
 			try {
 				faviconOut.reset();
 
-				InputStream resourceIn = HelloFromWebZ.class.getResourceAsStream(iconResourceName);
+				InputStream resourceIn = HelloFromWebZ.class.getResourceAsStream(FAVICON_RESOURCE_PREFIX + faviconSuffix);
 				if (resourceIn != null) {
 
 					IOUtils.copy(resourceIn, faviconOut);
