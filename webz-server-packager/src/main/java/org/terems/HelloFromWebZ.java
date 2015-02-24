@@ -1,5 +1,6 @@
 package org.terems;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -18,6 +19,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
@@ -38,21 +40,23 @@ public class HelloFromWebZ {
 			frame.setIconImages(favicons);
 		}
 
+		JPanel outerPanel = new JPanel();
+		outerPanel.setLayout(new GridBagLayout());
+
 		JPanel panel = new JPanel();
-		// ~
-		// panel.setBorder(BorderFactory.createLineBorder(Color.red));
-		// ~
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-		frame.getContentPane().setLayout(new GridBagLayout());
-		frame.getContentPane().add(panel, new GridBagConstraints());
+		outerPanel.add(panel, new GridBagConstraints());
+
+		frame.getContentPane().setLayout(new BorderLayout());
+		frame.getContentPane().add(outerPanel, BorderLayout.CENTER);
 
 		JLabel startedLabel = new JLabel("Server started.");
 		startedLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		startedLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
 		panel.add(startedLabel);
 
-		JLabel portLabel = new JLabel("HTTP port: 8887");
+		JLabel portLabel = new JLabel("HTTP port: 8887"); // TODO display the real port number
 		portLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panel.add(portLabel);
 
@@ -60,8 +64,13 @@ public class HelloFromWebZ {
 		shutdownLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panel.add(shutdownLabel);
 
+		JLabel licenseLabel = new JLabel("This software is licensed under GNU Affero General Public License v3.0");
+		licenseLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		licenseLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 14));
+		frame.getContentPane().add(licenseLabel, BorderLayout.SOUTH);
+
 		frame.setResizable(false);
-		frame.setMinimumSize(new Dimension(600, 200));
+		frame.setMinimumSize(new Dimension(560, 180));
 		frame.pack();
 
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
