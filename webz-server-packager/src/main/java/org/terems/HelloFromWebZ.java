@@ -56,7 +56,6 @@ public class HelloFromWebZ {
 		panel.add(shutdownLabel);
 
 		frame.setResizable(false);
-		// frame.pack();
 		frame.setSize(new Dimension(600, 200));
 
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
