@@ -64,9 +64,9 @@ public class HelloFromWebZ {
 		shutdownLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panel.add(shutdownLabel);
 
-		JLabel licenseLabel = new JLabel("This software is licensed under GNU Affero General Public License v3.0");
+		JLabel licenseLabel = new JLabel("This software is released under the terms of GNU Affero General Public License v3.0");
 		licenseLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		licenseLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 14));
+		licenseLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 13));
 		frame.getContentPane().add(licenseLabel, BorderLayout.SOUTH);
 
 		frame.setResizable(false);
