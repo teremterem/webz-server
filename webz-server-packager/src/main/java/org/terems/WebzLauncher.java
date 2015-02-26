@@ -57,8 +57,6 @@ public class WebzLauncher {
 
 	private static final Pattern WEBZ_WAR_PATTERN = Pattern.compile("webz-[^/\\\\]*.war");
 
-	private static final String LAUNCH_FAILURE_MSG_PREFIX = "Failed to launch WebZ Server: ";
-
 	private static boolean help = false;
 	private static boolean gui = true;
 
@@ -246,7 +244,7 @@ public class WebzLauncher {
 		}
 
 		if (webzWarFile == null) {
-			throw new RuntimeException(LAUNCH_FAILURE_MSG_PREFIX + "webz-{version}.war was not found in the jar");
+			throw new RuntimeException("webz-{version}.war was not found in the jar");
 		}
 		return webzWarFile;
 	}
@@ -255,7 +253,7 @@ public class WebzLauncher {
 
 		CodeSource codeSource = WebzLauncher.class.getProtectionDomain().getCodeSource();
 		if (codeSource == null) {
-			throw new RuntimeException(LAUNCH_FAILURE_MSG_PREFIX + "CodeSource is null");
+			throw new RuntimeException("CodeSource is null");
 		}
 		File thisJarFile = new File(codeSource.getLocation().toURI());
 		return thisJarFile;
@@ -267,7 +265,7 @@ public class WebzLauncher {
 		String thisJarName = thisJarFile.getName();
 
 		if (thisJarName == null || thisJarName.length() <= 0) {
-			throw new RuntimeException(LAUNCH_FAILURE_MSG_PREFIX + "empty or null launching jar name");
+			throw new RuntimeException("empty or null launching jar name");
 		}
 		if (thisJarName.toLowerCase().endsWith(".jar")) {
 			thisJarName = thisJarName.substring(0, thisJarName.length() - 4);
@@ -282,22 +280,22 @@ public class WebzLauncher {
 		if (folder.exists()) {
 
 			if (!folder.isDirectory()) {
-				throw new RuntimeException(LAUNCH_FAILURE_MSG_PREFIX + folder.getAbsolutePath() + " already exists and is NOT a folder");
+				throw new RuntimeException(folder.getAbsolutePath() + " already exists and is NOT a folder");
 			}
 
 		} else if (!folder.mkdir()) {
-			throw new RuntimeException(LAUNCH_FAILURE_MSG_PREFIX + "failed to create folder: " + folder.getAbsolutePath());
+			throw new RuntimeException("failed to create folder: " + folder.getAbsolutePath());
 		}
 
 		return folder;
 	}
 
-	private static File putWebzWarIntoTemp(String webzWarName, File tempFolder) {
+	private static File putWebzWarIntoTemp(String webzWarName, File tempFolder) throws IOException {
 
 		String resourceName = "/" + webzWarName;
 		InputStream in = WebzLauncher.class.getResourceAsStream(resourceName);
 		if (in == null) {
-			throw new RuntimeException(LAUNCH_FAILURE_MSG_PREFIX + resourceName + " was not found in the jar");
+			throw new RuntimeException(resourceName + " was not found in the jar");
 		}
 
 		File file = new File(tempFolder, webzWarName);
@@ -307,8 +305,6 @@ public class WebzLauncher {
 			out = new FileOutputStream(file);
 			IOUtils.copy(in, out);
 
-		} catch (IOException e) {
-			throw new RuntimeException(LAUNCH_FAILURE_MSG_PREFIX + e.toString(), e);
 		} finally {
 
 			if (out != null) {
