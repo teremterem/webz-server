@@ -358,11 +358,10 @@ public class WebzLauncher {
 		String message = th.toString() + "\n\nTry starting in a console to see the full stack trace";
 
 		if (thisJarName == null) {
-			message += " (additionally, if you want to see different usage options try \"" + HELP_ARG + "\" command-line argument).";
+			return message + ".";
 		} else {
-			message += ":\n" + getSimpleStartCommandHint(thisJarName) + "\n\n" + getUsageOptionsAdditionalHint(thisJarName);
+			return message + ":\n" + getSimpleStartCommandHint(thisJarName) + "\n\n" + getUsageOptionsAdditionalHint(thisJarName);
 		}
-		return message;
 	}
 
 	private static String getUsageOptionsAdditionalHint(String thisJarName) {
