@@ -63,12 +63,11 @@ public class WebzLauncher {
 	public static void main(String[] args) {
 
 		processArgs(args);
-
 		gui = gui && !(help || isHeadlessSafe());
+
 		if (gui) {
 			WebzLauncherGUI.initGuiSafe("WebZ Server v0.9 beta (Pedesis)");
 		}
-
 		File thisJarFile = null;
 		try {
 			thisJarFile = getThisJarFile();
