@@ -85,7 +85,7 @@ public class GenericWebzApp implements WebzApp {
 		initFilterChain(filterClassesList);
 
 		if (LOG.isInfoEnabled()) {
-			LOG.info("WebZ App '" + displayName + "' initialized");
+			LOG.info("WebZ App \"" + displayName + "\" initialized");
 		}
 		return this;
 	}
@@ -135,11 +135,11 @@ public class GenericWebzApp implements WebzApp {
 		public void nextPlease(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException {
 
 			if (filterChainIterator == null) {
-				throw new WebzException("WebZ chain is already processed and cannot be invoked again");
+				throw new WebzException("WebZ filter chain is already processed and cannot be invoked again");
 			}
 			if (filterChainIterator.hasNext()) {
 
-				// TODO <fileMask /> !
+				// TODO implement "fileMasks"(?) to decide which filters to invoke and which filters to skip
 
 				filterChainIterator.next().serve(req, resp, this);
 
@@ -171,7 +171,7 @@ public class GenericWebzApp implements WebzApp {
 		appFactory.destroy();
 
 		if (LOG.isInfoEnabled()) {
-			LOG.info("WebZ App '" + displayName + "' destroyed");
+			LOG.info("WebZ App \"" + displayName + "\" destroyed");
 		}
 	}
 

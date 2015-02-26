@@ -19,6 +19,8 @@
 package org.terems;
 
 import java.awt.Desktop;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -46,52 +48,154 @@ import org.apache.tomcat.util.http.fileupload.IOUtils;
 
 public class WebzLauncher {
 
+	private static final String HELP_ARG = "help";
+	private static final String NO_GUI_ARG = "no-gui";
+
+	private static final String HTTP_PORT_PROPERTY = "webz.http.port";
+
 	private static final String DEFAULT_HTTP_PORT = "8887";
 
 	private static final Pattern WEBZ_WAR_PATTERN = Pattern.compile("webz-[^/\\\\]*.war");
 
 	private static final String LAUNCH_FAILURE_MSG_PREFIX = "Failed to launch WebZ Server: ";
 
-	private static Tomcat tomcat = new Tomcat();
-	private static File tempFolder;
+	private static boolean help = false;
+	private static boolean gui = true;
 
-	public static void main(String[] args) throws URISyntaxException, IOException, ServletException, LifecycleException {
+	public static void main(String[] args) {
 
-		HelloFromWebZ.main(args);
+		processArgs(args);
 
-		File thisJarFile = getThisJarFile();
+		gui = gui && !(help || isHeadlessSafe());
+		if (gui) {
+			WebzLauncherGUI.initGuiSafe("WebZ Server v0.9 beta (Pedesis)");
+		}
 
-		initTempFolder(thisJarFile);
+		File thisJarFile = null;
+		try {
+			thisJarFile = getThisJarFile();
 
-		File webzWarFile = fetchWebzWar(thisJarFile);
+			if (help) {
+				printHelp(thisJarFile.getName());
+			} else {
+				prepareAndRun(thisJarFile);
+			}
 
+		} catch (Throwable th) {
+
+			th.printStackTrace();
+			if (gui) {
+				WebzLauncherGUI.showFatalAndShutdownSafe(formatFatalMessage(th, thisJarFile == null ? null : thisJarFile.getName()));
+			}
+		}
+	}
+
+	private static void processArgs(String[] args) {
+
+		for (String arg : args) {
+
+			if (HELP_ARG.equals(arg)) {
+				help = true;
+
+			} else if (NO_GUI_ARG.equals(arg)) {
+				gui = false;
+			}
+		}
+	}
+
+	private static void printHelp(String thisJarName) {
+
+		System.out.println("\nUsage examples:\n");
+
+		System.out.println(getSimpleStartCommandHint(thisJarName));
+		System.out.println("\tstart with GUI\n");
+
+		System.out.println("> java -jar " + thisJarName + " " + NO_GUI_ARG);
+		System.out.println("\tstart without GUI\n");
+
+		System.out.println(getStartAtSpecificPortCommandHint(thisJarName));
+		System.out.println("\tlisten to a specific port number (by default the port number is " + DEFAULT_HTTP_PORT + ")\n");
+
+		System.out.println(getHelpCommandHint(thisJarName));
+		System.out.println("\tshow this help\n");
+	}
+
+	private static String getSimpleStartCommandHint(String thisJarName) {
+		return "> java -jar " + thisJarName;
+	}
+
+	private static String getStartAtSpecificPortCommandHint(String thisJarName) {
+		return "> java -D" + HTTP_PORT_PROPERTY + "={port} -jar " + thisJarName;
+	}
+
+	private static String getHelpCommandHint(String thisJarName) {
+		return "> java -jar " + thisJarName + " " + HELP_ARG;
+	}
+
+	private static void prepareAndRun(File thisJarFile) throws URISyntaxException, IOException, ServletException, LifecycleException {
+
+		int configuredPortNumber = getConfiguredPortNumber();
+
+		File tempFolder = initTempFolder(thisJarFile, configuredPortNumber);
 		createFolder(tempFolder, "webapps");
 		// Tomcat wants this folder to be there before it starts
 
-		tomcat.setBaseDir(tempFolder.getAbsolutePath());
+		Tomcat tomcat = prepareTomcat(thisJarFile, tempFolder);
+		int actualPortNumber = runTomcat(tomcat, configuredPortNumber);
+		// TODO make WebZ Server write it's log into a file
 
-		String port = System.getenv("PORT");
+		if (actualPortNumber < 0) {
+
+			if (gui) {
+				String thisJarName = thisJarFile.getName();
+
+				WebzLauncherGUI.showFatalAndShutdownSafe("Port " + configuredPortNumber
+						+ " is already in use.\n\nTry setting a different port:\n" + getStartAtSpecificPortCommandHint(thisJarName)
+						+ "\n\n" + getUsageOptionsAdditionalHint(thisJarName));
+			}
+
+		} else {
+			try {
+				FileUtils.forceDeleteOnExit(tempFolder);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			if (gui) {
+				WebzLauncherGUI.showServerStartedSafe(actualPortNumber);
+				openBrowserSafe(actualPortNumber);
+			}
+			tomcat.getServer().await();
+		}
+	}
+
+	private static int getConfiguredPortNumber() {
+
+		// TODO make port number configurable through webz.properties as well
+		String port = System.getProperty(HTTP_PORT_PROPERTY);
 		if (port == null || port.isEmpty()) {
 			port = DEFAULT_HTTP_PORT;
 		}
-		int httpPortNumber = Integer.valueOf(port);
+		return Integer.valueOf(port);
+	}
 
-		// TODO make WebZ log into a file
+	private static Tomcat prepareTomcat(File thisJarFile, File tempFolder) throws ServletException, IOException {
 
-		tomcat.setPort(httpPortNumber);
+		Tomcat tomcat = new Tomcat();
+		tomcat.setBaseDir(tempFolder.getAbsolutePath());
 
-		Context webzContext = tomcat.addWebapp("", webzWarFile.getAbsolutePath());
+		Context webzContext = tomcat.addWebapp("", fetchWebzWar(thisJarFile, tempFolder).getAbsolutePath());
 		webzContext.setJarScanner(new JarScanner() {
 			@Override
 			public void scan(ServletContext context, ClassLoader classloader, JarScannerCallback callback, Set<String> jarsToSkip) {
 				// no need to scan jars - saving CPU time...
 			}
 		});
-
-		runTomcat(httpPortNumber);
+		return tomcat;
 	}
 
-	private static void runTomcat(int httpPortNumber) throws LifecycleException {
+	private static int runTomcat(final Tomcat tomcat, int portNumber) throws LifecycleException {
+
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -104,26 +208,13 @@ public class WebzLauncher {
 			}
 		}));
 
+		tomcat.setPort(portNumber);
 		tomcat.start();
-		// TODO tomcat.getConnector(). - find a way to check if port was successfully bound
 
-		try {
-			FileUtils.forceDeleteOnExit(tempFolder);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		try {
-			if (Desktop.isDesktopSupported()) {
-				Desktop.getDesktop().browse(new URI("http://localhost" + (httpPortNumber == 80 ? "" : ":" + httpPortNumber) + "/"));
-			}
-		} catch (Throwable th) {
-			// ignore
-		}
-
-		tomcat.getServer().await();
+		return tomcat.getConnector().getLocalPort();
 	}
 
-	private static File fetchWebzWar(File thisJarFile) throws IOException {
+	private static File fetchWebzWar(File thisJarFile, File tempFolder) throws IOException {
 
 		File webzWarFile = null;
 		JarFile thisJar = null;
@@ -139,7 +230,7 @@ public class WebzLauncher {
 
 					if (WEBZ_WAR_PATTERN.matcher(jarEntryName).matches()) {
 
-						webzWarFile = putWebzWarIntoTemp(jarEntryName);
+						webzWarFile = putWebzWarIntoTemp(jarEntryName, tempFolder);
 						break;
 					}
 				}
@@ -155,7 +246,7 @@ public class WebzLauncher {
 		}
 
 		if (webzWarFile == null) {
-			throw new RuntimeException(LAUNCH_FAILURE_MSG_PREFIX + "webz.war was not found in the jar");
+			throw new RuntimeException(LAUNCH_FAILURE_MSG_PREFIX + "webz-{version}.war was not found in the jar");
 		}
 		return webzWarFile;
 	}
@@ -170,7 +261,7 @@ public class WebzLauncher {
 		return thisJarFile;
 	}
 
-	private static void initTempFolder(File thisJarFile) throws URISyntaxException {
+	private static File initTempFolder(File thisJarFile, int portNumber) throws URISyntaxException {
 
 		File parentFolder = thisJarFile.getParentFile();
 		String thisJarName = thisJarFile.getName();
@@ -181,7 +272,7 @@ public class WebzLauncher {
 		if (thisJarName.toLowerCase().endsWith(".jar")) {
 			thisJarName = thisJarName.substring(0, thisJarName.length() - 4);
 		}
-		tempFolder = createFolder(parentFolder, "." + thisJarName + ".temp");
+		return createFolder(parentFolder, "." + thisJarName + ".port-" + portNumber + ".temp");
 	}
 
 	private static File createFolder(File parentFolder, String name) {
@@ -201,7 +292,7 @@ public class WebzLauncher {
 		return folder;
 	}
 
-	private static File putWebzWarIntoTemp(String webzWarName) {
+	private static File putWebzWarIntoTemp(String webzWarName, File tempFolder) {
 
 		String resourceName = "/" + webzWarName;
 		InputStream in = WebzLauncher.class.getResourceAsStream(resourceName);
@@ -217,7 +308,7 @@ public class WebzLauncher {
 			IOUtils.copy(in, out);
 
 		} catch (IOException e) {
-			throw new RuntimeException(LAUNCH_FAILURE_MSG_PREFIX + e.getMessage(), e);
+			throw new RuntimeException(LAUNCH_FAILURE_MSG_PREFIX + e.toString(), e);
 		} finally {
 
 			if (out != null) {
@@ -235,6 +326,47 @@ public class WebzLauncher {
 		}
 
 		return file;
+	}
+
+	private static boolean isHeadlessSafe() {
+
+		try {
+			if (GraphicsEnvironment.isHeadless()) {
+				return true;
+			}
+			GraphicsDevice[] screenDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+			return screenDevices == null || screenDevices.length == 0;
+
+		} catch (Throwable th) {
+			th.printStackTrace();
+			return true;
+		}
+	}
+
+	private static void openBrowserSafe(int httpPortNumber) {
+
+		try {
+			if (Desktop.isDesktopSupported()) {
+				Desktop.getDesktop().browse(new URI("http://localhost" + (httpPortNumber == 80 ? "" : ":" + httpPortNumber) + "/"));
+			}
+		} catch (Throwable th) {
+			// ignore
+		}
+	}
+
+	private static String formatFatalMessage(Throwable th, String thisJarName) {
+		String message = th.toString() + "\n\nTry starting in a console to see the full stack trace";
+
+		if (thisJarName == null) {
+			message += " (additionally, if you want to see different usage options try \"" + HELP_ARG + "\" command-line argument).";
+		} else {
+			message += ":\n" + getSimpleStartCommandHint(thisJarName) + "\n\n" + getUsageOptionsAdditionalHint(thisJarName);
+		}
+		return message;
+	}
+
+	private static String getUsageOptionsAdditionalHint(String thisJarName) {
+		return "Also, if you want to see different usage options, try the following:\n" + getHelpCommandHint(thisJarName);
 	}
 
 }
