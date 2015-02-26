@@ -355,8 +355,8 @@ public class WebzLauncher {
 	}
 
 	private static String formatFatalMessage(Throwable th, String thisJarName) {
-		String message = th.toString() + "\n\nTry starting in a console to see the full stack trace";
 
+		String message = th.toString() + "\n\nTry starting in a console to see the full stack trace";
 		if (thisJarName == null) {
 			return message + ".";
 		} else {
