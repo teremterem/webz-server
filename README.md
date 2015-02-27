@@ -1,4 +1,4 @@
-# WebZ Server v0.9 beta ([Pedesis](https://www.pinterest.com/teremterem/pedesis-from-ancient-greek-a-leaping/))
+# WebZ Server v0.9 beta ([Pedesis](https://www.pinterest.com/terems_org/pedesis-from-ancient-greek-a-leaping/))
 
 ```
 настроение - это душа,  
