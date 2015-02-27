@@ -101,19 +101,25 @@ public class WebzLauncherGUI {
 		}
 	}
 
-	public static void showFatalAndShutdownSafe(final String errorMessage) {
+	public static void showFatalAndExit(final int exitCode, final String errorMessage) {
 
 		try {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					JOptionPane.showMessageDialog(frame, errorMessage, "Fatal Error", JOptionPane.ERROR_MESSAGE);
-					System.exit(1);
+
+					try {
+						JOptionPane.showMessageDialog(frame, errorMessage, "Fatal Error", JOptionPane.ERROR_MESSAGE);
+					} catch (Throwable th) {
+						th.printStackTrace();
+					}
+					System.exit(exitCode);
 				}
 			});
 		} catch (Throwable th) {
 			th.printStackTrace();
-			// GUI dispatching is not important - in case of failure just print the stack trace and proceed
+			// GUI dispatching is not important - in case of failure just print the stack trace and exit
+			System.exit(exitCode);
 		}
 	}
 

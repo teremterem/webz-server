@@ -52,10 +52,12 @@ public class WebzLauncher {
 	private static final String NO_GUI_ARG = "no-gui";
 
 	private static final String HTTP_PORT_PROPERTY = "webz.http.port";
-
 	private static final String DEFAULT_HTTP_PORT = "8887";
 
 	private static final Pattern WEBZ_WAR_PATTERN = Pattern.compile("webz-[^/\\\\]*.war");
+
+	private static final int GENERIC_FATAL_EXIT_CODE = 1;
+	private static final int PORT_BUSY_FATAL_EXIT_CODE = 2;
 
 	private static boolean help = false;
 	private static boolean gui = true;
@@ -82,7 +84,10 @@ public class WebzLauncher {
 
 			th.printStackTrace();
 			if (gui) {
-				WebzLauncherGUI.showFatalAndShutdownSafe(formatFatalMessage(th, thisJarFile == null ? null : thisJarFile.getName()));
+				WebzLauncherGUI.showFatalAndExit(GENERIC_FATAL_EXIT_CODE,
+						formatFatalMessage(th, thisJarFile == null ? null : thisJarFile.getName()));
+			} else {
+				System.exit(GENERIC_FATAL_EXIT_CODE);
 			}
 		}
 	}
@@ -146,9 +151,11 @@ public class WebzLauncher {
 			if (gui) {
 				String thisJarName = thisJarFile.getName();
 
-				WebzLauncherGUI.showFatalAndShutdownSafe("Port " + configuredPortNumber
+				WebzLauncherGUI.showFatalAndExit(PORT_BUSY_FATAL_EXIT_CODE, "Port " + configuredPortNumber
 						+ " is already in use.\n\nTry setting a different port:\n" + getStartAtSpecificPortCommandHint(thisJarName)
 						+ "\n\n" + getUsageOptionsAdditionalHint(thisJarName));
+			} else {
+				System.exit(PORT_BUSY_FATAL_EXIT_CODE);
 			}
 
 		} else {
