@@ -22,6 +22,7 @@ import java.awt.Desktop;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,6 +31,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.CodeSource;
 import java.util.Enumeration;
+import java.util.Locale;
+import java.util.Properties;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -50,6 +53,10 @@ public class WebzLauncher {
 
 	private static final String HELP_ARG = "help";
 	private static final String NO_GUI_ARG = "no-gui";
+
+	private static final String WEBZ_PROPERTIES_PATH_PROPERTY = "webz.properties.path";
+	private static final String WEBZ_PROPERTIES_PATH_ENV_VAR = WEBZ_PROPERTIES_PATH_PROPERTY.replace('.', '_').toUpperCase(Locale.ENGLISH);
+	private static final String WEBZ_PROPERTIES_DEFAULT_FILENAME = "webz.properties";
 
 	private static final String HTTP_PORT_PROPERTY = "webz.http.port";
 	private static final String DEFAULT_HTTP_PORT = "8887";
@@ -136,7 +143,8 @@ public class WebzLauncher {
 
 	private static void prepareAndRun(File thisJarFile) throws URISyntaxException, IOException, ServletException, LifecycleException {
 
-		int configuredPortNumber = getConfiguredPortNumber();
+		Properties webzProperties = fetchWebzProperties(thisJarFile);
+		int configuredPortNumber = getConfiguredPortNumber(webzProperties);
 
 		File tempFolder = initTempFolder(thisJarFile, configuredPortNumber);
 		createFolder(tempFolder, "webapps");
@@ -173,14 +181,48 @@ public class WebzLauncher {
 		}
 	}
 
-	private static int getConfiguredPortNumber() {
+	private static Properties fetchWebzProperties(File thisJarFile) throws IOException {
 
-		// TODO make port number configurable through webz.properties as well
-		String port = System.getProperty(HTTP_PORT_PROPERTY);
-		if (port == null || port.isEmpty()) {
-			port = DEFAULT_HTTP_PORT;
+		Properties webzProperties = new Properties();
+
+		String path = System.getProperty(WEBZ_PROPERTIES_PATH_PROPERTY);
+		if (path == null) {
+			path = System.getenv(WEBZ_PROPERTIES_PATH_ENV_VAR);
+
+			if (path != null) {
+				System.out.println("\nUsing the value of " + WEBZ_PROPERTIES_PATH_ENV_VAR
+						+ " environment variable as WebZ properties path...");
+			}
 		}
-		return Integer.valueOf(port);
+		File file = path == null ? new File(thisJarFile.getParent(), WEBZ_PROPERTIES_DEFAULT_FILENAME) : new File(path);
+
+		System.setProperty(WEBZ_PROPERTIES_PATH_PROPERTY, file.getAbsolutePath());
+		// setting the path to webz.properties as a java system property for it to be read by webz.war
+
+		if (!(file.exists() && file.isFile())) {
+			System.out.flush();
+			System.err
+					.println("\nWARNING! WebZ properties were NOT loaded: " + file.getAbsolutePath() + " does not exist or is not a file");
+			System.err.flush();
+		} else {
+			System.out.println("\nWebZ properties path: " + file.getAbsolutePath());
+			webzProperties.load(new FileInputStream(file));
+		}
+		System.out.println();
+
+		return webzProperties;
+	}
+
+	private static int getConfiguredPortNumber(Properties webzProperties) {
+
+		String port = System.getProperty(HTTP_PORT_PROPERTY, webzProperties.getProperty(HTTP_PORT_PROPERTY, DEFAULT_HTTP_PORT));
+		int portNumber = Integer.valueOf(port);
+
+		if (portNumber > 0) {
+			return portNumber;
+		} else {
+			throw new RuntimeException(portNumber + " is not a valid port number (should be greater than zero)");
+		}
 	}
 
 	private static Tomcat prepareTomcat(File thisJarFile, File tempFolder) throws ServletException, IOException {
