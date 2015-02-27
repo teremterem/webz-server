@@ -116,7 +116,7 @@ public class WebzLauncher {
 		System.out.println("\tstart without GUI\n");
 
 		System.out.println(getStartAtSpecificPortCommandHint(thisJarName));
-		System.out.println("\tlisten to a specific port number (by default the port number is " + DEFAULT_HTTP_PORT + ")\n");
+		System.out.println("\tlisten to a specific {port} number (by default the port number is " + DEFAULT_HTTP_PORT + ")\n");
 
 		System.out.println(getHelpCommandHint(thisJarName));
 		System.out.println("\tshow this help\n");
@@ -358,7 +358,7 @@ public class WebzLauncher {
 
 	private static String formatFatalMessage(Throwable th, String thisJarName) {
 
-		String message = th.toString() + "\n\nTry starting in a console to see the full stack trace";
+		String message = th.toString() + "\n\nStart in a console to see the stack trace";
 		if (thisJarName == null) {
 			return message + ".";
 		} else {
