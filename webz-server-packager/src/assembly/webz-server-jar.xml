@@ -30,7 +30,7 @@
 			<useProjectArtifact>false</useProjectArtifact>
 			<unpack>true</unpack>
 			<excludes>
-				<exclude>org.terems:webz-war</exclude>
+				<exclude>${project.groupId}:webz-war</exclude>
 			</excludes>
 			<unpackOptions>
 				<includes>
@@ -40,10 +40,10 @@
 		</dependencySet>
 		<dependencySet>
 			<outputDirectory>/</outputDirectory>
-			<useProjectArtifact>true</useProjectArtifact>
+			<useProjectArtifact>false</useProjectArtifact>
 			<unpack>true</unpack>
 			<excludes>
-				<exclude>org.terems:webz-war</exclude>
+				<exclude>${project.groupId}:webz-war</exclude>
 			</excludes>
 			<unpackOptions>
 				<excludes>
@@ -53,20 +53,22 @@
 		</dependencySet>
 		<dependencySet>
 			<outputDirectory>/</outputDirectory>
+			<useProjectArtifact>true</useProjectArtifact>
+			<unpack>true</unpack>
+			<includes>
+				<include>${project.groupId}:${project.artifactId}</include>
+			</includes>
+		</dependencySet>
+		<dependencySet>
+			<outputDirectory>/</outputDirectory>
 			<useProjectArtifact>false</useProjectArtifact>
 			<unpack>false</unpack>
 			<includes>
-				<include>org.terems:webz-war</include>
+				<include>${project.groupId}:webz-war</include>
 			</includes>
 			<outputFileNameMapping>
 				${artifact.build.finalName}.${artifact.extension}
 			</outputFileNameMapping>
 		</dependencySet>
 	</dependencySets>
-	<files>
-		<file>
-			<source>LICENSE</source>
-			<outputDirectory>META-INF/</outputDirectory>
-		</file>
-	</files>
 </assembly>
