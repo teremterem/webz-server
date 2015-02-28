@@ -30,10 +30,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<servlet-name>WebZ</servlet-name>
 		<servlet-class>org.terems.webz.servlet.WebzHttpServletEnvelope</servlet-class>
 
-		<init-param>
-			<param-name>rootFileSystemProperties</param-name>
-			<param-value>webz-internals.properties</param-value>
-		</init-param>
 		<load-on-startup>0</load-on-startup>
 	</servlet>
 

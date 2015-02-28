@@ -26,19 +26,35 @@
 	<includeBaseDirectory>false</includeBaseDirectory>
 	<dependencySets>
 		<dependencySet>
-			<outputDirectory>/</outputDirectory>
-			<useProjectArtifact>true</useProjectArtifact>
+			<outputDirectory>META-INF/tomcat/</outputDirectory>
+			<useProjectArtifact>false</useProjectArtifact>
 			<unpack>true</unpack>
-			<scope>runtime</scope>
 			<excludes>
 				<exclude>org.terems:webz-war</exclude>
 			</excludes>
+			<unpackOptions>
+				<includes>
+					<include>META-INF/**</include>
+				</includes>
+			</unpackOptions>
+		</dependencySet>
+		<dependencySet>
+			<outputDirectory>/</outputDirectory>
+			<useProjectArtifact>true</useProjectArtifact>
+			<unpack>true</unpack>
+			<excludes>
+				<exclude>org.terems:webz-war</exclude>
+			</excludes>
+			<unpackOptions>
+				<excludes>
+					<exclude>META-INF/**</exclude>
+				</excludes>
+			</unpackOptions>
 		</dependencySet>
 		<dependencySet>
 			<outputDirectory>/</outputDirectory>
 			<useProjectArtifact>false</useProjectArtifact>
 			<unpack>false</unpack>
-			<scope>runtime</scope>
 			<includes>
 				<include>org.terems:webz-war</include>
 			</includes>

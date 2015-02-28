@@ -148,7 +148,9 @@ public class WebzLauncher {
 				WebzLauncherGUI.showServerStartedSafe(actualPortNumber);
 				openBrowserSafe(actualPortNumber);
 			}
+			// // ~~~ \\ // ~~~ \\ //
 			tomcat.getServer().await();
+			// \\ ~~~ // \\ ~~~ // \\
 		}
 	}
 

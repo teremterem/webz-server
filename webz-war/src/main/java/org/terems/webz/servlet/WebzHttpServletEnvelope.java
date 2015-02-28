@@ -40,7 +40,7 @@ import org.terems.webz.util.WebzUtils;
 @SuppressWarnings("serial")
 public class WebzHttpServletEnvelope extends HttpServlet {
 
-	private static final String ROOT_FILE_SYSTEM_PROPERTIES_PARAM = "rootFileSystemProperties";
+	private static final String WEBZ_INTERNALS_PROPERTIES_RESOURCE = "webz-internals.properties";
 
 	@Override
 	public void init() throws ServletException {
@@ -79,8 +79,7 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 				webzServer = this.webzServer;
 				if (webzServer == null) {
 
-					Properties rootFileSystemProperties = WebzUtils.loadPropertiesFromClasspath(
-							getServletConfig().getInitParameter(ROOT_FILE_SYSTEM_PROPERTIES_PARAM), true);
+					Properties rootFileSystemProperties = WebzUtils.loadPropertiesFromClasspath(WEBZ_INTERNALS_PROPERTIES_RESOURCE, false);
 
 					// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
 					this.webzServer = webzServer = new WebzServer(rootFileSystemProperties, getDefaultFilterClassesList());
