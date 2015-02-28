@@ -4,10 +4,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>webz-war</artifactId>
-	<packaging>war</packaging>
-	<name>WebZ Server Web Archive</name>
-	<description>Servlet "envelope" for WebZ Server</description>
+	<artifactId>webz-internal-api</artifactId>
+	<packaging>jar</packaging>
+	<name>WebZ Internal API</name>
+	<description>WebZ Server, Internal API</description>
 
 	<url>http://ww.webz.bz/</url>
 
@@ -40,42 +40,15 @@
 			<artifactId>webz-api</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>webz-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>webz-default-filters</artifactId>
-		</dependency>
-
 		<!-- Servlet API -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
 
-		<!-- Testing -->
-		<dependency>
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>webz-test-utils</artifactId>
-		</dependency>
-
 	</dependencies>
 
 	<build>
-
-		<finalName>webz-${project.version}</finalName>
-
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -84,10 +57,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>

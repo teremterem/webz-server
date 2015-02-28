@@ -40,6 +40,11 @@
 			<artifactId>webz-api</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>webz-internal-api</artifactId>
+		</dependency>
+
 		<!-- Servlet API -->
 		<dependency>
 			<groupId>javax.servlet</groupId>

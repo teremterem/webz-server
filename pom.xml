@@ -31,6 +31,7 @@
 
 	<modules>
 
+		<module>webz-internal-api</module>
 		<module>webz-core</module>
 		<module>webz-default-filters</module>
 		<module>webz-war</module>
@@ -89,6 +90,12 @@
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>webz-api</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>webz-internal-api</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
@@ -237,7 +244,6 @@
 					</executions>
 				</plugin>
 				<plugin>
-					<inherited>true</inherited>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>${maven.compiler.plugin.version}</version>
