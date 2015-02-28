@@ -56,7 +56,7 @@ public class WebzLauncher {
 
 	private static final String WEBZ_PROPERTIES_PATH_PROPERTY = "webz.properties.path";
 	private static final String WEBZ_PROPERTIES_PATH_ENV_VAR = WEBZ_PROPERTIES_PATH_PROPERTY.replace('.', '_').toUpperCase(Locale.ENGLISH);
-	private static final String WEBZ_PROPERTIES_DEFAULT_FILENAME = "webz.properties";
+	private static final String DEFAULT_WEBZ_PROPERTIES_FILENAME = "webz.properties";
 
 	private static final String HTTP_PORT_PROPERTY = "webz.http.port";
 	private static final String DEFAULT_HTTP_PORT = "8887";
@@ -112,35 +112,6 @@ public class WebzLauncher {
 		}
 	}
 
-	private static void printHelp(String thisJarName) {
-
-		System.out.println("\nUsage examples:\n");
-
-		System.out.println(getSimpleStartCommandHint(thisJarName));
-		System.out.println("\tstart with GUI\n");
-
-		System.out.println("> java -jar " + thisJarName + " " + NO_GUI_ARG);
-		System.out.println("\tstart without GUI\n");
-
-		System.out.println(getStartAtSpecificPortCommandHint(thisJarName));
-		System.out.println("\tlisten to a specific {port} number (by default the port number is " + DEFAULT_HTTP_PORT + ")\n");
-
-		System.out.println(getHelpCommandHint(thisJarName));
-		System.out.println("\tshow this help\n");
-	}
-
-	private static String getSimpleStartCommandHint(String thisJarName) {
-		return "> java -jar " + thisJarName;
-	}
-
-	private static String getStartAtSpecificPortCommandHint(String thisJarName) {
-		return "> java -D" + HTTP_PORT_PROPERTY + "={port} -jar " + thisJarName;
-	}
-
-	private static String getHelpCommandHint(String thisJarName) {
-		return "> java -jar " + thisJarName + " " + HELP_ARG;
-	}
-
 	private static void prepareAndRun(File thisJarFile) throws URISyntaxException, IOException, ServletException, LifecycleException {
 
 		Properties webzProperties = fetchWebzProperties(thisJarFile);
@@ -194,7 +165,7 @@ public class WebzLauncher {
 						+ " environment variable as WebZ properties path...");
 			}
 		}
-		File file = path == null ? new File(thisJarFile.getParent(), WEBZ_PROPERTIES_DEFAULT_FILENAME) : new File(path);
+		File file = path == null ? new File(thisJarFile.getParent(), DEFAULT_WEBZ_PROPERTIES_FILENAME) : new File(path);
 
 		System.setProperty(WEBZ_PROPERTIES_PATH_PROPERTY, file.getAbsolutePath());
 		// setting the path to webz.properties as a java system property for it to be read by webz.war
@@ -410,6 +381,73 @@ public class WebzLauncher {
 
 	private static String getUsageOptionsAdditionalHint(String thisJarName) {
 		return "Also, if you want to see different usage options, try the following:\n" + getHelpCommandHint(thisJarName);
+	}
+
+	private static String getSimpleStartCommandHint(String thisJarName) {
+		return "> java -jar " + thisJarName;
+	}
+
+	private static String getStartAtSpecificPortCommandHint(String thisJarName) {
+		return "> java -D" + HTTP_PORT_PROPERTY + "={port} -jar " + thisJarName;
+	}
+
+	private static String getHelpCommandHint(String thisJarName) {
+		return "> java -jar " + thisJarName + " " + HELP_ARG;
+	}
+
+	private static void printHelp(String thisJarName) {
+
+		System.out.println();
+		System.out.println();
+		System.out.println("    Usage examples:");
+		System.out.println();
+		System.out.println();
+
+		System.out.println(getHelpCommandHint(thisJarName));
+		System.out.println();
+		System.out.println("Show this help.");
+		System.out.println();
+		System.out.println();
+
+		System.out.println(getSimpleStartCommandHint(thisJarName));
+		System.out.println();
+		System.out.println("Start with GUI.");
+		System.out.println();
+		System.out.println();
+
+		System.out.println("> java -jar " + thisJarName + " " + NO_GUI_ARG);
+		System.out.println();
+		System.out.println("Start without GUI.");
+		System.out.println();
+		System.out.println();
+
+		System.out.println(getStartAtSpecificPortCommandHint(thisJarName));
+		System.out.println();
+		System.out.println("Listen to a specific {port} number (by default the port number is " + DEFAULT_HTTP_PORT + ").");
+		System.out.println();
+		System.out.println();
+
+		System.out.println("> java -D" + WEBZ_PROPERTIES_PATH_PROPERTY + "={pathname} -jar " + thisJarName);
+		System.out.println();
+		System.out.println("Read WebZ properties from {pathname} (by default it attempts to find '" + DEFAULT_WEBZ_PROPERTIES_FILENAME
+				+ "' in the folder where this jar is located).");
+		System.out.println("Another way to supply WebZ properties location is to set " + WEBZ_PROPERTIES_PATH_ENV_VAR
+				+ " environment variable before running the jar.");
+		System.out.println();
+		System.out.println();
+
+		System.out.println();
+		System.out.println("    WebZ properties:");
+		System.out.println();
+		System.out.println();
+		System.out.println("rendering.spa.path={path-to-SPA-root-folder}");
+		System.out.println("# Comming soon:");
+		System.out.println("#site.content.path={path-to-site-content-root-folder}");
+		System.out.println();
+		System.out.println("# Optional:");
+		System.out.println("#" + HTTP_PORT_PROPERTY + "=" + DEFAULT_HTTP_PORT);
+		System.out.println();
+		System.out.println();
 	}
 
 }
