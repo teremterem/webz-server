@@ -236,6 +236,7 @@
 										<filtering>false</filtering>
 										<includes>
 											<include>LICENSE</include>
+											<include>NOTICE</include>
 										</includes>
 									</resource>
 								</resources>
@@ -268,25 +269,26 @@
 					<artifactId>maven-war-plugin</artifactId>
 					<version>${maven.war.plugin.version}</version>
 					<configuration>
-				        <webResources>
-				            <resource>
-				                <filtering>false</filtering>
-				                <directory>.</directory>
-				                <targetPath>META-INF</targetPath>
-				                <includes>
-				                    <include>LICENSE</include>
-				                </includes>
-				            </resource>
-				            <resource>
-				                <filtering>true</filtering>
-				                <directory>src/main/webapp</directory>
-				                <includes>
-				                    <include>**/*.xml</include>
-				                </includes>
-				            </resource>
-				        </webResources>
-				        <warSourceDirectory>src/main/webapp</warSourceDirectory>
-				        <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+						<webResources>
+							<resource>
+								<filtering>false</filtering>
+								<directory>.</directory>
+								<targetPath>META-INF</targetPath>
+								<includes>
+									<include>LICENSE</include>
+									<include>NOTICE</include>
+								</includes>
+							</resource>
+							<resource>
+								<filtering>true</filtering>
+								<directory>src/main/webapp</directory>
+								<includes>
+									<include>**/*.xml</include>
+								</includes>
+							</resource>
+						</webResources>
+						<warSourceDirectory>src/main/webapp</warSourceDirectory>
+						<webXml>src/main/webapp/WEB-INF/web.xml</webXml>
 					</configuration>
 				</plugin>
 				<plugin>
