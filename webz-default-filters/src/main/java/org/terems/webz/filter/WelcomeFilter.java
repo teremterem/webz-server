@@ -39,7 +39,7 @@ import org.terems.webz.util.WebzUtils;
 
 public class WelcomeFilter extends BaseWebzFilter {
 
-	private Collection<String> welcomeExtensionsLowerCased;
+	private Collection<String> welcomeFilenameSuffixesLowerCased;
 	private Collection<String> welcomeFilenamesLowerCased;
 
 	// dilemma: 301 (permanent) redirect is more SEO friendly but some browsers and crawlers may treat it as "eternal"
@@ -48,7 +48,7 @@ public class WelcomeFilter extends BaseWebzFilter {
 	@Override
 	public void init() throws WebzException {
 		GeneralAppConfig generalConfig = getAppConfig().getAppConfigObject(GeneralAppConfig.class);
-		welcomeExtensionsLowerCased = generalConfig.getWelcomeExtensionsLowerCased();
+		welcomeFilenameSuffixesLowerCased = generalConfig.getWelcomeFilenameSuffixesLowerCased();
 		welcomeFilenamesLowerCased = generalConfig.getWelcomeFilenamesLowerCased();
 	}
 
@@ -125,7 +125,7 @@ public class WelcomeFilter extends BaseWebzFilter {
 
 				Map<String, WebzFile> childrenMap = buildChildrenMap(file);
 
-				for (String welcomeExtensionLowerCased : welcomeExtensionsLowerCased) {
+				for (String welcomeSuffixLowerCased : welcomeFilenameSuffixesLowerCased) {
 
 					for (String welcomeFilenameLowerCased : welcomeFilenamesLowerCased) {
 
@@ -135,7 +135,7 @@ public class WelcomeFilter extends BaseWebzFilter {
 							}
 							welcomeFilenameLowerCased = parentFolderNameLowerCased;
 						}
-						WebzFile child = childrenMap.get(welcomeFilenameLowerCased + welcomeExtensionLowerCased);
+						WebzFile child = childrenMap.get(welcomeFilenameLowerCased + welcomeSuffixLowerCased);
 
 						if (child != null) {
 							return child;
