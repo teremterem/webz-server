@@ -20,33 +20,30 @@ package org.terems.webz.impl;
 
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzProperties;
-import org.terems.webz.base.BaseWebzDestroyable;
 import org.terems.webz.internals.WebzFileSystem;
+import org.terems.webz.internals.WebzFileSystemImpl;
 import org.terems.webz.internals.WebzObjectFactory;
 import org.terems.webz.internals.WebzPathNormalizer;
+import org.terems.webz.internals.base.BaseWebzFileSystem;
 
-public class WebzFileSystemManager extends BaseWebzDestroyable {
+public class SiteAndSpaWebzFileSystem extends BaseWebzFileSystem {
 
-	public static WebzFileSystemManager getManager(WebzObjectFactory factory) throws WebzException {
+	public SiteAndSpaWebzFileSystem init(WebzPathNormalizer pathNormalizer, WebzFileSystem siteFileSystem, WebzFileSystem spaFileSystem,
+			WebzProperties properties, WebzObjectFactory factory) throws WebzException {
 
-		WebzFileSystemManager manager = factory.getDestroyableSingleton(WebzFileSystemManager.class);
-		manager.factory = factory;
+		this.pathNormalizer = pathNormalizer;
 
-		return manager;
-	}
+		fileFactory = factory.newDestroyable(DefaultWebzFileFactory.class);
+		fileFactory.init(this, properties);
 
-	private static final WebzPathNormalizer DEFAULT_PATH_NORMALIZER = new ForwardSlashNormalizer();
+		WebzFileSystemImpl fsImpl = new SiteAndSpaFileSystemImpl(siteFileSystem, spaFileSystem);
+		fsImpl.init(pathNormalizer, properties, factory);
 
-	private WebzObjectFactory factory;
+		structure = fsImpl;
+		operations = fsImpl;
 
-	public WebzFileSystem createFileSystem(WebzProperties webzProperties) throws WebzException {
-		return factory.newDestroyable(GenericWebzFileSystem.class).init(DEFAULT_PATH_NORMALIZER, webzProperties, factory);
-	}
-
-	public WebzFileSystem createSiteAndSpaFileSystem(WebzFileSystem siteFileSystem, WebzFileSystem spaFileSystem,
-			WebzProperties webzProperties) throws WebzException {
-		return factory.newDestroyable(SiteAndSpaWebzFileSystem.class).init(DEFAULT_PATH_NORMALIZER, siteFileSystem, spaFileSystem,
-				webzProperties, factory);
+		uniqueId = fsImpl.getUniqueId();
+		return this;
 	}
 
 }

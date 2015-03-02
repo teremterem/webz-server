@@ -16,40 +16,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.terems.webz.impl;
+package org.terems.webz.internals.base;
 
-import org.terems.webz.WebzDefaults;
-import org.terems.webz.WebzFile;
-import org.terems.webz.WebzProperties;
 import org.terems.webz.base.BaseWebzDestroyable;
 import org.terems.webz.internals.WebzFileFactory;
 import org.terems.webz.internals.WebzFileSystem;
+import org.terems.webz.internals.WebzFileSystemOperations;
+import org.terems.webz.internals.WebzFileSystemStructure;
+import org.terems.webz.internals.WebzPathNormalizer;
 
-public class DefaultWebzFileFactory extends BaseWebzDestroyable implements WebzFileFactory {
+public abstract class BaseWebzFileSystem extends BaseWebzDestroyable implements WebzFileSystem {
 
-	// TODO make this factory a first level cache
-	// TODO get rid of "file inflation" concept ? (it is possible that with the new cache architecture it will be redundant)
-
-	private WebzFileSystem fileSystem;
-	private boolean useMetadataInflatableFiles;
+	protected String uniqueId;
+	protected WebzFileFactory fileFactory;
+	protected WebzPathNormalizer pathNormalizer;
+	protected WebzFileSystemStructure structure;
+	protected WebzFileSystemOperations operations;
 
 	@Override
-	public DefaultWebzFileFactory init(WebzFileSystem fileSystem, WebzProperties properties) {
-
-		this.fileSystem = fileSystem;
-		this.useMetadataInflatableFiles = Boolean.valueOf(properties.get(WebzProperties.USE_METADATA_INFLATABLE_FILES_PROPERTY,
-				String.valueOf(WebzDefaults.USE_METADATA_INFLATABLE_FILES)));
-		return this;
+	public String getUniqueId() {
+		return uniqueId;
 	}
 
 	@Override
-	public WebzFile get(String pathname) {
+	public WebzFileFactory getFileFactory() {
+		return fileFactory;
+	}
 
-		WebzFile file = new GenericWebzFile(pathname, fileSystem);
-		if (useMetadataInflatableFiles) {
-			return new MetadataInflatableWebzFile(file);
-		}
-		return file;
+	@Override
+	public WebzPathNormalizer getPathNormalizer() {
+		return pathNormalizer;
+	}
+
+	@Override
+	public WebzFileSystemStructure getStructure() {
+		return structure;
+	}
+
+	@Override
+	public WebzFileSystemOperations getOperations() {
+		return operations;
 	}
 
 }

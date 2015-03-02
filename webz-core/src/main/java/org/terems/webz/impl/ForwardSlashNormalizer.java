@@ -20,10 +20,9 @@ package org.terems.webz.impl;
 
 import java.util.regex.Pattern;
 
-import org.terems.webz.base.BaseWebzPropertiesInitable;
 import org.terems.webz.internals.WebzPathNormalizer;
 
-public class ForwardSlashNormalizer extends BaseWebzPropertiesInitable implements WebzPathNormalizer {
+public class ForwardSlashNormalizer implements WebzPathNormalizer {
 
 	protected static final char FWD_SLASH = '/';
 	protected static final String FWD_SLASH_STR = "" + FWD_SLASH;

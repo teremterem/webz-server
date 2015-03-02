@@ -55,12 +55,16 @@ public class WebzServer implements WebzServletContainerBridge {
 	private WebzDestroyableObjectFactory globalFactory = new GenericWebzObjectFactory();
 	private volatile WebzApp rootWebzApp;
 
-	private Properties webzInternalProperties = new Properties();
+	private WebzProperties webzInternalProperties;
 
 	public WebzServer() {
 
 		try {
-			WebzUtils.loadPropertiesFromClasspath(webzInternalProperties, WEBZ_INTERNAL_PROPERTIES_RESOURCE, true);
+			Properties internalProperties = new Properties();
+			WebzUtils.loadPropertiesFromClasspath(internalProperties, WEBZ_INTERNAL_PROPERTIES_RESOURCE, true);
+
+			webzInternalProperties = new WebzProperties(internalProperties);
+
 		} catch (WebzException e) {
 			throw new RuntimeException(e);
 		}
@@ -68,16 +72,23 @@ public class WebzServer implements WebzServletContainerBridge {
 
 	public void start(String siteContentPath, String renderingSpaPath) {
 
-		// TODO siteContentPath
+		WebzProperties siteFileSystemProperties = new WebzProperties(webzInternalProperties);
+		siteFileSystemProperties.put(WebzProperties.FS_BASE_PATH_PROPERTY, siteContentPath);
 
-		WebzProperties fsProperties = new WebzProperties(webzInternalProperties);
-		fsProperties.put(WebzProperties.FS_BASE_PATH_PROPERTY, renderingSpaPath);
+		WebzProperties spaFileSystemProperties = new WebzProperties(webzInternalProperties);
+		spaFileSystemProperties.put(WebzProperties.FS_BASE_PATH_PROPERTY, renderingSpaPath);
 
 		try {
-			WebzFileSystem rootFileSystem = WebzFileSystemManager.getManager(globalFactory).createFileSystem(fsProperties);
+			WebzFileSystemManager fileSystemManager = WebzFileSystemManager.getManager(globalFactory);
 
-			rootWebzApp = globalFactory.newDestroyable(GenericWebzApp.class).init(rootFileSystem, DEFAULT_FILTERS,
-					globalFactory.newDestroyable(GenericWebzObjectFactory.class));
+			WebzFileSystem siteFileSystem = fileSystemManager.createFileSystem(siteFileSystemProperties);
+			WebzFileSystem spaFileSystem = fileSystemManager.createFileSystem(spaFileSystemProperties);
+
+			WebzFileSystem siteAndSpaFileSystem = fileSystemManager.createSiteAndSpaFileSystem(siteFileSystem, spaFileSystem,
+					webzInternalProperties);
+
+			rootWebzApp = globalFactory.newDestroyable(GenericWebzApp.class);
+			rootWebzApp.init(siteAndSpaFileSystem, DEFAULT_FILTERS, globalFactory.newDestroyable(GenericWebzObjectFactory.class));
 
 		} catch (WebzException e) {
 

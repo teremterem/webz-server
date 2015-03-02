@@ -18,9 +18,7 @@
 
 package org.terems.webz.internals;
 
-import org.terems.webz.WebzPropertiesInitable;
-
-public interface WebzPathNormalizer extends WebzPropertiesInitable {
+public interface WebzPathNormalizer {
 
 	public String normalizePathname(String nonNormalizedPathname, boolean trimLeadingSlash);
 

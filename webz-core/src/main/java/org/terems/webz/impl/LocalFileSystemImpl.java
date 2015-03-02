@@ -22,7 +22,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -33,6 +35,7 @@ import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzMetadata.FileSpecific;
 import org.terems.webz.WebzProperties;
 import org.terems.webz.internals.ParentChildrenMetadata;
+import org.terems.webz.internals.WebzPathNormalizer;
 import org.terems.webz.internals.base.BaseWebzFileSystemImpl;
 
 public class LocalFileSystemImpl extends BaseWebzFileSystemImpl {
@@ -78,16 +81,39 @@ public class LocalFileSystemImpl extends BaseWebzFileSystemImpl {
 
 		String[] children = file.list();
 		if (children != null) {
+			WebzPathNormalizer pathNormalizer = getPathNormalizer();
 
 			String localBasePath = file.getAbsolutePath();
-			Map<String, WebzMetadata> pathnamesAndMetadata = new HashMap<String, WebzMetadata>();
+			Map<String, WebzMetadata> pathnamesAndMetadata = new LinkedHashMap<String, WebzMetadata>();
+
 			parentChildren.childPathnamesAndMetadata = pathnamesAndMetadata;
 			for (String childName : children) {
 				File child = new File(localBasePath, childName);
-				pathnamesAndMetadata.put(getPathNormalizer().concatPathname(parentPathname, childName), new LocalFileMetadata(child));
+				pathnamesAndMetadata.put(pathNormalizer.concatPathname(parentPathname, childName), new LocalFileMetadata(child));
 			}
 		}
 		return parentChildren;
+	}
+
+	@Override
+	public Collection<String> getChildPathnames(String parentPathname) throws IOException, WebzException {
+
+		File file = new File(basePath, parentPathname);
+		if (!fileExists(file, parentPathname)) {
+			return null;
+		}
+
+		String[] children = file.list();
+		if (children == null) {
+			return null;
+		}
+
+		WebzPathNormalizer pathNormalizer = getPathNormalizer();
+		Collection<String> childPathnames = new ArrayList<String>(children.length);
+		for (String childName : children) {
+			childPathnames.add(pathNormalizer.concatPathname(parentPathname, childName));
+		}
+		return childPathnames;
 	}
 
 	@Override
