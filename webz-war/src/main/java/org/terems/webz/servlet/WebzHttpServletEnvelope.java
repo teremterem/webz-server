@@ -56,7 +56,9 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
 		try {
+			// // ~~~ \\ // ~~~ \\ //
 			webzServer().serve(req, resp);
+			// \\ ~~~ // \\ ~~~ // \\
 
 		} catch (WebzException e) {
 			throw new ServletException(e);
@@ -76,9 +78,9 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 				webzServer = this.webzServer;
 				if (webzServer == null) {
 
-					// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
+					// // ~~~ \\ // ~~~ \\ // ~~~ \\ //
 					this.webzServer = initWebzServer();
-					// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
+					// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
 				}
 			}
 		}
@@ -115,7 +117,9 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 			throw new WebzException(WebzLaunchHelper.RENDERING_SPA_PATH_PROPERTY + " WebZ property is not set");
 		}
 
+		// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
 		webzServer.start(siteContentPath, renderingSpaPath);
+		// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
 
 		return webzServer;
 	}

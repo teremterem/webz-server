@@ -44,7 +44,6 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.JarScanner;
 import org.apache.tomcat.JarScannerCallback;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 
 public class WebzLauncher {
@@ -112,8 +111,7 @@ public class WebzLauncher {
 		int configuredPortNumber = getConfiguredPortNumber(webzProperties);
 
 		File tempFolder = initTempFolder(thisJarFile, configuredPortNumber);
-		createFolder(tempFolder, "webapps");
-		// Tomcat wants this folder to be there before it starts
+		// TODO delete temp folder on exit
 
 		Tomcat tomcat = prepareTomcat(thisJarFile, tempFolder);
 		int actualPortNumber = runTomcat(tomcat, configuredPortNumber);
@@ -132,11 +130,6 @@ public class WebzLauncher {
 			}
 
 		} else {
-			try {
-				FileUtils.forceDeleteOnExit(tempFolder);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 
 			if (gui) {
 				WebzLauncherGUI.showServerStartedSafe(actualPortNumber);
@@ -161,6 +154,9 @@ public class WebzLauncher {
 	}
 
 	private static Tomcat prepareTomcat(File thisJarFile, File tempFolder) throws ServletException, IOException {
+
+		createFolder(tempFolder, "webapps");
+		// Tomcat wants this folder to be there before it starts
 
 		Tomcat tomcat = new Tomcat();
 		tomcat.setBaseDir(tempFolder.getAbsolutePath());
@@ -257,8 +253,10 @@ public class WebzLauncher {
 	}
 
 	private static File createFolder(File parentFolder, String name) {
+		return createFolder(new File(parentFolder, name));
+	}
 
-		File folder = new File(parentFolder, name);
+	private static File createFolder(File folder) {
 
 		if (folder.exists()) {
 
