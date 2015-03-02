@@ -20,7 +20,7 @@
 	<licenses>
 		<license>
 			<name>GNU Affero GPL v3.0</name>
-			<url>http://www.gnu.org/licenses/agpl-3.0.html</url>
+			<url>http://www.gnu.org/licenses/agpl-3.0</url>
 		</license>
 	</licenses>
 	<scm>
@@ -43,6 +43,10 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>webz-internal-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>webz-default-filters</artifactId>
 		</dependency>
 
 		<!-- Servlet API -->

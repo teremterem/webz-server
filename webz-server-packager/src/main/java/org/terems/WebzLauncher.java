@@ -22,7 +22,6 @@ import java.awt.Desktop;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +30,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.CodeSource;
 import java.util.Enumeration;
-import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -54,10 +52,6 @@ public class WebzLauncher {
 	private static final String HELP_ARG = "help";
 	private static final String NO_GUI_ARG = "no-gui";
 
-	private static final String WEBZ_PROPERTIES_PATH_PROPERTY = "webz.properties.path";
-	private static final String WEBZ_PROPERTIES_PATH_ENV_VAR = WEBZ_PROPERTIES_PATH_PROPERTY.replace('.', '_').toUpperCase(Locale.ENGLISH);
-	private static final String DEFAULT_WEBZ_PROPERTIES_FILENAME = "webz.properties";
-
 	private static final String HTTP_PORT_PROPERTY = "webz.http.port";
 	private static final String DEFAULT_HTTP_PORT = "8887";
 
@@ -75,7 +69,7 @@ public class WebzLauncher {
 		gui = gui && !(help || isHeadlessSafe());
 
 		if (gui) {
-			WebzLauncherGUI.initGuiSafe("WebZ Server v0.9 beta (Pedesis)");
+			WebzLauncherGUI.initGuiSafe(WebzLaunchHelper.SERVER_TITLE + " (" + WebzLaunchHelper.VERSION_TITLE + ")");
 		}
 		File thisJarFile = null;
 		try {
@@ -114,7 +108,7 @@ public class WebzLauncher {
 
 	private static void prepareAndRun(File thisJarFile) throws URISyntaxException, IOException, ServletException, LifecycleException {
 
-		Properties webzProperties = fetchWebzProperties(thisJarFile);
+		Properties webzProperties = WebzLaunchHelper.initWebzPropertiesInLauncher(thisJarFile);
 		int configuredPortNumber = getConfiguredPortNumber(webzProperties);
 
 		File tempFolder = initTempFolder(thisJarFile, configuredPortNumber);
@@ -152,38 +146,6 @@ public class WebzLauncher {
 			tomcat.getServer().await();
 			// \\ ~~~ // \\ ~~~ // \\
 		}
-	}
-
-	private static Properties fetchWebzProperties(File thisJarFile) throws IOException {
-
-		Properties webzProperties = new Properties();
-
-		String path = System.getProperty(WEBZ_PROPERTIES_PATH_PROPERTY);
-		if (path == null) {
-			path = System.getenv(WEBZ_PROPERTIES_PATH_ENV_VAR);
-
-			if (path != null) {
-				System.out.println("\nUsing the value of " + WEBZ_PROPERTIES_PATH_ENV_VAR
-						+ " environment variable as WebZ properties path...");
-			}
-		}
-		File file = path == null ? new File(thisJarFile.getParent(), DEFAULT_WEBZ_PROPERTIES_FILENAME) : new File(path);
-
-		System.setProperty(WEBZ_PROPERTIES_PATH_PROPERTY, file.getAbsolutePath());
-		// setting the path to webz.properties as a java system property for it to be read by webz.war
-
-		if (!(file.exists() && file.isFile())) {
-			System.out.flush();
-			System.err
-					.println("\nWARNING! WebZ properties were NOT loaded: " + file.getAbsolutePath() + " does not exist or is not a file");
-			System.err.flush();
-		} else {
-			System.out.println("\nWebZ properties path: " + file.getAbsolutePath());
-			webzProperties.load(new FileInputStream(file));
-		}
-		System.out.println();
-
-		return webzProperties;
 	}
 
 	private static int getConfiguredPortNumber(Properties webzProperties) {
@@ -429,11 +391,11 @@ public class WebzLauncher {
 		System.out.println();
 		System.out.println();
 
-		System.out.println("> java -D" + WEBZ_PROPERTIES_PATH_PROPERTY + "={pathname} -jar " + thisJarName);
+		System.out.println("> java -D" + WebzLaunchHelper.WEBZ_PROPERTIES_PATH_PROPERTY + "={pathname} -jar " + thisJarName);
 		System.out.println();
-		System.out.println("Read WebZ properties from {pathname} (by default it attempts to find '" + DEFAULT_WEBZ_PROPERTIES_FILENAME
-				+ "' in the folder where this jar is located).");
-		System.out.println("Another way to supply WebZ properties location is to set " + WEBZ_PROPERTIES_PATH_ENV_VAR
+		System.out.println("Read WebZ properties from {pathname} (by default it attempts to find '"
+				+ WebzLaunchHelper.WEBZ_PROPERTIES_DEFAULT_FILENAME + "' in the folder where this jar is located).");
+		System.out.println("Another way to supply WebZ properties location is to set " + WebzLaunchHelper.WEBZ_PROPERTIES_PATH_ENV_VAR
 				+ " environment variable before running the jar.");
 		System.out.println();
 		System.out.println();
@@ -442,9 +404,9 @@ public class WebzLauncher {
 		System.out.println("    WebZ properties:");
 		System.out.println();
 		System.out.println();
-		System.out.println("rendering.spa.path={path-to-SPA-root-folder}");
+		System.out.println(WebzLaunchHelper.RENDERING_SPA_PATH_PROPERTY + "={path-to-SPA-root-folder}");
 		System.out.println("# Comming soon:");
-		System.out.println("#site.content.path={path-to-site-content-root-folder}");
+		System.out.println("#" + WebzLaunchHelper.SITE_CONTENT_PATH_PROPERTY + "={path-to-site-content-root-folder}");
 		System.out.println();
 		System.out.println("# Optional:");
 		System.out.println("#" + HTTP_PORT_PROPERTY + "=" + DEFAULT_HTTP_PORT);

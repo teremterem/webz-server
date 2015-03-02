@@ -20,7 +20,7 @@
 	<licenses>
 		<license>
 			<name>GNU Affero GPL v3.0</name>
-			<url>http://www.gnu.org/licenses/agpl-3.0.html</url>
+			<url>http://www.gnu.org/licenses/agpl-3.0</url>
 		</license>
 	</licenses>
 	<scm>
@@ -37,22 +37,27 @@
 
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>webz-api</artifactId>
+			<artifactId>webz-launch-helper</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>webz-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>webz-default-filters</artifactId>
 		</dependency>
 
 		<!-- Servlet API -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
+		</dependency>
+
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
 		</dependency>
 
 		<!-- Testing -->

@@ -18,9 +18,9 @@
 
 package org.terems.webz.servlet;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Properties;
 
 import javax.servlet.ServletException;
@@ -28,19 +28,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.terems.WebzLaunchHelper;
 import org.terems.webz.WebzException;
-import org.terems.webz.WebzFilter;
-import org.terems.webz.filter.ErrorFilter;
-import org.terems.webz.filter.NotFoundFilter;
-import org.terems.webz.filter.StaticContentFilter;
-import org.terems.webz.filter.WelcomeFilter;
 import org.terems.webz.impl.WebzServer;
-import org.terems.webz.util.WebzUtils;
 
 @SuppressWarnings("serial")
 public class WebzHttpServletEnvelope extends HttpServlet {
 
-	private static final String WEBZ_INTERNALS_PROPERTIES_RESOURCE = "webz-internals.properties";
+	private static final Logger LOG = LoggerFactory.getLogger(WebzHttpServletEnvelope.class);
 
 	@Override
 	public void init() throws ServletException {
@@ -79,11 +76,9 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 				webzServer = this.webzServer;
 				if (webzServer == null) {
 
-					Properties rootFileSystemProperties = WebzUtils.loadPropertiesFromClasspath(WEBZ_INTERNALS_PROPERTIES_RESOURCE, false);
-
-					// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
-					this.webzServer = webzServer = new WebzServer(rootFileSystemProperties, getDefaultFilterClassesList());
-					// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
+					// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
+					this.webzServer = initWebzServer();
+					// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
 				}
 			}
 		}
@@ -107,13 +102,50 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private Collection<Class<? extends WebzFilter>> getDefaultFilterClassesList() {
+	private WebzServer initWebzServer() throws IOException, WebzException {
 
-		// TODO move list of filters into webz app config
-		Class<?>[] filterClassesList = { ErrorFilter.class, WelcomeFilter.class, StaticContentFilter.class, NotFoundFilter.class };
+		Properties webzProperties = fetchWebzProperties();
+		// TODO make logging configurable through WebZ properties as well
 
-		return Arrays.asList((Class<? extends WebzFilter>[]) filterClassesList);
+		WebzServer webzServer = new WebzServer();
+
+		String siteContentPath = webzProperties.getProperty(WebzLaunchHelper.SITE_CONTENT_PATH_PROPERTY);
+		String renderingSpaPath = webzProperties.getProperty(WebzLaunchHelper.RENDERING_SPA_PATH_PROPERTY);
+		if (renderingSpaPath == null) {
+			throw new WebzException(WebzLaunchHelper.RENDERING_SPA_PATH_PROPERTY + " WebZ property is not set");
+		}
+
+		webzServer.start(siteContentPath, renderingSpaPath);
+
+		return webzServer;
+	}
+
+	private Properties fetchWebzProperties() throws IOException {
+
+		Properties webzProperties = new Properties();
+
+		String path = System.getProperty(WebzLaunchHelper.WEBZ_PROPERTIES_PATH_PROPERTY);
+		if (path == null) {
+			path = System.getenv(WebzLaunchHelper.WEBZ_PROPERTIES_PATH_ENV_VAR);
+
+			if (path != null && LOG.isInfoEnabled()) {
+				LOG.info(WebzLaunchHelper.getUsingEnvVarMessage(WebzLaunchHelper.WEBZ_PROPERTIES_PATH_ENV_VAR));
+			}
+		}
+		File file = new File(path);
+
+		if (!(file.exists() && file.isFile())) {
+			if (LOG.isWarnEnabled()) {
+				LOG.warn(WebzLaunchHelper.getPropertiesNotLoadedMessage(file));
+			}
+		} else {
+			if (LOG.isInfoEnabled()) {
+				LOG.info(WebzLaunchHelper.getPropertiesPathMessage(file));
+			}
+			webzProperties.load(new FileInputStream(file));
+		}
+
+		return webzProperties;
 	}
 
 }

@@ -4,10 +4,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>webz-test-utils</artifactId>
+	<artifactId>webz-launch-helper</artifactId>
 	<packaging>jar</packaging>
-	<name>WebZ Test Utils</name>
-	<description>WebZ Utilities for unit testing</description>
+	<name>WebZ Launch Helper</name>
+	<description>WebZ Server, Launch Helper</description>
 
 	<url>http://ww.webz.bz/</url>
 
@@ -24,7 +24,7 @@
 		</license>
 	</licenses>
 	<scm>
-		<url>https://github.com/terems-org/webz-server</url>
+		<url>https://github.com/terems-org/webz-server.git</url>
 	</scm>
 
 	<parent>
@@ -39,16 +39,15 @@
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
-			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>org.javassist</groupId>
-			<artifactId>javassist</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.objenesis</groupId>
-			<artifactId>objenesis</artifactId>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>webz-test-utils</artifactId>
 		</dependency>
 
 	</dependencies>

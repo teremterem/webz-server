@@ -26,11 +26,12 @@
 	<includeBaseDirectory>false</includeBaseDirectory>
 	<dependencySets>
 		<dependencySet>
-			<outputDirectory>META-INF/tomcat/</outputDirectory>
+			<outputDirectory>META-INF/${artifact.artifactId}-${artifact.version}/</outputDirectory>
 			<useProjectArtifact>false</useProjectArtifact>
 			<unpack>true</unpack>
+			<scope>runtime</scope>
 			<excludes>
-				<exclude>${project.groupId}:webz-war</exclude>
+				<exclude>${project.groupId}:*</exclude>
 			</excludes>
 			<unpackOptions>
 				<includes>
@@ -42,6 +43,7 @@
 			<outputDirectory>/</outputDirectory>
 			<useProjectArtifact>false</useProjectArtifact>
 			<unpack>true</unpack>
+			<scope>runtime</scope>
 			<excludes>
 				<exclude>${project.groupId}:webz-war</exclude>
 			</excludes>
@@ -55,6 +57,7 @@
 			<outputDirectory>/</outputDirectory>
 			<useProjectArtifact>true</useProjectArtifact>
 			<unpack>true</unpack>
+			<scope>runtime</scope>
 			<includes>
 				<include>${project.groupId}:${project.artifactId}</include>
 			</includes>
@@ -63,6 +66,7 @@
 			<outputDirectory>/</outputDirectory>
 			<useProjectArtifact>false</useProjectArtifact>
 			<unpack>false</unpack>
+			<scope>runtime</scope>
 			<includes>
 				<include>${project.groupId}:webz-war</include>
 			</includes>

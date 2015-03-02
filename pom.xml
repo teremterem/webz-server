@@ -22,7 +22,7 @@
 	<licenses>
 		<license>
 			<name>GNU Affero GPL v3.0</name>
-			<url>http://www.gnu.org/licenses/agpl-3.0.html</url>
+			<url>http://www.gnu.org/licenses/agpl-3.0</url>
 		</license>
 	</licenses>
 	<scm>
@@ -32,8 +32,9 @@
 	<modules>
 
 		<module>webz-internal-api</module>
-		<module>webz-core</module>
 		<module>webz-default-filters</module>
+		<module>webz-core</module>
+		<module>webz-launch-helper</module>
 		<module>webz-war</module>
 		<module>webz-server-packager</module>
 
@@ -100,12 +101,17 @@
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
+				<artifactId>webz-default-filters</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
 				<artifactId>webz-core</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>webz-default-filters</artifactId>
+				<artifactId>webz-launch-helper</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

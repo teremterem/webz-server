@@ -19,6 +19,7 @@
 package org.terems.webz.impl;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Properties;
 
@@ -29,6 +30,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFilter;
+import org.terems.webz.WebzProperties;
+import org.terems.webz.filter.ErrorFilter;
+import org.terems.webz.filter.NotFoundFilter;
+import org.terems.webz.filter.StaticContentFilter;
+import org.terems.webz.filter.WelcomeFilter;
 import org.terems.webz.internals.WebzApp;
 import org.terems.webz.internals.WebzDestroyableObjectFactory;
 import org.terems.webz.internals.WebzFileSystem;
@@ -39,15 +45,38 @@ public class WebzServer implements WebzServletContainerBridge {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WebzServer.class);
 
+	private static final String WEBZ_INTERNAL_PROPERTIES_RESOURCE = "webz-internal.properties";
+
+	@SuppressWarnings("unchecked")
+	private static final Collection<Class<? extends WebzFilter>> DEFAULT_FILTERS = Arrays
+			.asList((Class<? extends WebzFilter>[]) new Class<?>[] { ErrorFilter.class, WelcomeFilter.class, StaticContentFilter.class,
+					NotFoundFilter.class });
+
 	private WebzDestroyableObjectFactory globalFactory = new GenericWebzObjectFactory();
 	private volatile WebzApp rootWebzApp;
 
-	public WebzServer(Properties rootFileSystemProperties, Collection<Class<? extends WebzFilter>> filterClassesList) {
+	private Properties webzInternalProperties = new Properties();
+
+	public WebzServer() {
 
 		try {
-			WebzFileSystem rootFileSystem = WebzFileSystemManager.getManager(globalFactory).createFileSystem(rootFileSystemProperties);
+			WebzUtils.loadPropertiesFromClasspath(webzInternalProperties, WEBZ_INTERNAL_PROPERTIES_RESOURCE, true);
+		} catch (WebzException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-			rootWebzApp = globalFactory.newDestroyable(GenericWebzApp.class).init(rootFileSystem, filterClassesList,
+	public void start(String siteContentPath, String renderingSpaPath) {
+
+		// TODO siteContentPath
+
+		WebzProperties fsProperties = new WebzProperties(webzInternalProperties);
+		fsProperties.put(WebzProperties.FS_BASE_PATH_PROPERTY, renderingSpaPath);
+
+		try {
+			WebzFileSystem rootFileSystem = WebzFileSystemManager.getManager(globalFactory).createFileSystem(fsProperties);
+
+			rootWebzApp = globalFactory.newDestroyable(GenericWebzApp.class).init(rootFileSystem, DEFAULT_FILTERS,
 					globalFactory.newDestroyable(GenericWebzObjectFactory.class));
 
 		} catch (WebzException e) {
