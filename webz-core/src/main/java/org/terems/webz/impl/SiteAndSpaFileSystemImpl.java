@@ -29,6 +29,7 @@ import org.terems.webz.WebzException;
 import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzMetadata.FileSpecific;
+import org.terems.webz.base.WebzMetadataProxy;
 import org.terems.webz.internals.FreshParentChildrenMetadata;
 import org.terems.webz.internals.ParentChildrenMetadata;
 import org.terems.webz.internals.WebzFileSystem;
@@ -66,30 +67,35 @@ public class SiteAndSpaFileSystemImpl extends BaseWebzFileSystemImpl {
 		return uniqueId;
 	}
 
-	private static class FileSearchResult {
-		private WebzMetadata metadata;
-		private WebzFileSystem host;
+	private static class FileFound {
+
+		WebzMetadata proxiedMetadata;
+		WebzFileSystem host;
+		String actualPathname;
+
+		FileFound(WebzMetadata proxiedMetadata, WebzFileSystem host, String actualPathname) {
+			this.proxiedMetadata = proxiedMetadata;
+			this.host = host;
+			this.actualPathname = actualPathname;
+		}
+
 	}
 
-	private FileSearchResult findFile(String pathname) throws IOException, WebzException {
-
-		FileSearchResult searchResult = new FileSearchResult();
+	private FileFound findFile(String pathname) throws IOException, WebzException {
 
 		WebzPathNormalizer pathNormalizer = getPathNormalizer();
 		WebzFileSystemStructure siteStructure = siteFileSystem.getStructure();
 		WebzFileSystemStructure spaStructure = spaFileSystem.getStructure();
 
-		searchResult.metadata = siteStructure.getMetadata(pathname);
-		if (searchResult.metadata != null) {
-			searchResult.host = siteFileSystem;
-			return searchResult;
+		WebzMetadata metadata = spaStructure.getMetadata(pathname);
+		if (metadata != null) {
+			return new FileFound(metadata, spaFileSystem, pathname);
 		}
-		searchResult.metadata = spaStructure.getMetadata(pathname);
-		if (searchResult.metadata != null) {
-			searchResult.host = spaFileSystem;
-			return searchResult;
+		metadata = siteStructure.getMetadata(pathname);
+		if (metadata != null) {
+			return new FileFound(metadata, siteFileSystem, pathname);
 		}
-		// TODO get rid of previous two checks when caching is implemented
+		// TODO get rid of previous two checks when caching is implemented ?
 
 		String currentPath = "";
 
@@ -114,79 +120,112 @@ public class SiteAndSpaFileSystemImpl extends BaseWebzFileSystemImpl {
 			}
 			if (!matchFound) {
 
-				if (i < pathMembers.length - 1) {
+				if (i > 0) {
 
-					searchResult.metadata = spaStructure.getMetadata(pathNormalizer.constructPathname(pathMembers, i + 1,
-							pathMembers.length));
-					if (searchResult.metadata != null) {
-						// TODO provide linkedPathname in metadata
-						searchResult.host = spaFileSystem;
-						return searchResult;
+					final String linkedPathname = pathNormalizer.constructPathname(pathMembers, i, pathMembers.length);
+					final WebzMetadata metadataToProxy = spaStructure.getMetadata(linkedPathname);
+					if (metadataToProxy != null) {
+
+						return new FileFound(new WebzMetadataProxy() {
+
+							@Override
+							protected WebzMetadata getInnerMetadata() {
+								return metadataToProxy;
+							}
+
+							@Override
+							public String getLinkedPathname() {
+								return linkedPathname;
+							}
+
+						}, spaFileSystem, linkedPathname);
 					}
 				}
-
-				// returning empty search result
-				return searchResult;
+				return null;
 			}
 		}
-
-		return searchResult;
+		return null;
 	}
 
 	@Override
 	public WebzMetadata getMetadata(String pathname) throws IOException, WebzException {
-		return findFile(pathname).metadata;
+
+		FileFound found = findFile(pathname);
+		if (found == null) {
+			return null;
+		}
+		return found.proxiedMetadata;
 	}
 
 	@Override
 	public ParentChildrenMetadata getParentChildrenMetadata(String parentPathname) throws IOException, WebzException {
 
-		FileSearchResult result = findFile(parentPathname);
-		if (result.metadata == null) {
+		// TODO if folder exists in both file systems then merge children
+		FileFound found = findFile(parentPathname);
+		if (found == null) {
 			return null;
 		}
-		return result.host.getStructure().getParentChildrenMetadata(parentPathname);
+
+		ParentChildrenMetadata result = found.host.getStructure().getParentChildrenMetadata(found.actualPathname);
+		if (result != null) {
+			result.parentMetadata = found.proxiedMetadata;
+		}
+		return result;
 	}
 
 	@Override
 	public FreshParentChildrenMetadata getParentChildrenMetadataIfChanged(String parentPathname, Object previousFolderHash)
 			throws IOException, WebzException {
 
-		FileSearchResult result = findFile(parentPathname);
-		if (result.metadata == null) {
+		// TODO if folder exists in both file systems then merge children
+		FileFound found = findFile(parentPathname);
+		if (found == null) {
 			return null;
 		}
-		return result.host.getStructure().getParentChildrenMetadataIfChanged(parentPathname, previousFolderHash);
+
+		FreshParentChildrenMetadata result = found.host.getStructure().getParentChildrenMetadataIfChanged(found.actualPathname,
+				previousFolderHash);
+		if (result != null && result.parentChildrenMetadata != null) {
+			result.parentChildrenMetadata.parentMetadata = found.proxiedMetadata;
+		}
+		return result;
 	}
 
 	@Override
 	public Map<String, WebzMetadata> getChildPathnamesAndMetadata(String parentPathname) throws IOException, WebzException {
 
-		FileSearchResult result = findFile(parentPathname);
-		if (result.metadata == null) {
+		// TODO if folder exists in both file systems then merge children
+		FileFound found = findFile(parentPathname);
+		if (found == null) {
 			return null;
 		}
-		return result.host.getStructure().getChildPathnamesAndMetadata(parentPathname);
+		return found.host.getStructure().getChildPathnamesAndMetadata(found.actualPathname);
 	}
 
 	@Override
 	public Collection<String> getChildPathnames(String parentPathname) throws IOException, WebzException {
 
-		FileSearchResult result = findFile(parentPathname);
-		if (result.metadata == null) {
+		// TODO if folder exists in both file systems then merge children
+		FileFound found = findFile(parentPathname);
+		if (found == null) {
 			return null;
 		}
-		return result.host.getStructure().getChildPathnames(parentPathname);
+		return found.host.getStructure().getChildPathnames(found.actualPathname);
 	}
 
 	@Override
 	public WebzFileDownloader getFileDownloader(String pathname) throws IOException, WebzException {
 
-		FileSearchResult result = findFile(pathname);
-		if (result.metadata == null) {
+		FileFound found = findFile(pathname);
+		if (found == null) {
 			return null;
 		}
-		return result.host.getOperations().getFileDownloader(pathname);
+
+		WebzFileDownloader result = found.host.getOperations().getFileDownloader(found.actualPathname);
+		if (result != null) {
+			result.fileSpecific = found.proxiedMetadata.getFileSpecific();
+		}
+		return result;
 	}
 
 	@Override

@@ -110,7 +110,12 @@ public class ForwardSlashNormalizer implements WebzPathNormalizer {
 
 	@Override
 	public String concatPathname(String basePath, String relativePathname) {
-		return basePath + FWD_SLASH + relativePathname;
+
+		if (basePath.length() > 0) {
+			return basePath + FWD_SLASH + relativePathname;
+		} else {
+			return relativePathname;
+		}
 	}
 
 	@Override
