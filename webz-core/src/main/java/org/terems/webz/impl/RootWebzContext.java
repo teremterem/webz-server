@@ -67,6 +67,12 @@ public class RootWebzContext implements WebzContext, WebzConfig {
 	}
 
 	@Override
+	public String resolveUri(String pathname) {
+		// TODO take context path into account when it is introduced
+		return "/" + pathname;
+	}
+
+	@Override
 	public <T extends WebzConfigObject> T getAppConfigObject(Class<T> configObjectClass) throws WebzException {
 
 		T configObject = appFactory.getDestroyableSingleton(configObjectClass);

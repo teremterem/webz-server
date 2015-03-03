@@ -62,18 +62,26 @@ public class WelcomeFilter extends BaseWebzFilter {
 			WebzMetadata metadata = chainContext.resolveFile(req).getMetadata();
 			if (metadata != null) {
 
-				boolean uriEndsWithSlash = req.getRequestURI().endsWith("/");
+				String linkedPathname = metadata.getLinkedPathname();
+				if (linkedPathname != null) {
 
-				if (!uriEndsWithSlash && metadata.isFolder()) {
-
-					redirectToFileOrFolder(req, resp, true, isMethodHead);
+					redirectToLinkedUri(req, resp, chainContext.resolveUri(linkedPathname), isMethodHead);
 					return;
 
-				} else if (uriEndsWithSlash && metadata.isFile()) {
+				} else {
+					boolean uriEndsWithSlash = req.getRequestURI().endsWith("/");
 
-					redirectToFileOrFolder(req, resp, false, isMethodHead);
-					return;
+					if (!uriEndsWithSlash && metadata.isFolder()) {
 
+						redirectToFileOrFolder(req, resp, true, isMethodHead);
+						return;
+
+					} else if (uriEndsWithSlash && metadata.isFile()) {
+
+						redirectToFileOrFolder(req, resp, false, isMethodHead);
+						return;
+
+					}
 				}
 			}
 		}
@@ -95,7 +103,21 @@ public class WelcomeFilter extends BaseWebzFilter {
 			urlBuffer.append('?').append(queryString);
 		}
 
-		String redirectUrl = urlBuffer.toString();
+		redirect(resp, urlBuffer.toString(), isMethodHead);
+	}
+
+	private void redirectToLinkedUri(HttpServletRequest req, HttpServletResponse resp, String linkedUri, boolean isMethodHead)
+			throws IOException {
+
+		String queryString = req.getQueryString();
+		if (queryString != null) {
+			linkedUri += '?' + queryString;
+		}
+
+		redirect(resp, linkedUri, isMethodHead);
+	}
+
+	private void redirect(HttpServletResponse resp, String redirectUrl, boolean isMethodHead) throws IOException {
 
 		resp.setStatus(permanentRedirect ? HttpServletResponse.SC_MOVED_PERMANENTLY : HttpServletResponse.SC_MOVED_TEMPORARILY);
 		resp.setHeader(HEADER_LOCATION, redirectUrl);
