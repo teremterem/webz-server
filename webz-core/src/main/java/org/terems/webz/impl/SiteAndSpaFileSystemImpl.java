@@ -20,20 +20,20 @@ package org.terems.webz.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzException;
-import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzMetadata.FileSpecific;
+import org.terems.webz.internals.FreshParentChildrenMetadata;
 import org.terems.webz.internals.ParentChildrenMetadata;
 import org.terems.webz.internals.WebzFileSystem;
+import org.terems.webz.internals.WebzFileSystemStructure;
+import org.terems.webz.internals.WebzPathNormalizer;
 import org.terems.webz.internals.base.BaseWebzFileSystemImpl;
 
 public class SiteAndSpaFileSystemImpl extends BaseWebzFileSystemImpl {
@@ -66,73 +66,127 @@ public class SiteAndSpaFileSystemImpl extends BaseWebzFileSystemImpl {
 		return uniqueId;
 	}
 
-	private WebzFile findFile(String pathname) {
+	private static class FileSearchResult {
+		private WebzMetadata metadata;
+		private WebzFileSystem host;
+	}
 
-		// TODO
-		return null;
+	private FileSearchResult findFile(String pathname) throws IOException, WebzException {
+
+		FileSearchResult searchResult = new FileSearchResult();
+
+		WebzPathNormalizer pathNormalizer = getPathNormalizer();
+		WebzFileSystemStructure siteStructure = siteFileSystem.getStructure();
+		WebzFileSystemStructure spaStructure = spaFileSystem.getStructure();
+
+		searchResult.metadata = siteStructure.getMetadata(pathname);
+		if (searchResult.metadata != null) {
+			searchResult.host = siteFileSystem;
+			return searchResult;
+		}
+		searchResult.metadata = spaStructure.getMetadata(pathname);
+		if (searchResult.metadata != null) {
+			searchResult.host = spaFileSystem;
+			return searchResult;
+		}
+		// TODO get rid of previous two checks when caching is implemented
+
+		String currentPath = "";
+
+		String[] pathMembers = pathNormalizer.splitPathname(pathname);
+		for (int i = 0; i < pathMembers.length; i++) {
+
+			boolean matchFound = false;
+			Map<String, WebzMetadata> children = siteStructure.getChildPathnamesAndMetadata(currentPath);
+			if (children != null) {
+				for (Map.Entry<String, WebzMetadata> childEntry : children.entrySet()) {
+
+					WebzMetadata childMetadata = childEntry.getValue();
+					if (pathMembers[i].equals(childMetadata.getName())) {
+
+						if (childMetadata.isFolder()) {
+							matchFound = true;
+							currentPath = pathNormalizer.concatPathname(currentPath, pathMembers[i]);
+						}
+						break;
+					}
+				}
+			}
+			if (!matchFound) {
+
+				if (i < pathMembers.length - 1) {
+
+					searchResult.metadata = spaStructure.getMetadata(pathNormalizer.constructPathname(pathMembers, i + 1,
+							pathMembers.length));
+					if (searchResult.metadata != null) {
+						// TODO provide linkedPathname in metadata
+						searchResult.host = spaFileSystem;
+						return searchResult;
+					}
+				}
+
+				// returning empty search result
+				return searchResult;
+			}
+		}
+
+		return searchResult;
 	}
 
 	@Override
 	public WebzMetadata getMetadata(String pathname) throws IOException, WebzException {
-		return findFile(pathname).getMetadata();
+		return findFile(pathname).metadata;
 	}
 
 	@Override
 	public ParentChildrenMetadata getParentChildrenMetadata(String parentPathname) throws IOException, WebzException {
 
-		WebzFile file = findFile(parentPathname);
-
-		WebzMetadata metadata = file.getMetadata();
-		if (metadata == null) {
+		FileSearchResult result = findFile(parentPathname);
+		if (result.metadata == null) {
 			return null;
 		}
+		return result.host.getStructure().getParentChildrenMetadata(parentPathname);
+	}
 
-		ParentChildrenMetadata parentChildren = new ParentChildrenMetadata();
-		parentChildren.parentMetadata = metadata;
-		parentChildren.childPathnamesAndMetadata = populateChildPathnamesAndMetadata(file);
+	@Override
+	public FreshParentChildrenMetadata getParentChildrenMetadataIfChanged(String parentPathname, Object previousFolderHash)
+			throws IOException, WebzException {
 
-		return parentChildren;
+		FileSearchResult result = findFile(parentPathname);
+		if (result.metadata == null) {
+			return null;
+		}
+		return result.host.getStructure().getParentChildrenMetadataIfChanged(parentPathname, previousFolderHash);
 	}
 
 	@Override
 	public Map<String, WebzMetadata> getChildPathnamesAndMetadata(String parentPathname) throws IOException, WebzException {
-		return populateChildPathnamesAndMetadata(findFile(parentPathname));
-	}
 
-	private Map<String, WebzMetadata> populateChildPathnamesAndMetadata(WebzFile file) throws IOException, WebzException {
-
-		Collection<WebzFile> children = file.listChildren();
-		if (children == null) {
+		FileSearchResult result = findFile(parentPathname);
+		if (result.metadata == null) {
 			return null;
 		}
-
-		Map<String, WebzMetadata> pathnamesAndMetadata = new LinkedHashMap<String, WebzMetadata>();
-		for (WebzFile child : children) {
-			pathnamesAndMetadata.put(child.getPathname(), child.getMetadata());
-		}
-		return pathnamesAndMetadata;
+		return result.host.getStructure().getChildPathnamesAndMetadata(parentPathname);
 	}
 
 	@Override
 	public Collection<String> getChildPathnames(String parentPathname) throws IOException, WebzException {
 
-		WebzFile file = findFile(parentPathname);
-		Collection<WebzFile> children = file.listChildren();
-		if (children == null) {
+		FileSearchResult result = findFile(parentPathname);
+		if (result.metadata == null) {
 			return null;
 		}
-
-		Collection<String> childPathnames = new ArrayList<String>(children.size());
-		for (WebzFile child : children) {
-			childPathnames.add(child.getPathname());
-		}
-		return childPathnames;
+		return result.host.getStructure().getChildPathnames(parentPathname);
 	}
 
 	@Override
 	public WebzFileDownloader getFileDownloader(String pathname) throws IOException, WebzException {
 
-		return findFile(pathname).getFileDownloader();
+		FileSearchResult result = findFile(pathname);
+		if (result.metadata == null) {
+			return null;
+		}
+		return result.host.getOperations().getFileDownloader(pathname);
 	}
 
 	@Override

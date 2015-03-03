@@ -24,12 +24,18 @@ public interface WebzPathNormalizer {
 
 	public boolean isNormalizedPathnameInvalid(String pathname);
 
-	public String getParentPathname(String pathname);
-
-	public String concatPathname(String basePath, String relativePathname);
+	public boolean isHidden(String pathname);
 
 	public boolean belongsToSubtree(String pathname, String subtreePath);
 
-	public boolean isHidden(String pathname);
+	public String getParentPathname(String pathname);
+
+	public String getFilename(String pathname);
+
+	public String concatPathname(String basePath, String relativePathname);
+
+	public String[] splitPathname(String pathname);
+
+	public String constructPathname(String[] pathMembers, int beginIndex, int endIndex);
 
 }

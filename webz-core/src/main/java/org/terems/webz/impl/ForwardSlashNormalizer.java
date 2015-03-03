@@ -98,9 +98,38 @@ public class ForwardSlashNormalizer implements WebzPathNormalizer {
 	}
 
 	@Override
-	public String concatPathname(String basePath, String relativePathname) {
+	public String getFilename(String pathname) {
 
+		int separatorIndex = pathname.lastIndexOf(FWD_SLASH);
+
+		if (separatorIndex < 0) {
+			return pathname;
+		}
+		return pathname.substring(separatorIndex + 1, pathname.length());
+	}
+
+	@Override
+	public String concatPathname(String basePath, String relativePathname) {
 		return basePath + FWD_SLASH + relativePathname;
+	}
+
+	@Override
+	public String[] splitPathname(String pathname) {
+		return pathname.split(FWD_SLASH_STR);
+	}
+
+	@Override
+	public String constructPathname(String[] pathMembers, int beginIndex, int endIndex) {
+
+		StringBuffer buf = new StringBuffer();
+		for (int i = beginIndex; i < endIndex - 1; i++) {
+
+			buf.append(pathMembers[i]);
+			buf.append(FWD_SLASH);
+		}
+		buf.append(pathMembers[endIndex - 1]);
+
+		return buf.toString();
 	}
 
 }

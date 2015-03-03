@@ -113,6 +113,9 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 
 		String siteContentPath = webzProperties.getProperty(WebzLaunchHelper.SITE_CONTENT_PATH_PROPERTY);
 		String renderingSpaPath = webzProperties.getProperty(WebzLaunchHelper.RENDERING_SPA_PATH_PROPERTY);
+		if (siteContentPath == null) {
+			throw new WebzException(WebzLaunchHelper.SITE_CONTENT_PATH_PROPERTY + " WebZ property is not set");
+		}
 		if (renderingSpaPath == null) {
 			throw new WebzException(WebzLaunchHelper.RENDERING_SPA_PATH_PROPERTY + " WebZ property is not set");
 		}
