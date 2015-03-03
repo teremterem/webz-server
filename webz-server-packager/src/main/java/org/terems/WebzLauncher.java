@@ -402,9 +402,8 @@ public class WebzLauncher {
 		System.out.println("    WebZ properties:");
 		System.out.println();
 		System.out.println();
+		System.out.println(WebzLaunchHelper.SITE_CONTENT_PATH_PROPERTY + "={path-to-site-content-root-folder}");
 		System.out.println(WebzLaunchHelper.RENDERING_SPA_PATH_PROPERTY + "={path-to-SPA-root-folder}");
-		System.out.println("# Comming soon:");
-		System.out.println("#" + WebzLaunchHelper.SITE_CONTENT_PATH_PROPERTY + "={path-to-site-content-root-folder}");
 		System.out.println();
 		System.out.println("# Optional:");
 		System.out.println("#" + HTTP_PORT_PROPERTY + "=" + DEFAULT_HTTP_PORT);
