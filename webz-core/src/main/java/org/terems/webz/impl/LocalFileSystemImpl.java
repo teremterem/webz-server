@@ -22,10 +22,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,25 +76,25 @@ public class LocalFileSystemImpl extends BaseWebzFileSystemImpl {
 			return null;
 		}
 
-		Map<String, WebzMetadata> pathnamesAndMetadata = null;
+		Map<String, WebzMetadata> childPathnamesAndMetadata = null;
 
 		String[] children = file.list();
 		if (children != null) {
 			WebzPathNormalizer pathNormalizer = getPathNormalizer();
 
 			String localBasePath = file.getAbsolutePath();
-			pathnamesAndMetadata = new LinkedHashMap<String, WebzMetadata>();
+			childPathnamesAndMetadata = new LinkedHashMap<String, WebzMetadata>();
 
 			for (String childName : children) {
 				File child = new File(localBasePath, childName);
-				pathnamesAndMetadata.put(pathNormalizer.concatPathname(parentPathname, childName), new LocalFileMetadata(child));
+				childPathnamesAndMetadata.put(pathNormalizer.concatPathname(parentPathname, childName), new LocalFileMetadata(child));
 			}
 		}
-		return new ParentChildrenMetadata(new LocalFileMetadata(file), pathnamesAndMetadata, null);
+		return new ParentChildrenMetadata(new LocalFileMetadata(file), childPathnamesAndMetadata, null);
 	}
 
 	@Override
-	public Collection<String> getChildPathnames(String parentPathname) throws IOException, WebzException {
+	public Set<String> getChildPathnames(String parentPathname) throws IOException, WebzException {
 
 		File file = new File(basePath, parentPathname);
 		if (!fileExists(file, parentPathname)) {
@@ -107,7 +107,7 @@ public class LocalFileSystemImpl extends BaseWebzFileSystemImpl {
 		}
 
 		WebzPathNormalizer pathNormalizer = getPathNormalizer();
-		Collection<String> childPathnames = new ArrayList<String>(children.length);
+		Set<String> childPathnames = new LinkedHashSet<String>();
 		for (String childName : children) {
 			childPathnames.add(pathNormalizer.concatPathname(parentPathname, childName));
 		}

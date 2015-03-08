@@ -20,10 +20,10 @@ package org.terems.webz.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,17 +101,14 @@ public class SpaSiteFileSystemImpl extends BaseWebzFileSystemImpl {
 			boolean matchFound = false;
 			Map<String, WebzMetadata> children = siteStructure.getChildPathnamesAndMetadata(currentPath);
 			if (children != null) {
-				for (Map.Entry<String, WebzMetadata> childEntry : children.entrySet()) {
 
-					WebzMetadata childMetadata = childEntry.getValue();
-					if (pathMembers[i].equals(childMetadata.getName())) {
+				String childPathname = pathNormalizer.concatPathname(currentPath, pathMembers[i]);
 
-						if (childMetadata.isFolder()) {
-							matchFound = true;
-							currentPath = pathNormalizer.concatPathname(currentPath, pathMembers[i]);
-						}
-						break;
-					}
+				WebzMetadata childMetadata = children.get(childPathname);
+				if (childMetadata != null && childMetadata.isFolder()) {
+
+					matchFound = true;
+					currentPath = childPathname;
 				}
 			}
 			if (!matchFound) {
@@ -229,15 +226,15 @@ public class SpaSiteFileSystemImpl extends BaseWebzFileSystemImpl {
 	}
 
 	@Override
-	public Collection<String> getChildPathnames(String parentPathname) throws IOException, WebzException {
+	public Set<String> getChildPathnames(String parentPathname) throws IOException, WebzException {
 
 		FileFound found = findFile(parentPathname, true);
 		if (found == null) {
 			return null;
 		}
 
-		Collection<String> primary = found.primaryHost.getStructure().getChildPathnames(found.actualPathname);
-		Collection<String> secondary = null;
+		Set<String> primary = found.primaryHost.getStructure().getChildPathnames(found.actualPathname);
+		Set<String> secondary = null;
 		if (found.secondaryHost != null) {
 			secondary = found.secondaryHost.getStructure().getChildPathnames(found.actualPathname);
 		}
@@ -248,7 +245,7 @@ public class SpaSiteFileSystemImpl extends BaseWebzFileSystemImpl {
 		if (primary == null) {
 			return secondary;
 		}
-		Collection<String> merged = new LinkedHashSet<String>(primary);
+		Set<String> merged = new LinkedHashSet<String>(primary);
 		merged.addAll(secondary);
 
 		return merged;

@@ -18,11 +18,11 @@
 
 package org.terems.webz.internals.cache;
 
-import java.util.Collection;
+import java.util.Set;
 
 public class ChildPathnamesHolder {
 
-	public Collection<String> childPathnames;
+	public Set<String> childPathnames;
 
 	public Object folderHash;
 

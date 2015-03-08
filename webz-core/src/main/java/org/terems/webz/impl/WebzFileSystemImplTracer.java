@@ -20,8 +20,8 @@ package org.terems.webz.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,7 +127,7 @@ public class WebzFileSystemImplTracer extends BaseWebzDestroyable implements Web
 	}
 
 	@Override
-	public Collection<String> getChildPathnames(String parentPathname) throws IOException, WebzException {
+	public Set<String> getChildPathnames(String parentPathname) throws IOException, WebzException {
 
 		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".getChildPathnames('" + parentPathname + "');", fsImpl));
 		return fsImpl.getChildPathnames(parentPathname);

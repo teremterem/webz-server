@@ -19,8 +19,8 @@
 package org.terems.webz.internals;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
@@ -46,6 +46,6 @@ public interface WebzFileSystemStructure {
 
 	public Map<String, WebzMetadata> getChildPathnamesAndMetadata(String parentPathname) throws IOException, WebzException;
 
-	public Collection<String> getChildPathnames(String parentPathname) throws IOException, WebzException;
+	public Set<String> getChildPathnames(String parentPathname) throws IOException, WebzException;
 
 }

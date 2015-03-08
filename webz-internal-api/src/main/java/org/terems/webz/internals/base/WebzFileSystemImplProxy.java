@@ -20,8 +20,8 @@ package org.terems.webz.internals.base;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
@@ -83,7 +83,7 @@ public abstract class WebzFileSystemImplProxy extends BaseWebzDestroyable implem
 	}
 
 	@Override
-	public Collection<String> getChildPathnames(String parentPathname) throws IOException, WebzException {
+	public Set<String> getChildPathnames(String parentPathname) throws IOException, WebzException {
 		return getInnerFileSystemImpl().getChildPathnames(parentPathname);
 	}
 

@@ -20,8 +20,8 @@ package org.terems.webz.impl.cache;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,7 +138,7 @@ public class FileSystemCacheWrapper extends BaseWebzFileSystemImpl {
 	}
 
 	@Override
-	public Collection<String> getChildPathnames(String parentPathname) {
+	public Set<String> getChildPathnames(String parentPathname) {
 		ChildPathnamesHolder childPathnamesHolder = cacheImpl.fetchChildPathnamesHolder(parentPathname);
 		return childPathnamesHolder == null ? null : childPathnamesHolder.childPathnames;
 	}
