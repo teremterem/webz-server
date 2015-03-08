@@ -43,9 +43,9 @@ public class WebzFileSystemManager extends BaseWebzDestroyable {
 		return factory.newDestroyable(GenericWebzFileSystem.class).init(DEFAULT_PATH_NORMALIZER, webzProperties, factory);
 	}
 
-	public WebzFileSystem createSiteAndSpaFileSystem(WebzFileSystem siteFileSystem, WebzFileSystem spaFileSystem,
+	public WebzFileSystem createSpaSiteFileSystem(WebzFileSystem spaFileSystem, WebzFileSystem siteFileSystem,
 			WebzProperties webzProperties) throws WebzException {
-		return factory.newDestroyable(SiteAndSpaWebzFileSystem.class).init(DEFAULT_PATH_NORMALIZER, siteFileSystem, spaFileSystem,
+		return factory.newDestroyable(SpaSiteWebzFileSystem.class).init(DEFAULT_PATH_NORMALIZER, spaFileSystem, siteFileSystem,
 				webzProperties, factory);
 	}
 

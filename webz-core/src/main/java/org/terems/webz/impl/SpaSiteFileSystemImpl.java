@@ -21,6 +21,8 @@ package org.terems.webz.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -30,26 +32,24 @@ import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzMetadata.FileSpecific;
 import org.terems.webz.base.WebzMetadataProxy;
-import org.terems.webz.internals.FreshParentChildrenMetadata;
 import org.terems.webz.internals.ParentChildrenMetadata;
 import org.terems.webz.internals.WebzFileSystem;
 import org.terems.webz.internals.WebzFileSystemStructure;
 import org.terems.webz.internals.WebzPathNormalizer;
 import org.terems.webz.internals.base.BaseWebzFileSystemImpl;
 
-public class SiteAndSpaFileSystemImpl extends BaseWebzFileSystemImpl {
+public class SpaSiteFileSystemImpl extends BaseWebzFileSystemImpl {
 
-	private static final Logger LOG = LoggerFactory.getLogger(SiteAndSpaFileSystemImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SpaSiteFileSystemImpl.class);
 
-	private WebzFileSystem siteFileSystem;
 	private WebzFileSystem spaFileSystem;
+	private WebzFileSystem siteFileSystem;
 
 	private String uniqueId;
 
-	public SiteAndSpaFileSystemImpl(WebzFileSystem siteFileSystem, WebzFileSystem spaFileSystem) {
-
-		this.siteFileSystem = siteFileSystem;
+	public SpaSiteFileSystemImpl(WebzFileSystem spaFileSystem, WebzFileSystem siteFileSystem) {
 		this.spaFileSystem = spaFileSystem;
+		this.siteFileSystem = siteFileSystem;
 	}
 
 	@Override
@@ -70,35 +70,31 @@ public class SiteAndSpaFileSystemImpl extends BaseWebzFileSystemImpl {
 	private static class FileFound {
 
 		WebzMetadata proxiedMetadata;
-		WebzFileSystem host;
+		WebzFileSystem primaryHost;
+		WebzFileSystem secondaryHost; // can be null
 		String actualPathname;
 
-		FileFound(WebzMetadata proxiedMetadata, WebzFileSystem host, String actualPathname) {
+		FileFound(WebzMetadata proxiedMetadata, WebzFileSystem primaryHost, WebzFileSystem secondaryHost, String actualPathname) {
 			this.proxiedMetadata = proxiedMetadata;
-			this.host = host;
+			this.primaryHost = primaryHost;
+			this.secondaryHost = secondaryHost;
 			this.actualPathname = actualPathname;
 		}
 
 	}
 
-	private FileFound findFile(String pathname) throws IOException, WebzException {
+	private FileFound findFile(String pathname, boolean populateSecondaryHost) throws IOException, WebzException {
+
+		FileFound found = hitAgainstFullPathname(pathname, populateSecondaryHost);
+		if (found != null) {
+			return found;
+		}
+		// TODO get rid of hitAgainstFullPathname() method when caching is implemented (integrate it's logic into the algorithm below)
 
 		WebzPathNormalizer pathNormalizer = getPathNormalizer();
 		WebzFileSystemStructure siteStructure = siteFileSystem.getStructure();
-		WebzFileSystemStructure spaStructure = spaFileSystem.getStructure();
-
-		WebzMetadata metadata = spaStructure.getMetadata(pathname);
-		if (metadata != null) {
-			return new FileFound(metadata, spaFileSystem, pathname);
-		}
-		metadata = siteStructure.getMetadata(pathname);
-		if (metadata != null) {
-			return new FileFound(metadata, siteFileSystem, pathname);
-		}
-		// TODO get rid of previous two checks when caching is implemented ?
 
 		String currentPath = "";
-
 		String[] pathMembers = pathNormalizer.splitPathname(pathname);
 		for (int i = 0; i < pathMembers.length; i++) {
 
@@ -122,23 +118,9 @@ public class SiteAndSpaFileSystemImpl extends BaseWebzFileSystemImpl {
 
 				if (i > 0) {
 
-					final String linkedPathname = pathNormalizer.constructPathname(pathMembers, i, pathMembers.length);
-					final WebzMetadata metadataToProxy = spaStructure.getMetadata(linkedPathname);
-					if (metadataToProxy != null) {
-
-						return new FileFound(new WebzMetadataProxy() {
-
-							@Override
-							protected WebzMetadata getInnerMetadata() {
-								return metadataToProxy;
-							}
-
-							@Override
-							public String getLinkedPathname() {
-								return linkedPathname;
-							}
-
-						}, spaFileSystem, linkedPathname);
+					found = checkLinkedPathnameInSpa(pathNormalizer.constructPathname(pathMembers, i, pathMembers.length));
+					if (found != null) {
+						return found;
 					}
 				}
 				return null;
@@ -147,10 +129,59 @@ public class SiteAndSpaFileSystemImpl extends BaseWebzFileSystemImpl {
 		return null;
 	}
 
+	private FileFound checkLinkedPathnameInSpa(final String linkedPathname) throws IOException, WebzException {
+
+		final WebzMetadata metadataToProxy = spaFileSystem.getStructure().getMetadata(linkedPathname);
+		if (metadataToProxy != null) {
+
+			return new FileFound(new WebzMetadataProxy() {
+
+				@Override
+				protected WebzMetadata getInnerMetadata() {
+					return metadataToProxy;
+				}
+
+				@Override
+				public String getLinkedPathname() {
+					return linkedPathname;
+				}
+
+			}, spaFileSystem, null, linkedPathname);
+		}
+		return null;
+	}
+
+	private FileFound hitAgainstFullPathname(String pathname, boolean populateSecondaryHost) throws IOException, WebzException {
+
+		WebzFileSystemStructure spaStructure = spaFileSystem.getStructure();
+		WebzFileSystemStructure siteStructure = siteFileSystem.getStructure();
+
+		WebzMetadata metadata = spaStructure.getMetadata(pathname);
+		if (metadata != null) {
+
+			if (populateSecondaryHost && metadata.isFolder()) {
+
+				WebzMetadata secondaryMetadata = siteStructure.getMetadata(pathname);
+				if (secondaryMetadata != null && secondaryMetadata.isFolder()) {
+					return new FileFound(metadata, spaFileSystem, siteFileSystem, pathname);
+				}
+			}
+			return new FileFound(metadata, spaFileSystem, null, pathname);
+		}
+
+		metadata = siteStructure.getMetadata(pathname);
+		if (metadata != null) {
+
+			return new FileFound(metadata, siteFileSystem, null, pathname);
+		}
+
+		return null;
+	}
+
 	@Override
 	public WebzMetadata getMetadata(String pathname) throws IOException, WebzException {
 
-		FileFound found = findFile(pathname);
+		FileFound found = findFile(pathname, false);
 		if (found == null) {
 			return null;
 		}
@@ -160,72 +191,83 @@ public class SiteAndSpaFileSystemImpl extends BaseWebzFileSystemImpl {
 	@Override
 	public ParentChildrenMetadata getParentChildrenMetadata(String parentPathname) throws IOException, WebzException {
 
-		// TODO if folder exists in both file systems then merge children
-		FileFound found = findFile(parentPathname);
+		FileFound found = findFile(parentPathname, true);
 		if (found == null) {
 			return null;
 		}
-
-		ParentChildrenMetadata result = found.host.getStructure().getParentChildrenMetadata(found.actualPathname);
-		if (result != null) {
-			result.parentMetadata = found.proxiedMetadata;
-		}
-		return result;
-	}
-
-	@Override
-	public FreshParentChildrenMetadata getParentChildrenMetadataIfChanged(String parentPathname, Object previousFolderHash)
-			throws IOException, WebzException {
-
-		// TODO if folder exists in both file systems then merge children
-		FileFound found = findFile(parentPathname);
-		if (found == null) {
-			return null;
-		}
-
-		FreshParentChildrenMetadata result = found.host.getStructure().getParentChildrenMetadataIfChanged(found.actualPathname,
-				previousFolderHash);
-		if (result != null && result.parentChildrenMetadata != null) {
-			result.parentChildrenMetadata.parentMetadata = found.proxiedMetadata;
-		}
-		return result;
+		return new ParentChildrenMetadata(found.proxiedMetadata, fetchMergedChildren(found), null);
 	}
 
 	@Override
 	public Map<String, WebzMetadata> getChildPathnamesAndMetadata(String parentPathname) throws IOException, WebzException {
 
-		// TODO if folder exists in both file systems then merge children
-		FileFound found = findFile(parentPathname);
+		FileFound found = findFile(parentPathname, true);
 		if (found == null) {
 			return null;
 		}
-		return found.host.getStructure().getChildPathnamesAndMetadata(found.actualPathname);
+		return fetchMergedChildren(found);
+	}
+
+	private Map<String, WebzMetadata> fetchMergedChildren(FileFound found) throws IOException, WebzException {
+
+		Map<String, WebzMetadata> primary = found.primaryHost.getStructure().getChildPathnamesAndMetadata(found.actualPathname);
+		Map<String, WebzMetadata> secondary = null;
+		if (found.secondaryHost != null) {
+			secondary = found.secondaryHost.getStructure().getChildPathnamesAndMetadata(found.actualPathname);
+		}
+
+		if (secondary == null) {
+			return primary;
+		}
+		if (primary == null) {
+			return secondary;
+		}
+		Map<String, WebzMetadata> merged = new LinkedHashMap<String, WebzMetadata>(primary);
+		merged.putAll(secondary);
+
+		return merged;
 	}
 
 	@Override
 	public Collection<String> getChildPathnames(String parentPathname) throws IOException, WebzException {
 
-		// TODO if folder exists in both file systems then merge children
-		FileFound found = findFile(parentPathname);
+		FileFound found = findFile(parentPathname, true);
 		if (found == null) {
 			return null;
 		}
-		return found.host.getStructure().getChildPathnames(found.actualPathname);
+
+		Collection<String> primary = found.primaryHost.getStructure().getChildPathnames(found.actualPathname);
+		Collection<String> secondary = null;
+		if (found.secondaryHost != null) {
+			secondary = found.secondaryHost.getStructure().getChildPathnames(found.actualPathname);
+		}
+
+		if (secondary == null) {
+			return primary;
+		}
+		if (primary == null) {
+			return secondary;
+		}
+		Collection<String> merged = new LinkedHashSet<String>(primary);
+		merged.addAll(secondary);
+
+		return merged;
 	}
 
 	@Override
 	public WebzFileDownloader getFileDownloader(String pathname) throws IOException, WebzException {
 
-		FileFound found = findFile(pathname);
+		FileFound found = findFile(pathname, false);
 		if (found == null) {
 			return null;
 		}
 
-		WebzFileDownloader result = found.host.getOperations().getFileDownloader(found.actualPathname);
-		if (result != null) {
-			result.fileSpecific = found.proxiedMetadata.getFileSpecific();
+		WebzFileDownloader downloader = found.primaryHost.getOperations().getFileDownloader(found.actualPathname);
+		if (downloader == null) {
+			return null;
 		}
-		return result;
+
+		return new WebzFileDownloader(found.proxiedMetadata.getFileSpecific(), downloader.content);
 	}
 
 	@Override

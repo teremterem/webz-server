@@ -29,6 +29,7 @@ import org.terems.webz.WebzFile;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.base.BaseWebzFilter;
 import org.terems.webz.config.StatusCodesConfig;
+import org.terems.webz.filter.helpers.StaticContentSender;
 import org.terems.webz.util.WebzUtils;
 
 public class ErrorFilter extends BaseWebzFilter {

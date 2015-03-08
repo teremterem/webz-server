@@ -76,23 +76,21 @@ public class LocalFileSystemImpl extends BaseWebzFileSystemImpl {
 			return null;
 		}
 
-		ParentChildrenMetadata parentChildren = new ParentChildrenMetadata();
-		parentChildren.parentMetadata = new LocalFileMetadata(file);
+		Map<String, WebzMetadata> pathnamesAndMetadata = null;
 
 		String[] children = file.list();
 		if (children != null) {
 			WebzPathNormalizer pathNormalizer = getPathNormalizer();
 
 			String localBasePath = file.getAbsolutePath();
-			Map<String, WebzMetadata> pathnamesAndMetadata = new LinkedHashMap<String, WebzMetadata>();
+			pathnamesAndMetadata = new LinkedHashMap<String, WebzMetadata>();
 
-			parentChildren.childPathnamesAndMetadata = pathnamesAndMetadata;
 			for (String childName : children) {
 				File child = new File(localBasePath, childName);
 				pathnamesAndMetadata.put(pathNormalizer.concatPathname(parentPathname, childName), new LocalFileMetadata(child));
 			}
 		}
-		return parentChildren;
+		return new ParentChildrenMetadata(new LocalFileMetadata(file), pathnamesAndMetadata, null);
 	}
 
 	@Override

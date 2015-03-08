@@ -32,6 +32,7 @@ import org.terems.webz.WebzException;
 import org.terems.webz.WebzFilter;
 import org.terems.webz.WebzProperties;
 import org.terems.webz.filter.ErrorFilter;
+import org.terems.webz.filter.MarkdownForSpaFilter;
 import org.terems.webz.filter.NotFoundFilter;
 import org.terems.webz.filter.StaticContentFilter;
 import org.terems.webz.filter.WelcomeFilter;
@@ -49,8 +50,8 @@ public class WebzServer implements WebzServletContainerBridge {
 
 	@SuppressWarnings("unchecked")
 	private static final Collection<Class<? extends WebzFilter>> DEFAULT_FILTERS = Arrays
-			.asList((Class<? extends WebzFilter>[]) new Class<?>[] { ErrorFilter.class, WelcomeFilter.class, StaticContentFilter.class,
-					NotFoundFilter.class });
+			.asList((Class<? extends WebzFilter>[]) new Class<?>[] { ErrorFilter.class, WelcomeFilter.class, MarkdownForSpaFilter.class,
+					StaticContentFilter.class, NotFoundFilter.class });
 
 	private WebzDestroyableObjectFactory globalFactory = new GenericWebzObjectFactory();
 	private volatile WebzApp rootWebzApp;
@@ -70,21 +71,21 @@ public class WebzServer implements WebzServletContainerBridge {
 		}
 	}
 
-	public void start(String siteContentPath, String renderingSpaPath) {
-
-		WebzProperties siteFileSystemProperties = new WebzProperties(webzInternalProperties);
-		siteFileSystemProperties.put(WebzProperties.FS_BASE_PATH_PROPERTY, siteContentPath);
+	public void start(String renderingSpaPath, String siteContentPath) {
 
 		WebzProperties spaFileSystemProperties = new WebzProperties(webzInternalProperties);
 		spaFileSystemProperties.put(WebzProperties.FS_BASE_PATH_PROPERTY, renderingSpaPath);
 
+		WebzProperties siteFileSystemProperties = new WebzProperties(webzInternalProperties);
+		siteFileSystemProperties.put(WebzProperties.FS_BASE_PATH_PROPERTY, siteContentPath);
+
 		try {
 			WebzFileSystemManager fileSystemManager = WebzFileSystemManager.getManager(globalFactory);
 
-			WebzFileSystem siteFileSystem = fileSystemManager.createFileSystem(siteFileSystemProperties);
 			WebzFileSystem spaFileSystem = fileSystemManager.createFileSystem(spaFileSystemProperties);
+			WebzFileSystem siteFileSystem = fileSystemManager.createFileSystem(siteFileSystemProperties);
 
-			WebzFileSystem siteAndSpaFileSystem = fileSystemManager.createSiteAndSpaFileSystem(siteFileSystem, spaFileSystem,
+			WebzFileSystem siteAndSpaFileSystem = fileSystemManager.createSpaSiteFileSystem(spaFileSystem, siteFileSystem,
 					webzInternalProperties);
 
 			rootWebzApp = globalFactory.newDestroyable(GenericWebzApp.class);
@@ -93,7 +94,7 @@ public class WebzServer implements WebzServletContainerBridge {
 		} catch (WebzException e) {
 
 			if (LOG.isErrorEnabled()) {
-				LOG.error("failed to init WebZ App \"" + (rootWebzApp == null ? null : rootWebzApp.getDisplayName()) + "\"", e);
+				LOG.error("failed to init WebZ App" + (rootWebzApp == null ? "" : " \"" + rootWebzApp.getDisplayName() + "\""), e);
 			}
 		}
 

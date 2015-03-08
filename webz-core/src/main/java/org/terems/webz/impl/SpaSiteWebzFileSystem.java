@@ -26,9 +26,9 @@ import org.terems.webz.internals.WebzObjectFactory;
 import org.terems.webz.internals.WebzPathNormalizer;
 import org.terems.webz.internals.base.BaseWebzFileSystem;
 
-public class SiteAndSpaWebzFileSystem extends BaseWebzFileSystem {
+public class SpaSiteWebzFileSystem extends BaseWebzFileSystem {
 
-	public SiteAndSpaWebzFileSystem init(WebzPathNormalizer pathNormalizer, WebzFileSystem siteFileSystem, WebzFileSystem spaFileSystem,
+	public SpaSiteWebzFileSystem init(WebzPathNormalizer pathNormalizer, WebzFileSystem spaFileSystem, WebzFileSystem siteFileSystem,
 			WebzProperties properties, WebzObjectFactory factory) throws WebzException {
 
 		this.pathNormalizer = pathNormalizer;
@@ -36,7 +36,7 @@ public class SiteAndSpaWebzFileSystem extends BaseWebzFileSystem {
 		fileFactory = factory.newDestroyable(DefaultWebzFileFactory.class);
 		fileFactory.init(this, properties);
 
-		WebzFileSystemImpl fsImpl = new SiteAndSpaFileSystemImpl(siteFileSystem, spaFileSystem);
+		WebzFileSystemImpl fsImpl = new SpaSiteFileSystemImpl(spaFileSystem, siteFileSystem);
 		fsImpl.init(pathNormalizer, properties, factory);
 
 		structure = fsImpl;

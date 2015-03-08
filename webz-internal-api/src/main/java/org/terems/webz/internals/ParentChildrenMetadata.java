@@ -24,10 +24,16 @@ import org.terems.webz.WebzMetadata;
 
 public class ParentChildrenMetadata {
 
-	public WebzMetadata parentMetadata;
+	public final WebzMetadata parentMetadata;
 
-	public Map<String, WebzMetadata> childPathnamesAndMetadata;
+	public final Map<String, WebzMetadata> childPathnamesAndMetadata;
 
-	public Object folderHash;
+	public final Object folderHash;
+
+	public ParentChildrenMetadata(WebzMetadata parentMetadata, Map<String, WebzMetadata> childPathnamesAndMetadata, Object folderHash) {
+		this.parentMetadata = parentMetadata;
+		this.childPathnamesAndMetadata = childPathnamesAndMetadata;
+		this.folderHash = folderHash;
+	}
 
 }

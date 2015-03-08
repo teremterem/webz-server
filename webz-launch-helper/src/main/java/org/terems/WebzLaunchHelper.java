@@ -15,8 +15,8 @@ public class WebzLaunchHelper {
 	public static final String WEBZ_PROPERTIES_PATH_ENV_VAR = WEBZ_PROPERTIES_PATH_PROPERTY.replace('.', '_').toUpperCase(Locale.ENGLISH);
 	public static final String WEBZ_PROPERTIES_DEFAULT_FILENAME = "webz.properties";
 
-	public static final String SITE_CONTENT_PATH_PROPERTY = "site.content.path";
 	public static final String RENDERING_SPA_PATH_PROPERTY = "rendering.spa.path";
+	public static final String SITE_CONTENT_PATH_PROPERTY = "site.content.path";
 
 	public static Properties initWebzPropertiesInLauncher(File thisJarFile) throws IOException {
 

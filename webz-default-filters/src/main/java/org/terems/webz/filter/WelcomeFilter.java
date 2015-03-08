@@ -42,14 +42,15 @@ public class WelcomeFilter extends BaseWebzFilter {
 	private Collection<String> welcomeFilenameSuffixesLowerCased;
 	private Collection<String> welcomeFilenamesLowerCased;
 
-	// dilemma: 301 (permanent) redirect is more SEO friendly but some browsers and crawlers may treat it as "eternal"
-	private final boolean permanentRedirect = false;
+	// dilemma: 301 (permanent) redirects are more SEO friendly however browsers usually treat them as "eternal"
+	private boolean usePermanentRedirects;
 
 	@Override
 	public void init() throws WebzException {
 		GeneralAppConfig generalConfig = getAppConfig().getAppConfigObject(GeneralAppConfig.class);
 		welcomeFilenameSuffixesLowerCased = generalConfig.getWelcomeFilenameSuffixesLowerCased();
 		welcomeFilenamesLowerCased = generalConfig.getWelcomeFilenamesLowerCased();
+		usePermanentRedirects = generalConfig.isUsePermanentRedirects();
 	}
 
 	@Override
@@ -119,7 +120,7 @@ public class WelcomeFilter extends BaseWebzFilter {
 
 	private void redirect(HttpServletResponse resp, String redirectUrl, boolean isMethodHead) throws IOException {
 
-		resp.setStatus(permanentRedirect ? HttpServletResponse.SC_MOVED_PERMANENTLY : HttpServletResponse.SC_MOVED_TEMPORARILY);
+		resp.setStatus(usePermanentRedirects ? HttpServletResponse.SC_MOVED_PERMANENTLY : HttpServletResponse.SC_MOVED_TEMPORARILY);
 		resp.setHeader(HEADER_LOCATION, redirectUrl);
 
 		if (!isMethodHead) {

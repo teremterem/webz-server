@@ -127,14 +127,8 @@ public class FileSystemCacheWrapper extends BaseWebzFileSystemImpl {
 		if (childPathnamesHolder == null) {
 			return null;
 		}
-
-		ParentChildrenMetadata parentChildrenMetadata = new ParentChildrenMetadata();
-		parentChildrenMetadata.folderHash = childPathnamesHolder.folderHash;
-
-		parentChildrenMetadata.parentMetadata = cacheImpl.fetchMetadata(parentPathname);
-		parentChildrenMetadata.childPathnamesAndMetadata = cacheImpl.fetchMetadata(childPathnamesHolder.childPathnames);
-
-		return parentChildrenMetadata;
+		return new ParentChildrenMetadata(cacheImpl.fetchMetadata(parentPathname),
+				cacheImpl.fetchMetadata(childPathnamesHolder.childPathnames), childPathnamesHolder.folderHash);
 	}
 
 	@Override

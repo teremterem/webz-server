@@ -27,6 +27,7 @@ import org.terems.webz.WebzChainContext;
 import org.terems.webz.WebzException;
 import org.terems.webz.base.BaseWebzFilter;
 import org.terems.webz.config.StatusCodesConfig;
+import org.terems.webz.filter.helpers.StaticContentSender;
 
 public class NotFoundFilter extends BaseWebzFilter {
 

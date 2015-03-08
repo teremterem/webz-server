@@ -20,13 +20,10 @@ package org.terems.webz.internals;
 
 public class FreshParentChildrenMetadata {
 
-	public ParentChildrenMetadata parentChildrenMetadata;
+	public final ParentChildrenMetadata parentChildrenMetadata;
 
 	public FreshParentChildrenMetadata(ParentChildrenMetadata parentChildrenMetadata) {
 		this.parentChildrenMetadata = parentChildrenMetadata;
-	}
-
-	public FreshParentChildrenMetadata() {
 	}
 
 }

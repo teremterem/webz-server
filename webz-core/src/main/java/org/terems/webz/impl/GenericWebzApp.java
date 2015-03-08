@@ -61,21 +61,26 @@ public class GenericWebzApp implements WebzApp {
 		this.appFactory = appFactory;
 		WebzFileFactory fileFactory = fileSystem.getFileFactory();
 
-		// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
-		rootContext = new RootWebzContext(fileFactory, appFactory);
-		// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
+		// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
+		this.rootContext = new RootWebzContext(fileFactory, appFactory);
+		// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
 
 		try {
 			WebzMetadata rootMetadata = fileFactory.get("").getMetadata();
 
 			if (rootMetadata == null) {
-				throw new WebzException(WebzUtils.formatFileSystemMessage("failed to initialize WebZ App - root location does not exist",
-						fileSystem));
+				throw new WebzException(WebzUtils.formatFileSystemMessage("root location does not exist", fileSystem));
+			}
+			this.displayName = rootMetadata.getName();
+
+			if (!rootMetadata.isFolder()) {
+				throw new WebzException(WebzUtils.formatFileSystemMessage("root location is not a folder", fileSystem));
 			}
 
-			displayName = rootContext.getAppConfigObject(GeneralAppConfig.class).getAppDisplayName();
-			if (displayName == null) {
-				displayName = rootMetadata.getName();
+			String configuredDisplayName = rootContext.getAppConfigObject(GeneralAppConfig.class).getAppDisplayName();
+			if (configuredDisplayName != null) {
+
+				this.displayName = configuredDisplayName;
 			}
 
 		} catch (IOException e) {
@@ -139,7 +144,7 @@ public class GenericWebzApp implements WebzApp {
 			}
 			if (filterChainIterator.hasNext()) {
 
-				// TODO implement "fileMasks"(?) to decide which filters to invoke and which filters to skip
+				// TODO implement fileMask concept to decide which filters to invoke and which to skip
 
 				filterChainIterator.next().serve(req, resp, this);
 

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.terems.webz.filter;
+package org.terems.webz.filter.helpers;
 
 import java.io.IOException;
 
@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.ByteOrderMark;
-import org.apache.commons.io.input.BOMInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzConfig;
@@ -64,31 +63,14 @@ public class StaticContentSender {
 		if (downloader == null) {
 			return null;
 		}
-		WebzMetadata.FileSpecific fileSpecific = downloader.fileSpecific;
-		if (fileSpecific == null) {
-			return null;
-		}
+		WebzMetadata.FileSpecific fileSpecific = WebzUtils.assertNotNull(downloader.fileSpecific);
+		FileDownloaderWithBOM downloaderWithBom = new FileDownloaderWithBOM(downloader, defaultEncoding);
 
-		BOMInputStream bomIn = new BOMInputStream(downloader.content, false, ALL_BOMS);
-
-		String encoding = defaultEncoding;
-		long contentLength = fileSpecific.getNumberOfBytes();
-
-		ByteOrderMark bom = bomIn.getBOM();
-		if (bom != null) {
-			encoding = bom.getCharsetName();
-			contentLength -= bom.length();
-		}
-		resp.setContentType(mimetypes.getMimetype(fileSpecific, defaultMimetype));
-		resp.setCharacterEncoding(encoding);
-
-		resp.setContentLength((int) contentLength);
-		resp.addHeader("Content-Length", Long.toString(contentLength));
-		// with Servlet API 3.1 it could be: resp.setContentLengthLong(contentLength);
-
+		WebzUtils.prepareStandardHeaders(resp, mimetypes.getMimetype(fileSpecific, defaultMimetype), downloaderWithBom.actualEncoding,
+				downloaderWithBom.actualNumberOfBytes);
 		try {
 			if (!WebzUtils.isHttpMethodHead(req)) {
-				WebzUtils.copyInToOut(bomIn, resp.getOutputStream());
+				downloaderWithBom.copyContentAndClose(resp.getOutputStream());
 			}
 
 		} catch (WebzWriteException e) {
@@ -96,11 +78,10 @@ public class StaticContentSender {
 			if (LOG.isDebugEnabled()) {
 				LOG.debug("most likely client dropped connection while receiving static content from " + content, e);
 			}
-		} finally {
-			WebzUtils.closeSafely(bomIn);
 		}
 		resp.flushBuffer();
 
 		return fileSpecific;
 	}
+
 }

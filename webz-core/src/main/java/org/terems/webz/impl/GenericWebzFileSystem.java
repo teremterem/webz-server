@@ -40,6 +40,7 @@ public class GenericWebzFileSystem extends BaseWebzFileSystem {
 		WebzFileSystemImpl fsImpl = ((WebzFileSystemImpl) factory.newDestroyable(properties.get(WebzProperties.WEBZ_FS_IMPL_CLASS_PROPERTY,
 				WebzDefaults.FS_IMPL_CLASS)));
 		fsImpl.init(pathNormalizer, properties, factory);
+
 		fsImpl = WebzFileSystemImplTracer.wrapIfApplicable(fsImpl);
 
 		boolean cacheEnabled = Boolean.valueOf(properties.get(WebzProperties.FS_CACHE_ENABLED_PROPERTY,

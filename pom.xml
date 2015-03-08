@@ -44,6 +44,15 @@
 
 	<properties>
 
+		<pegdown.version>1.5.0</pegdown.version>
+		<!--
+		<freemarker.version>2.3.22</freemarker.version>
+		<thymeleaf.version>2.1.4.RELEASE</thymeleaf.version>
+		<mustache.version>0.8.17</mustache.version><!- 0.9.0 ->
+		-->
+		<handlebars.version>2.0.0</handlebars.version>
+		<gson.version>2.3.1</gson.version>
+
 		<commons.io.version>2.4</commons.io.version>
 
 		<javassist.version>3.19.0-GA</javassist.version>
@@ -52,7 +61,7 @@
 		<maven.war.plugin.version>2.6</maven.war.plugin.version>
 		<maven.assembly.plugin.version>2.5.3</maven.assembly.plugin.version>
 
-		<apache.tomcat.version>7.0.59</apache.tomcat.version>
+		<tomcat.version>7.0.59</tomcat.version><!-- 8.0.20 -->
 
 		<slf4j.log4j12.version>1.7.10</slf4j.log4j12.version>
 		<log4j.version>1.2.17</log4j.version>
@@ -126,6 +135,39 @@
 				<version>${project.version}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>org.pegdown</groupId>
+				<artifactId>pegdown</artifactId>
+				<version>${pegdown.version}</version>
+			</dependency>
+			<!--
+			<dependency>
+				<groupId>org.freemarker</groupId>
+				<artifactId>freemarker</artifactId>
+				<version>${freemarker.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.thymeleaf</groupId>
+				<artifactId>thymeleaf</artifactId>
+				<version>${thymeleaf.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.spullara.mustache.java</groupId>
+				<artifactId>compiler</artifactId>
+				<version>${mustache.version}</version>
+			</dependency>
+			-->
+			<dependency>
+				<groupId>com.github.jknack</groupId>
+				<artifactId>handlebars</artifactId>
+				<version>${handlebars.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.code.gson</groupId>
+				<artifactId>gson</artifactId>
+				<version>${gson.version}</version>
+			</dependency>
+
 			<!-- Servlet API -->
 			<dependency>
 				<groupId>javax.servlet</groupId>
@@ -145,17 +187,17 @@
 			<dependency>
 		        <groupId>org.apache.tomcat.embed</groupId>
 		        <artifactId>tomcat-embed-core</artifactId>
-		        <version>${apache.tomcat.version}</version>
+		        <version>${tomcat.version}</version>
 		    </dependency>
 		    <dependency>
 		        <groupId>org.apache.tomcat.embed</groupId>
 		        <artifactId>tomcat-embed-logging-juli</artifactId>
-		        <version>${apache.tomcat.version}</version>
+		        <version>${tomcat.version}</version>
 		    </dependency>
 		    <dependency>
 		        <groupId>org.apache.tomcat.embed</groupId>
 		        <artifactId>tomcat-embed-jasper</artifactId>
-		        <version>${apache.tomcat.version}</version>
+		        <version>${tomcat.version}</version>
 		    </dependency>
 
 			<!-- Logging -->

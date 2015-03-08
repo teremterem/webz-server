@@ -32,6 +32,7 @@ import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFilter;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.base.BaseLastModifiedWebzFilter;
+import org.terems.webz.filter.helpers.StaticContentSender;
 import org.terems.webz.util.WebzUtils;
 
 public class StaticContentFilter extends BaseLastModifiedWebzFilter<WebzFile> {
