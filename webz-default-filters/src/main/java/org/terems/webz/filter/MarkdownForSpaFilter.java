@@ -23,6 +23,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,7 +56,24 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 
 	// TODO support browser caching (ETags or "last modified" timestamp stored in cache against request pathInfo ?)
 
-	public static final String MAIN_CONTENT_MUSTACHE_VAR = "MAIN-CONTENT";
+	private static final String WEBZ_FILE_MUSTACHE_VAR = "WEBZ-FILE";
+
+	private static final String NAME_MUSTACHE_VAR = "NAME";
+	private static final String PATHNAME_MUSTACHE_VAR = "PATHNAME";
+	// TODO private static final String UNDERLYING_SOURCE_MUSTACHE_VAR = "UNDERLYING-SOURCE";
+	// TODO private static final String UNDERLYING_SOURCE_ID_MUSTACHE_VAR = "UNDERLYING-SOURCE-ID";
+	// TODO private static final String SHORTEST_URI_MUSTACHE_VAR = "SHORTEST-URI";
+	// TODO private static final String SHORTEST_RELATIVE_URI_MUSTACHE_VAR = "SHORTEST-RELATTIVE-URI";
+	// TODO private static final String SHORTEST_URL_MUSTACHE_VAR = "SHORTEST-URL";
+	private static final String FULL_URI_MUSTACHE_VAR = "FULL-URI";
+	// TODO private static final String FULL_RELATIVE_URI_MUSTACHE_VAR = "FULL-RELATTIVE-URI";
+	// TODO private static final String FULL_URL_MUSTACHE_VAR = "FULL-URL";
+
+	private static final String WEBZ_PARENT_MUSTACHE_VAR = "WEBZ-PARENT";
+	private static final String WEBZ_SIBLINGS_MUSTACHE_VAR = "WEBZ-SIBLINGS";
+	// TODO private static final String WEBZ_LINKED_SIBLINGS_MUSTACHE_VAR = "WEBZ-LINKED-SIBLINGS";
+
+	private static final String MAIN_CONTENT_MUSTACHE_VAR = "MAIN-CONTENT";
 
 	private String defaultEncoding;
 	private String markdownSuffixLowerCased;
@@ -93,15 +112,14 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 		}
 	}
 
-	private boolean serveMarkdown(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException,
-			WebzException {
+	private boolean serveMarkdown(HttpServletRequest req, HttpServletResponse resp, WebzContext context) throws IOException, WebzException {
 
 		if (req.getParameterMap().containsKey(QUERY_PARAM_RAW)) {
 			// ?raw => give up in favor of StaticContentFilter
 			return false;
 		}
 
-		WebzFile file = chainContext.resolveFile(req);
+		WebzFile file = context.resolveFile(req);
 		WebzMetadata metadata = file.getMetadata();
 		if (metadata == null || !metadata.isFile() || !WebzUtils.toLowerCaseEng(metadata.getName()).endsWith(markdownSuffixLowerCased)) {
 			return false;
@@ -116,10 +134,9 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 
 		// TODO parse supplementary JSON files
 
-		Map<String, String> pageScope = new HashMap<String, String>();
-		pageScope.put(MAIN_CONTENT_MUSTACHE_VAR, mainContent);
+		Map<String, Object> pageScope = populatePageScope(mainContent, file, context);
 
-		WebzByteArrayOutputStream html = executeMustache(new Object[] { pageScope }, chainContext);
+		WebzByteArrayOutputStream html = executeMustache(new Object[] { pageScope }, context);
 
 		WebzUtils.prepareStandardHeaders(resp, mustacheResultingMimetype, defaultEncoding, html.size());
 		if (!WebzUtils.isHttpMethodHead(req)) {
@@ -127,6 +144,53 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 			resp.getOutputStream().write(html.getInternalByteArray(), 0, html.size());
 		}
 		return true;
+	}
+
+	private Map<String, Object> populatePageScope(String mainContent, WebzFile file, WebzContext context) throws IOException, WebzException {
+
+		Map<String, Object> pageScope = new HashMap<String, Object>();
+
+		// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
+		pageScope.put(MAIN_CONTENT_MUSTACHE_VAR, mainContent);
+		// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
+
+		pageScope.put(WEBZ_FILE_MUSTACHE_VAR, populateWebzFileMap(file, context));
+		WebzFile parent = file.getParent();
+		if (parent != null) {
+			pageScope.put(WEBZ_PARENT_MUSTACHE_VAR, populateWebzFileMap(parent, context));
+
+			Collection<WebzFile> children = parent.listChildren();
+			if (children != null) {
+
+				Collection<Object> webzSiblings = new ArrayList<Object>(children.size());
+				for (WebzFile sibling : children) {
+					webzSiblings.add(populateWebzFileMap(sibling, context));
+				}
+				pageScope.put(WEBZ_SIBLINGS_MUSTACHE_VAR, webzSiblings);
+			}
+		}
+
+		return pageScope;
+	}
+
+	private Map<String, Object> populateWebzFileMap(WebzFile file, WebzContext context) throws IOException, WebzException {
+
+		Map<String, Object> webzFile = new HashMap<String, Object>();
+
+		String pathname = file.getPathname();
+		WebzMetadata metadata = file.getMetadata();
+		if (metadata != null) {
+			webzFile.put(NAME_MUSTACHE_VAR, metadata.getName());
+
+			String linkedPathname = metadata.getLinkedPathname();
+			if (linkedPathname != null) {
+				pathname = linkedPathname;
+			}
+		}
+		webzFile.put(PATHNAME_MUSTACHE_VAR, pathname);
+		webzFile.put(FULL_URI_MUSTACHE_VAR, context.resolveUri(file));
+
+		return webzFile;
 	}
 
 	private WebzByteArrayOutputStream executeMustache(Object[] scopes, WebzContext context) throws IOException {

@@ -60,13 +60,14 @@ public class WelcomeFilter extends BaseWebzFilter {
 
 		if (isMethodHead || WebzUtils.isHttpMethodGet(req)) {
 
-			WebzMetadata metadata = chainContext.resolveFile(req).getMetadata();
+			WebzFile file = chainContext.resolveFile(req);
+			WebzMetadata metadata = file.getMetadata();
 			if (metadata != null) {
 
 				String linkedPathname = metadata.getLinkedPathname();
 				if (linkedPathname != null) {
 
-					redirectToLinkedUri(req, resp, chainContext.resolveUri(linkedPathname), isMethodHead);
+					redirectToLinkedUri(req, resp, chainContext.resolveUri(file), isMethodHead);
 					return;
 
 				} else {

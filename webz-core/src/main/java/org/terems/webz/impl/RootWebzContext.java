@@ -18,6 +18,8 @@
 
 package org.terems.webz.impl;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -26,6 +28,7 @@ import org.terems.webz.WebzConfig;
 import org.terems.webz.WebzContext;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
+import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzPathnameException;
 import org.terems.webz.WebzProperties;
 import org.terems.webz.config.WebzConfigObject;
@@ -36,6 +39,8 @@ import org.terems.webz.internals.WebzObjectFactory;
 public class RootWebzContext implements WebzContext, WebzConfig {
 
 	private static final Logger LOG = LoggerFactory.getLogger(RootWebzContext.class);
+
+	private static final String URI_RESOLUTION_FAILED_MSG = "failed to resolve WebZ File URI";
 
 	private WebzFileFactory fileFactory;
 	private WebzObjectFactory appFactory;
@@ -67,9 +72,35 @@ public class RootWebzContext implements WebzContext, WebzConfig {
 	}
 
 	@Override
-	public String resolveUri(String pathname) {
+	public String resolveUri(WebzFile file) {
+
 		// TODO take context path into account when it is introduced
-		return "/" + pathname;
+
+		if (file == null) {
+			return null;
+		}
+
+		String pathname = file.getPathname();
+		if (pathname == null) {
+			return null;
+		}
+		try {
+			WebzMetadata metadata = file.getMetadata();
+			if (metadata != null && metadata.isFolder()) {
+
+				if (pathname.length() > 0) {
+					return '/' + pathname + '/';
+				}
+				return "/";
+			}
+
+		} catch (IOException e) {
+			LOG.warn(URI_RESOLUTION_FAILED_MSG, e);
+		} catch (WebzException e) {
+			LOG.warn(URI_RESOLUTION_FAILED_MSG, e);
+		}
+
+		return '/' + pathname;
 	}
 
 	@Override
