@@ -174,7 +174,7 @@ public class WelcomeFilter extends BaseWebzFilter {
 		private Map<String, WebzFile> buildChildrenMap(WebzFile file) throws IOException, WebzException {
 			Map<String, WebzFile> childrenMap = new HashMap<String, WebzFile>();
 
-			for (WebzFile child : file.listChildren()) {
+			for (WebzFile child : file.listChildren(false)) {
 				String childPathname = child.getPathname();
 
 				if (childPathname != null) {

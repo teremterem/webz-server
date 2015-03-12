@@ -107,7 +107,7 @@ public class WebzFileNotAccessible implements WebzFile {
 	}
 
 	@Override
-	public Collection<WebzFile> listChildren() throws IOException, WebzException {
+	public Collection<WebzFile> listChildren(boolean includeHidden) throws IOException, WebzException {
 		return null;
 	}
 

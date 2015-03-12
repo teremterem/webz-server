@@ -181,7 +181,7 @@ public class GenericWebzFile implements WebzFile {
 	}
 
 	@Override
-	public Collection<WebzFile> listChildren() throws IOException, WebzException {
+	public Collection<WebzFile> listChildren(boolean includeHidden) throws IOException, WebzException {
 
 		if (isPathnameInvalid()) {
 			return null;
@@ -191,11 +191,15 @@ public class GenericWebzFile implements WebzFile {
 		if (childPathnames == null) {
 			return null;
 		}
-
 		WebzFileFactory fileFactory = fileSystem.getFileFactory();
+
 		Collection<WebzFile> children = new ArrayList<WebzFile>(childPathnames.size());
 		for (String childPathname : childPathnames) {
-			children.add(fileFactory.get(childPathname));
+
+			WebzFile child = fileFactory.get(childPathname);
+			if (includeHidden || !child.isHidden()) {
+				children.add(child);
+			}
 		}
 		return children;
 	}

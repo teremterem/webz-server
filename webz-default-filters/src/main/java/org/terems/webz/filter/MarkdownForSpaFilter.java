@@ -75,9 +75,8 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 
 	public static final String WEBZ_ROOT_MUSTACHE_VAR = "WEBZ-ROOT";
 	public static final String WEBZ_BREADCRUMBS_MUSTACHE_VAR = "WEBZ-BREADCRUMBS";
-	public static final String WEBZ_SIBLINGS_MUSTACHE_VAR = "WEBZ-SIBLINGS";
-	public static final String WEBZ_CHILDREN_MUSTACHE_VAR = "WEBZ-CHILDREN";
-	// TODO private static final String WEBZ_LINKED_SIBLINGS_MUSTACHE_VAR = "WEBZ-LINKED-SIBLINGS";
+	public static final String WEBZ_FOLDER_INDEX_MUSTACHE_VAR = "WEBZ-FOLDER-INDEX";
+	// TODO private static final String WEBZ_FOLDER_LINKED_INDEX_MUSTACHE_VAR = "WEBZ-FOLDER-LINKED-INDEX";
 
 	public static final String MAIN_CONTENT_MUSTACHE_VAR = "MAIN-CONTENT";
 
@@ -171,7 +170,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 
 			Collection<Object> webzChildren = populateChildren(file, context);
 			if (webzChildren != null) {
-				pageScope.put(WEBZ_CHILDREN_MUSTACHE_VAR, webzChildren);
+				pageScope.put(WEBZ_FOLDER_INDEX_MUSTACHE_VAR, webzChildren);
 			}
 		}
 
@@ -183,7 +182,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 
 			Collection<Object> webzSiblings = populateChildren(parent, context);
 			if (webzSiblings != null) {
-				pageScope.put(WEBZ_SIBLINGS_MUSTACHE_VAR, webzSiblings);
+				pageScope.put(WEBZ_FOLDER_INDEX_MUSTACHE_VAR, webzSiblings);
 			}
 		}
 
@@ -209,6 +208,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 			} else {
 				webzFile.put(FULL_RELATIVE_URI_MUSTACHE_VAR, metadata.getName());
 			}
+			// TODO implement relative URIs more properly
 		}
 		webzFile.put(PATHNAME_MUSTACHE_VAR, pathname);
 		webzFile.put(FULL_URI_MUSTACHE_VAR, context.resolveUri(file));
@@ -218,7 +218,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 
 	private Collection<Object> populateChildren(WebzFile file, WebzContext context) throws IOException, WebzException {
 
-		Collection<WebzFile> children = file.listChildren();
+		Collection<WebzFile> children = file.listChildren(false);
 		if (children == null) {
 			return null;
 		}
