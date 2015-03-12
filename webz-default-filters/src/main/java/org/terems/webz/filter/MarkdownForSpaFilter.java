@@ -181,17 +181,6 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 
 			if (!metadata.isFolder()) {
 
-				Collection<WebzFile> children = file.listChildren();
-				if (children != null) {
-
-					Collection<Object> webzChildren = new ArrayList<Object>(children.size());
-					for (WebzFile child : children) {
-						webzChildren.add(populateWebzFileMap(child, context));
-					}
-					pageScope.put(WEBZ_CHILDREN_MUSTACHE_VAR, webzChildren);
-				}
-			} else {
-
 				Collection<WebzFile> siblings = parent.listChildren();
 				if (siblings != null) {
 
