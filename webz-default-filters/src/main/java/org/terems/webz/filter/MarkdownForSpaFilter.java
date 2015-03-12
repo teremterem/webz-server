@@ -56,24 +56,24 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 
 	// TODO support browser caching (ETags or "last modified" timestamp stored in cache against request pathInfo ?)
 
-	private static final String WEBZ_FILE_MUSTACHE_VAR = "WEBZ-FILE";
+	public static final String WEBZ_FILE_MUSTACHE_VAR = "WEBZ-FILE";
 
-	private static final String NAME_MUSTACHE_VAR = "NAME";
-	private static final String PATHNAME_MUSTACHE_VAR = "PATHNAME";
+	public static final String NAME_MUSTACHE_VAR = "NAME";
+	public static final String PATHNAME_MUSTACHE_VAR = "PATHNAME";
 	// TODO private static final String UNDERLYING_SOURCE_MUSTACHE_VAR = "UNDERLYING-SOURCE";
 	// TODO private static final String UNDERLYING_SOURCE_ID_MUSTACHE_VAR = "UNDERLYING-SOURCE-ID";
 	// TODO private static final String SHORTEST_URI_MUSTACHE_VAR = "SHORTEST-URI";
 	// TODO private static final String SHORTEST_RELATIVE_URI_MUSTACHE_VAR = "SHORTEST-RELATTIVE-URI";
 	// TODO private static final String SHORTEST_URL_MUSTACHE_VAR = "SHORTEST-URL";
-	private static final String FULL_URI_MUSTACHE_VAR = "FULL-URI";
+	public static final String FULL_URI_MUSTACHE_VAR = "FULL-URI";
 	// TODO private static final String FULL_RELATIVE_URI_MUSTACHE_VAR = "FULL-RELATTIVE-URI";
 	// TODO private static final String FULL_URL_MUSTACHE_VAR = "FULL-URL";
 
-	private static final String WEBZ_PARENT_MUSTACHE_VAR = "WEBZ-PARENT";
-	private static final String WEBZ_SIBLINGS_MUSTACHE_VAR = "WEBZ-SIBLINGS";
+	public static final String WEBZ_PARENT_MUSTACHE_VAR = "WEBZ-PARENT";
+	public static final String WEBZ_SIBLINGS_MUSTACHE_VAR = "WEBZ-SIBLINGS";
 	// TODO private static final String WEBZ_LINKED_SIBLINGS_MUSTACHE_VAR = "WEBZ-LINKED-SIBLINGS";
 
-	private static final String MAIN_CONTENT_MUSTACHE_VAR = "MAIN-CONTENT";
+	public static final String MAIN_CONTENT_MUSTACHE_VAR = "MAIN-CONTENT";
 
 	private String defaultEncoding;
 	private String markdownSuffixLowerCased;
