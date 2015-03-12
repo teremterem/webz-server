@@ -86,12 +86,20 @@ public class RootWebzContext implements WebzContext, WebzConfig {
 		}
 		try {
 			WebzMetadata metadata = file.getMetadata();
-			if (metadata != null && metadata.isFolder()) {
+			if (metadata != null) {
 
-				if (pathname.length() > 0) {
-					return '/' + pathname + '/';
+				String linkedPathname = metadata.getLinkedPathname();
+				if (linkedPathname != null) {
+					pathname = linkedPathname;
 				}
-				return "/";
+
+				if (metadata.isFolder()) {
+
+					if (pathname.length() > 0) {
+						return '/' + pathname + '/';
+					}
+					return "/";
+				}
 			}
 
 		} catch (IOException e) {
