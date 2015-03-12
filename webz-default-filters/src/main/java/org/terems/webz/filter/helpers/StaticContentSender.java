@@ -74,14 +74,22 @@ public class StaticContentSender {
 			}
 
 		} catch (WebzWriteException e) {
-
-			if (LOG.isDebugEnabled()) {
-				LOG.debug("most likely client dropped connection while receiving static content from " + content, e);
-			}
+			debugConnectionDropped(e, content);
 		}
-		resp.flushBuffer();
+		try {
+			resp.flushBuffer();
+
+		} catch (IOException e) {
+			debugConnectionDropped(e, content);
+		}
 
 		return fileSpecific;
 	}
 
+	private void debugConnectionDropped(IOException e, WebzFile content) {
+
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("most likely client dropped connection while receiving static content from " + content, e);
+		}
+	}
 }
