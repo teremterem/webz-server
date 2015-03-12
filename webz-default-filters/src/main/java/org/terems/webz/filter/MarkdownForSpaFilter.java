@@ -25,7 +25,10 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -60,6 +63,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 
 	public static final String NAME_MUSTACHE_VAR = "NAME";
 	public static final String PATHNAME_MUSTACHE_VAR = "PATHNAME";
+	public static final String IS_FOLDER_MUSTACHE_VAR = "IS-FOLDER";
 	// TODO private static final String UNDERLYING_SOURCE_MUSTACHE_VAR = "UNDERLYING-SOURCE";
 	// TODO private static final String UNDERLYING_SOURCE_ID_MUSTACHE_VAR = "UNDERLYING-SOURCE-ID";
 	// TODO private static final String SHORTEST_URI_MUSTACHE_VAR = "SHORTEST-URI";
@@ -69,9 +73,10 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 	public static final String FULL_RELATIVE_URI_MUSTACHE_VAR = "FULL-RELATIVE-URI";
 	// TODO private static final String FULL_URL_MUSTACHE_VAR = "FULL-URL";
 
-	public static final String WEBZ_PARENT_MUSTACHE_VAR = "WEBZ-PARENT";
+	public static final String WEBZ_ROOT_MUSTACHE_VAR = "WEBZ-ROOT";
+	public static final String WEBZ_BREADCRUMBS_MUSTACHE_VAR = "WEBZ-BREADCRUMBS";
 	public static final String WEBZ_SIBLINGS_MUSTACHE_VAR = "WEBZ-SIBLINGS";
-	private static final String WEBZ_CHILDREN_MUSTACHE_VAR = "WEBZ-CHILDREN";
+	public static final String WEBZ_CHILDREN_MUSTACHE_VAR = "WEBZ-CHILDREN";
 	// TODO private static final String WEBZ_LINKED_SIBLINGS_MUSTACHE_VAR = "WEBZ-LINKED-SIBLINGS";
 
 	public static final String MAIN_CONTENT_MUSTACHE_VAR = "MAIN-CONTENT";
@@ -164,32 +169,21 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 		WebzMetadata metadata = file.getMetadata();
 		if (metadata.isFolder()) {
 
-			Collection<WebzFile> children = file.listChildren();
-			if (children != null) {
-
-				Collection<Object> webzChildren = new ArrayList<Object>(children.size());
-				for (WebzFile child : children) {
-					webzChildren.add(populateWebzFileMap(child, context));
-				}
+			Collection<Object> webzChildren = populateChildren(file, context);
+			if (webzChildren != null) {
 				pageScope.put(WEBZ_CHILDREN_MUSTACHE_VAR, webzChildren);
 			}
 		}
 
+		pageScope.put(WEBZ_ROOT_MUSTACHE_VAR, populateWebzFileMap(context.getFile(null), context));
+		pageScope.put(WEBZ_BREADCRUMBS_MUSTACHE_VAR, populateWebzBreadcrumbs(file, context));
+
 		WebzFile parent = file.getParent();
-		if (parent != null) {
-			pageScope.put(WEBZ_PARENT_MUSTACHE_VAR, populateWebzFileMap(parent, context));
+		if (parent != null && !metadata.isFolder()) {
 
-			if (!metadata.isFolder()) {
-
-				Collection<WebzFile> siblings = parent.listChildren();
-				if (siblings != null) {
-
-					Collection<Object> webzSiblings = new ArrayList<Object>(siblings.size());
-					for (WebzFile sibling : siblings) {
-						webzSiblings.add(populateWebzFileMap(sibling, context));
-					}
-					pageScope.put(WEBZ_SIBLINGS_MUSTACHE_VAR, webzSiblings);
-				}
+			Collection<Object> webzSiblings = populateChildren(parent, context);
+			if (webzSiblings != null) {
+				pageScope.put(WEBZ_SIBLINGS_MUSTACHE_VAR, webzSiblings);
 			}
 		}
 
@@ -210,6 +204,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 				pathname = linkedPathname;
 			}
 			if (metadata.isFolder()) {
+				webzFile.put(IS_FOLDER_MUSTACHE_VAR, Boolean.TRUE);
 				webzFile.put(FULL_RELATIVE_URI_MUSTACHE_VAR, metadata.getName() + '/');
 			} else {
 				webzFile.put(FULL_RELATIVE_URI_MUSTACHE_VAR, metadata.getName());
@@ -219,6 +214,35 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 		webzFile.put(FULL_URI_MUSTACHE_VAR, context.resolveUri(file));
 
 		return webzFile;
+	}
+
+	private Collection<Object> populateChildren(WebzFile file, WebzContext context) throws IOException, WebzException {
+
+		Collection<WebzFile> children = file.listChildren();
+		if (children == null) {
+			return null;
+		}
+
+		Collection<Object> webzChildren = new ArrayList<Object>(children.size());
+		for (WebzFile child : children) {
+			webzChildren.add(populateWebzFileMap(child, context));
+		}
+		return webzChildren;
+	}
+
+	private Collection<Object> populateWebzBreadcrumbs(WebzFile file, WebzContext context) throws IOException, WebzException {
+
+		List<Object> breadcrumbs = new LinkedList<Object>();
+		WebzFile parent = file.getParent();
+
+		while (parent != null && parent.getParent() != null) {
+
+			breadcrumbs.add(populateWebzFileMap(parent, context));
+			parent = parent.getParent();
+		}
+		Collections.reverse(breadcrumbs);
+
+		return breadcrumbs;
 	}
 
 	private WebzByteArrayOutputStream executeMustache(Object[] scopes, WebzContext context) throws IOException {
