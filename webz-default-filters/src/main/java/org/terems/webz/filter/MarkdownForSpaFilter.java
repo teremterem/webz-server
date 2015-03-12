@@ -63,14 +63,15 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 	// TODO private static final String UNDERLYING_SOURCE_MUSTACHE_VAR = "UNDERLYING-SOURCE";
 	// TODO private static final String UNDERLYING_SOURCE_ID_MUSTACHE_VAR = "UNDERLYING-SOURCE-ID";
 	// TODO private static final String SHORTEST_URI_MUSTACHE_VAR = "SHORTEST-URI";
-	// TODO private static final String SHORTEST_RELATIVE_URI_MUSTACHE_VAR = "SHORTEST-RELATTIVE-URI";
+	// TODO private static final String SHORTEST_RELATIVE_URI_MUSTACHE_VAR = "SHORTEST-RELATIVE-URI";
 	// TODO private static final String SHORTEST_URL_MUSTACHE_VAR = "SHORTEST-URL";
 	public static final String FULL_URI_MUSTACHE_VAR = "FULL-URI";
-	// TODO private static final String FULL_RELATIVE_URI_MUSTACHE_VAR = "FULL-RELATTIVE-URI";
+	public static final String FULL_RELATIVE_URI_MUSTACHE_VAR = "FULL-RELATIVE-URI";
 	// TODO private static final String FULL_URL_MUSTACHE_VAR = "FULL-URL";
 
 	public static final String WEBZ_PARENT_MUSTACHE_VAR = "WEBZ-PARENT";
 	public static final String WEBZ_SIBLINGS_MUSTACHE_VAR = "WEBZ-SIBLINGS";
+	private static final String WEBZ_CHILDREN_MUSTACHE_VAR = "WEBZ-CHILDREN";
 	// TODO private static final String WEBZ_LINKED_SIBLINGS_MUSTACHE_VAR = "WEBZ-LINKED-SIBLINGS";
 
 	public static final String MAIN_CONTENT_MUSTACHE_VAR = "MAIN-CONTENT";
@@ -121,20 +122,28 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 
 		WebzFile file = context.resolveFile(req);
 		WebzMetadata metadata = file.getMetadata();
-		if (metadata == null || !metadata.isFile() || !WebzUtils.toLowerCaseEng(metadata.getName()).endsWith(markdownSuffixLowerCased)) {
+		if (metadata == null || !(metadata.isFolder() || WebzUtils.toLowerCaseEng(metadata.getName()).endsWith(markdownSuffixLowerCased))) {
 			return false;
 		}
 
-		String markdownContent = readFileAsString(file);
-		if (markdownContent == null) {
-			return false;
-		}
+		String mainContent = null;
 
-		String mainContent = pegDownProcessor.get().markdownToHtml(markdownContent, linkRenderer);
+		if (metadata.isFile()) {
+			String markdownContent = readFileAsString(file);
+			if (markdownContent == null) {
+				return false;
+			}
+			mainContent = pegDownProcessor.get().markdownToHtml(markdownContent, linkRenderer);
+		}
 
 		// TODO parse supplementary JSON files
 
-		Map<String, Object> pageScope = populatePageScope(mainContent, file, context);
+		Map<String, Object> pageScope = populatePageScope(file, context);
+		if (mainContent != null) {
+			// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
+			pageScope.put(MAIN_CONTENT_MUSTACHE_VAR, mainContent);
+			// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
+		}
 
 		WebzByteArrayOutputStream html = executeMustache(new Object[] { pageScope }, context);
 
@@ -146,27 +155,52 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 		return true;
 	}
 
-	private Map<String, Object> populatePageScope(String mainContent, WebzFile file, WebzContext context) throws IOException, WebzException {
+	private Map<String, Object> populatePageScope(WebzFile file, WebzContext context) throws IOException, WebzException {
 
 		Map<String, Object> pageScope = new HashMap<String, Object>();
 
-		// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
-		pageScope.put(MAIN_CONTENT_MUSTACHE_VAR, mainContent);
-		// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
-
 		pageScope.put(WEBZ_FILE_MUSTACHE_VAR, populateWebzFileMap(file, context));
+
+		WebzMetadata metadata = file.getMetadata();
+		if (metadata.isFolder()) {
+
+			Collection<WebzFile> children = file.listChildren();
+			if (children != null) {
+
+				Collection<Object> webzChildren = new ArrayList<Object>(children.size());
+				for (WebzFile child : children) {
+					webzChildren.add(populateWebzFileMap(child, context));
+				}
+				pageScope.put(WEBZ_CHILDREN_MUSTACHE_VAR, webzChildren);
+			}
+		}
+
 		WebzFile parent = file.getParent();
 		if (parent != null) {
 			pageScope.put(WEBZ_PARENT_MUSTACHE_VAR, populateWebzFileMap(parent, context));
 
-			Collection<WebzFile> children = parent.listChildren();
-			if (children != null) {
+			if (!metadata.isFolder()) {
 
-				Collection<Object> webzSiblings = new ArrayList<Object>(children.size());
-				for (WebzFile sibling : children) {
-					webzSiblings.add(populateWebzFileMap(sibling, context));
+				Collection<WebzFile> children = file.listChildren();
+				if (children != null) {
+
+					Collection<Object> webzChildren = new ArrayList<Object>(children.size());
+					for (WebzFile child : children) {
+						webzChildren.add(populateWebzFileMap(child, context));
+					}
+					pageScope.put(WEBZ_CHILDREN_MUSTACHE_VAR, webzChildren);
 				}
-				pageScope.put(WEBZ_SIBLINGS_MUSTACHE_VAR, webzSiblings);
+			} else {
+
+				Collection<WebzFile> siblings = parent.listChildren();
+				if (siblings != null) {
+
+					Collection<Object> webzSiblings = new ArrayList<Object>(siblings.size());
+					for (WebzFile sibling : siblings) {
+						webzSiblings.add(populateWebzFileMap(sibling, context));
+					}
+					pageScope.put(WEBZ_SIBLINGS_MUSTACHE_VAR, webzSiblings);
+				}
 			}
 		}
 
@@ -185,6 +219,11 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 			String linkedPathname = metadata.getLinkedPathname();
 			if (linkedPathname != null) {
 				pathname = linkedPathname;
+			}
+			if (metadata.isFolder()) {
+				webzFile.put(FULL_RELATIVE_URI_MUSTACHE_VAR, metadata.getName() + '/');
+			} else {
+				webzFile.put(FULL_RELATIVE_URI_MUSTACHE_VAR, metadata.getName());
 			}
 		}
 		webzFile.put(PATHNAME_MUSTACHE_VAR, pathname);
