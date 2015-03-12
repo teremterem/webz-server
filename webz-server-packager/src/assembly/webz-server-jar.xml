@@ -25,6 +25,12 @@
 	</formats>
 	<includeBaseDirectory>false</includeBaseDirectory>
 	<dependencySets>
+<!--
+
+// TODO start maintaining "LICENSE-3RD-PARTY" file in this module as well as in "webz-war" module...
+
+// http://programmers.stackexchange.com/questions/234511/what-is-the-best-practice-for-arranging-third-party-library-licenses-paperwork
+
 		<dependencySet>
 			<outputDirectory>META-INF/${artifact.artifactId}-${artifact.version}/</outputDirectory>
 			<useProjectArtifact>false</useProjectArtifact>
@@ -39,6 +45,7 @@
 				</includes>
 			</unpackOptions>
 		</dependencySet>
+-->
 		<dependencySet>
 			<outputDirectory>/</outputDirectory>
 			<useProjectArtifact>false</useProjectArtifact>

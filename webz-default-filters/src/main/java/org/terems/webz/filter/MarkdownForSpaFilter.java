@@ -19,27 +19,49 @@
 package org.terems.webz.filter;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.pegdown.LinkRenderer;
 import org.pegdown.PegDownProcessor;
+import org.terems.webz.WebzByteArrayOutputStream;
 import org.terems.webz.WebzChainContext;
+import org.terems.webz.WebzContext;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.base.BaseWebzFilter;
 import org.terems.webz.config.GeneralAppConfig;
+import org.terems.webz.config.MarkdownForSpaConfig;
+import org.terems.webz.filter.helpers.ConfigurableLinkRenderer;
 import org.terems.webz.filter.helpers.FileDownloaderWithBOM;
 import org.terems.webz.util.WebzUtils;
 
+import com.github.mustachejava.DefaultMustacheFactory;
+import com.github.mustachejava.Mustache;
+import com.github.mustachejava.MustacheException;
+import com.github.mustachejava.MustacheResolver;
+
 public class MarkdownForSpaFilter extends BaseWebzFilter {
 
-	// TODO support browser caching (ETags?)
+	// TODO support browser caching (ETags or "last modified" timestamp stored in cache against request pathInfo ?)
 
-	private String markdownSuffixLowerCased;
+	public static final String MAIN_CONTENT_MUSTACHE_VAR = "MAIN-CONTENT";
+
 	private String defaultEncoding;
+	private String markdownSuffixLowerCased;
+	private String mustacheTemplate;
+	private String mustacheResultingMimetype;
+
+	private LinkRenderer linkRenderer;
 
 	private ThreadLocal<PegDownProcessor> pegDownProcessor = new ThreadLocal<PegDownProcessor>() {
 		@Override
@@ -52,10 +74,15 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 	public void init() throws WebzException {
 
 		GeneralAppConfig generalConfig = getAppConfig().getAppConfigObject(GeneralAppConfig.class);
-		markdownSuffixLowerCased = generalConfig.getMarkdownSuffixLowerCased();
-		defaultEncoding = generalConfig.getDefaultEncoding();
+		MarkdownForSpaConfig markdownForSpaConfig = getAppConfig().getAppConfigObject(MarkdownForSpaConfig.class);
 
-		String renderingTemplatePathname = generalConfig.getRenderingTemplatePathname();
+		defaultEncoding = generalConfig.getDefaultEncoding();
+		markdownSuffixLowerCased = markdownForSpaConfig.getMarkdownSuffixLowerCased();
+		mustacheTemplate = markdownForSpaConfig.getMustacheTemplate();
+		mustacheResultingMimetype = markdownForSpaConfig.getMustacheResultingMimetype();
+
+		linkRenderer = new ConfigurableLinkRenderer(getAppConfig());
+		// TODO make ConfigurableLinkRenderer configurable
 	}
 
 	@Override
@@ -69,6 +96,11 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 	private boolean serveMarkdown(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException,
 			WebzException {
 
+		if (req.getParameterMap().containsKey(QUERY_PARAM_RAW)) {
+			// ?raw => give up in favor of StaticContentFilter
+			return false;
+		}
+
 		WebzFile file = chainContext.resolveFile(req);
 		WebzMetadata metadata = file.getMetadata();
 		if (metadata == null || !metadata.isFile() || !WebzUtils.toLowerCaseEng(metadata.getName()).endsWith(markdownSuffixLowerCased)) {
@@ -80,17 +112,61 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 			return false;
 		}
 
-		byte[] html = pegDownProcessor.get().markdownToHtml(markdownContent).getBytes(defaultEncoding);
-		// TODO support configurable rel="nofollow" for links to foreign domains
-		// TODO support configurable target="xxx"
+		String mainContent = pegDownProcessor.get().markdownToHtml(markdownContent, linkRenderer);
 
-		WebzUtils.prepareStandardHeaders(resp, "text/html", defaultEncoding, html.length);
-		// TODO content type should probably be the same as freemarker template's mimetype
+		// TODO parse supplementary JSON files
 
+		Map<String, String> pageScope = new HashMap<String, String>();
+		pageScope.put(MAIN_CONTENT_MUSTACHE_VAR, mainContent);
+
+		WebzByteArrayOutputStream html = executeMustache(new Object[] { pageScope }, chainContext);
+
+		WebzUtils.prepareStandardHeaders(resp, mustacheResultingMimetype, defaultEncoding, html.size());
 		if (!WebzUtils.isHttpMethodHead(req)) {
-			resp.getOutputStream().write(html);
+
+			resp.getOutputStream().write(html.getInternalByteArray(), 0, html.size());
 		}
 		return true;
+	}
+
+	private WebzByteArrayOutputStream executeMustache(Object[] scopes, WebzContext context) throws IOException {
+
+		Mustache mustache = newMustacheFactory(context).compile(mustacheTemplate);
+
+		WebzByteArrayOutputStream result = new WebzByteArrayOutputStream();
+		Writer writer = new OutputStreamWriter(result, defaultEncoding);
+
+		mustache.execute(writer, scopes);
+		writer.close();
+
+		return result;
+	}
+
+	private DefaultMustacheFactory newMustacheFactory(final WebzContext context) {
+
+		return new DefaultMustacheFactory(new MustacheResolver() {
+			@Override
+			public Reader getReader(String resourceName) {
+
+				FileDownloaderWithBOM downloaderWithBom = null;
+				try {
+					WebzFileDownloader downloader = context.getFile(resourceName).getFileDownloader();
+					if (downloader == null) {
+						throw new WebzException("'" + resourceName
+								+ "' mustache template was not found (or a folder of the same name was found instead)");
+					}
+
+					downloaderWithBom = new FileDownloaderWithBOM(downloader, defaultEncoding);
+					return new InputStreamReader(downloaderWithBom.content, downloaderWithBom.actualEncoding);
+
+				} catch (IOException e) {
+					new MustacheException(e);
+				} catch (WebzException e) {
+					new MustacheException(e);
+				}
+				return null; // dead code
+			}
+		});
 	}
 
 	private String readFileAsString(WebzFile file) throws IOException, WebzException {

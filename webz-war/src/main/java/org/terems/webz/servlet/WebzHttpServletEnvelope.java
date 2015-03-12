@@ -132,12 +132,12 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 
 		Properties webzProperties = new Properties();
 
-		String path = System.getProperty(WebzLaunchHelper.WEBZ_PROPERTIES_PATH_PROPERTY);
+		String path = System.getProperty(WebzLaunchHelper.WEBZ_PROPERTIES_PROPERTY);
 		if (path == null) {
-			path = System.getenv(WebzLaunchHelper.WEBZ_PROPERTIES_PATH_ENV_VAR);
+			path = System.getenv(WebzLaunchHelper.WEBZ_PROPERTIES_ENV_VAR);
 
 			if (path != null && LOG.isInfoEnabled()) {
-				LOG.info(WebzLaunchHelper.getUsingEnvVarMessage(WebzLaunchHelper.WEBZ_PROPERTIES_PATH_ENV_VAR));
+				LOG.info(WebzLaunchHelper.getUsingEnvVarMessage(WebzLaunchHelper.WEBZ_PROPERTIES_ENV_VAR));
 			}
 		}
 		File file = new File(path);

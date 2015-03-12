@@ -85,8 +85,7 @@ public class WebzTestUtils {
 				if (methodException == null || !expectedExceptionClass.isAssignableFrom(methodException.getClass())) {
 					fail(object, "method " + thisMethod.getName() + "(...) was expected to throw " + expectedExceptionClass.getName()
 							+ " but it "
-							+ (methodException == null ? "did not" : "throwed " + methodException.getClass().getName() + " instead"),
-							message);
+							+ (methodException == null ? "did not" : "threw " + methodException.getClass().getName() + " instead"), message);
 				}
 
 				return null;

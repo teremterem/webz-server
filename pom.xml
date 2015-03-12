@@ -45,7 +45,7 @@
 	<properties>
 
 		<pegdown.version>1.5.0</pegdown.version>
-		<handlebars.version>2.0.0</handlebars.version>
+		<mustache.version>0.8.17</mustache.version><!-- 0.9.0 -->
 		<gson.version>2.3.1</gson.version>
 
 		<commons.io.version>2.4</commons.io.version>
@@ -56,7 +56,7 @@
 		<maven.war.plugin.version>2.6</maven.war.plugin.version>
 		<maven.assembly.plugin.version>2.5.3</maven.assembly.plugin.version>
 
-		<tomcat.version>7.0.59</tomcat.version><!-- 8.0.20 -->
+		<tomcat.version>8.0.20</tomcat.version>
 
 		<slf4j.log4j12.version>1.7.10</slf4j.log4j12.version>
 		<log4j.version>1.2.17</log4j.version>
@@ -136,9 +136,9 @@
 				<version>${pegdown.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.github.jknack</groupId>
-				<artifactId>handlebars</artifactId>
-				<version>${handlebars.version}</version>
+				<groupId>com.github.spullara.mustache.java</groupId>
+				<artifactId>compiler</artifactId>
+				<version>${mustache.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.code.gson</groupId>

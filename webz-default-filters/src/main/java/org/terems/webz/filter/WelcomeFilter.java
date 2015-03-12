@@ -139,6 +139,7 @@ public class WelcomeFilter extends BaseWebzFilter {
 		@Override
 		public WebzFile resolveFile(HttpServletRequest req) throws IOException, WebzException {
 
+			// TODO after first level cache is implemented start storing resolved WebzFile as a request attribute
 			WebzFile file = super.resolveFile(req);
 
 			WebzMetadata metadata = file.getMetadata();

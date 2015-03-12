@@ -31,19 +31,14 @@ import java.net.URISyntaxException;
 import java.security.CodeSource;
 import java.util.Enumeration;
 import java.util.Properties;
-import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
-import org.apache.tomcat.JarScanner;
-import org.apache.tomcat.JarScannerCallback;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 
 public class WebzLauncher {
@@ -161,13 +156,8 @@ public class WebzLauncher {
 		Tomcat tomcat = new Tomcat();
 		tomcat.setBaseDir(tempFolder.getAbsolutePath());
 
-		Context webzContext = tomcat.addWebapp("", fetchWebzWar(thisJarFile, tempFolder).getAbsolutePath());
-		webzContext.setJarScanner(new JarScanner() {
-			@Override
-			public void scan(ServletContext context, ClassLoader classloader, JarScannerCallback callback, Set<String> jarsToSkip) {
-				// no need to scan jars - saving CPU time...
-			}
-		});
+		tomcat.addWebapp("", fetchWebzWar(thisJarFile, tempFolder).getAbsolutePath());
+
 		return tomcat;
 	}
 
@@ -389,11 +379,11 @@ public class WebzLauncher {
 		System.out.println();
 		System.out.println();
 
-		System.out.println("> java -D" + WebzLaunchHelper.WEBZ_PROPERTIES_PATH_PROPERTY + "={pathname} -jar " + thisJarName);
+		System.out.println("> java -D" + WebzLaunchHelper.WEBZ_PROPERTIES_PROPERTY + "={pathname} -jar " + thisJarName);
 		System.out.println();
-		System.out.println("Read WebZ properties from {pathname} (by default it attempts to find '"
+		System.out.println("Read WebZ properties from {pathname} (by default it attempts to find a file with the name '"
 				+ WebzLaunchHelper.WEBZ_PROPERTIES_DEFAULT_FILENAME + "' in the folder where this jar is located).");
-		System.out.println("Another way to supply WebZ properties location is to set " + WebzLaunchHelper.WEBZ_PROPERTIES_PATH_ENV_VAR
+		System.out.println("Another way to supply WebZ properties pathname is to set " + WebzLaunchHelper.WEBZ_PROPERTIES_ENV_VAR
 				+ " environment variable before running the jar.");
 		System.out.println();
 		System.out.println();

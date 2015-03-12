@@ -18,6 +18,8 @@
 
 package org.terems.webz.internals.cache;
 
+import org.terems.webz.WebzByteArrayOutputStream;
+
 public class FileContentHolder {
 
 	public WebzByteArrayOutputStream content;
