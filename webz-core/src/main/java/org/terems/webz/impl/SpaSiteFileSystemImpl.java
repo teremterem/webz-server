@@ -21,9 +21,7 @@ package org.terems.webz.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -221,32 +219,6 @@ public class SpaSiteFileSystemImpl extends BaseWebzFileSystemImpl {
 		}
 		Map<String, WebzMetadata> merged = new LinkedHashMap<String, WebzMetadata>(primary);
 		merged.putAll(secondary);
-
-		return merged;
-	}
-
-	@Override
-	public Set<String> getChildPathnames(String parentPathname) throws IOException, WebzException {
-
-		FileFound found = findFile(parentPathname, true);
-		if (found == null) {
-			return null;
-		}
-
-		Set<String> primary = found.primaryHost.getStructure().getChildPathnames(found.actualPathname);
-		Set<String> secondary = null;
-		if (found.secondaryHost != null) {
-			secondary = found.secondaryHost.getStructure().getChildPathnames(found.actualPathname);
-		}
-
-		if (secondary == null) {
-			return primary;
-		}
-		if (primary == null) {
-			return secondary;
-		}
-		Set<String> merged = new LinkedHashSet<String>(primary);
-		merged.addAll(secondary);
 
 		return merged;
 	}
