@@ -23,7 +23,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -64,8 +63,6 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 	public static final String NAME_MUSTACHE_VAR = "NAME";
 	public static final String PATHNAME_MUSTACHE_VAR = "PATHNAME";
 	public static final String IS_FOLDER_MUSTACHE_VAR = "IS-FOLDER";
-	// TODO private static final String UNDERLYING_SOURCE_MUSTACHE_VAR = "UNDERLYING-SOURCE";
-	// TODO private static final String UNDERLYING_SOURCE_ID_MUSTACHE_VAR = "UNDERLYING-SOURCE-ID";
 	// TODO private static final String SHORTEST_URI_MUSTACHE_VAR = "SHORTEST-URI";
 	// TODO private static final String SHORTEST_RELATIVE_URI_MUSTACHE_VAR = "SHORTEST-RELATIVE-URI";
 	// TODO private static final String SHORTEST_URL_MUSTACHE_VAR = "SHORTEST-URL";
@@ -75,8 +72,10 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 
 	public static final String WEBZ_ROOT_MUSTACHE_VAR = "WEBZ-ROOT";
 	public static final String WEBZ_BREADCRUMBS_MUSTACHE_VAR = "WEBZ-BREADCRUMBS";
-	public static final String WEBZ_FOLDER_INDEX_MUSTACHE_VAR = "WEBZ-FOLDER-INDEX";
-	// TODO private static final String WEBZ_FOLDER_LINKED_INDEX_MUSTACHE_VAR = "WEBZ-FOLDER-LINKED-INDEX";
+	// TODO make them public:
+	private static final String WEBZ_FOLDER_INDEX_MUSTACHE_VAR = "WEBZ-FOLDER-INDEX";
+	private static final String SUBFOLDERS_MUSTACHE_VAR = "SUBFOLDERS";
+	private static final String SUBFILES_MUSTACHE_VAR = "SUBFILES";
 
 	public static final String MAIN_CONTENT_MUSTACHE_VAR = "MAIN-CONTENT";
 
@@ -168,7 +167,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 		WebzMetadata metadata = file.getMetadata();
 		if (metadata.isFolder()) {
 
-			Collection<Object> webzChildren = populateChildren(file, context);
+			Map<String, Map<String, Collection<Object>>> webzChildren = populateFolderIndex(file, context);
 			if (webzChildren != null) {
 				pageScope.put(WEBZ_FOLDER_INDEX_MUSTACHE_VAR, webzChildren);
 			}
@@ -180,7 +179,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 		WebzFile parent = file.getParent();
 		if (parent != null && !metadata.isFolder()) {
 
-			Collection<Object> webzSiblings = populateChildren(parent, context);
+			Map<String, Map<String, Collection<Object>>> webzSiblings = populateFolderIndex(parent, context);
 			if (webzSiblings != null) {
 				pageScope.put(WEBZ_FOLDER_INDEX_MUSTACHE_VAR, webzSiblings);
 			}
@@ -216,18 +215,40 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 		return webzFile;
 	}
 
-	private Collection<Object> populateChildren(WebzFile file, WebzContext context) throws IOException, WebzException {
+	private Map<String, Map<String, Collection<Object>>> populateFolderIndex(WebzFile file, WebzContext context) throws IOException,
+			WebzException {
 
 		Collection<WebzFile> children = file.listChildren(false);
 		if (children == null) {
 			return null;
 		}
 
-		Collection<Object> webzChildren = new ArrayList<Object>(children.size());
+		Map<String, Collection<Object>> webzSubfolders = new HashMap<String, Collection<Object>>();
+		Map<String, Collection<Object>> webzSubfiles = new HashMap<String, Collection<Object>>();
+
+		Map<String, Map<String, Collection<Object>>> webzFolderIndex = new HashMap<String, Map<String, Collection<Object>>>(children.size());
+		webzFolderIndex.put(SUBFOLDERS_MUSTACHE_VAR, webzSubfolders);
+		webzFolderIndex.put(SUBFILES_MUSTACHE_VAR, webzSubfiles);
+
 		for (WebzFile child : children) {
-			webzChildren.add(populateWebzFileMap(child, context));
+
+			WebzMetadata childMetadata = child.getMetadata();
+			if (childMetadata != null) {
+
+				Map<String, Collection<Object>> webzSubitems = childMetadata.isFolder() ? webzSubfolders : webzSubfiles;
+
+				String sourceType = childMetadata.getFileSourceType();
+
+				Collection<Object> webzChildren = webzSubitems.get(sourceType);
+				if (webzChildren == null) {
+					webzChildren = new LinkedList<Object>();
+					webzSubitems.put(sourceType, webzChildren);
+				}
+
+				webzChildren.add(populateWebzFileMap(child, context));
+			}
 		}
-		return webzChildren;
+		return webzFolderIndex;
 	}
 
 	private Collection<Object> populateWebzBreadcrumbs(WebzFile file, WebzContext context) throws IOException, WebzException {
