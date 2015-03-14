@@ -231,6 +231,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 		Map<String, Map<String, Object>> isNotEmpty = new HashMap<String, Map<String, Object>>();
 		Map<String, Object> isNotEmptySubfolders = new HashMap<String, Object>();
 		Map<String, Object> isNotEmptySubfiles = new HashMap<String, Object>();
+		Map<String, Object> isNotEmptyAll = new HashMap<String, Object>();
 
 		Map<String, Object> webzFolderIndex = new HashMap<String, Object>(children.size());
 		for (WebzFile child : children) {
@@ -245,9 +246,9 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 				Map<String, Object> webzChild = populateWebzFileMap(child, context);
 				webzAllChildren.add(webzChild);
 
-				populateChildAgainstOrigin(webzSubitems, isNotEmptySubitems, webzChild, ALL_MUSTACHE_VAR);
+				populateChildAgainstOrigin(webzSubitems, isNotEmptySubitems, isNotEmptyAll, webzChild, ALL_MUSTACHE_VAR);
 				for (String originName : childMetadata.getOriginNames()) {
-					populateChildAgainstOrigin(webzSubitems, isNotEmptySubitems, webzChild, originName);
+					populateChildAgainstOrigin(webzSubitems, isNotEmptySubitems, isNotEmptyAll, webzChild, originName);
 				}
 			}
 		}
@@ -262,6 +263,9 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 			if (!isNotEmptySubfiles.isEmpty()) {
 				isNotEmpty.put(SUBFILES_MUSTACHE_VAR, isNotEmptySubfiles);
 			}
+			if (!isNotEmptyAll.isEmpty()) {
+				isNotEmpty.put(ALL_MUSTACHE_VAR, isNotEmptyAll);
+			}
 		}
 		if (!webzSubfolders.isEmpty()) {
 			webzFolderIndex.put(SUBFOLDERS_MUSTACHE_VAR, webzSubfolders);
@@ -274,13 +278,16 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 	}
 
 	private void populateChildAgainstOrigin(Map<String, Collection<Object>> webzSubitems, Map<String, Object> isNotEmptySubitems,
-			Map<String, Object> webzChild, String originName) {
+			Map<String, Object> isNotEmptyAll, Map<String, Object> webzChild, String originName) {
 
 		Collection<Object> webzChildren = webzSubitems.get(originName);
 		if (webzChildren == null) {
+
 			webzChildren = new LinkedList<Object>();
 			webzSubitems.put(originName, webzChildren);
+
 			isNotEmptySubitems.put(originName, Boolean.TRUE);
+			isNotEmptyAll.put(originName, Boolean.TRUE);
 		}
 		webzChildren.add(webzChild);
 	}
