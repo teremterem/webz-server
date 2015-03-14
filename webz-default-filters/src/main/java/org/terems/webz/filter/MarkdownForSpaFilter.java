@@ -274,7 +274,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 			webzFolderIndex.put(SUBFILES_MUSTACHE_VAR, webzSubfiles);
 		}
 
-		return webzFolderIndex;
+		return webzFolderIndex.isEmpty() ? null : webzFolderIndex;
 	}
 
 	private void populateChildAgainstOrigin(Map<String, Collection<Object>> webzSubitems, Map<String, Object> isNotEmptySubitems,
