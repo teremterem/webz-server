@@ -20,10 +20,8 @@ package org.terems.webz.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,18 +37,18 @@ import org.terems.webz.internals.WebzFileSystemStructure;
 import org.terems.webz.internals.WebzPathNormalizer;
 import org.terems.webz.internals.base.BaseWebzFileSystemImpl;
 
-public class SpaSiteFileSystemImpl extends BaseWebzFileSystemImpl {
+public class SiteAndSpaFileSystemImpl extends BaseWebzFileSystemImpl {
 
-	private static final Logger LOG = LoggerFactory.getLogger(SpaSiteFileSystemImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SiteAndSpaFileSystemImpl.class);
 
-	private WebzFileSystem spaFileSystem;
 	private WebzFileSystem siteFileSystem;
+	private WebzFileSystem spaFileSystem;
 
 	private String uniqueId;
 
-	public SpaSiteFileSystemImpl(WebzFileSystem spaFileSystem, WebzFileSystem siteFileSystem) {
-		this.spaFileSystem = spaFileSystem;
+	public SiteAndSpaFileSystemImpl(WebzFileSystem siteFileSystem, WebzFileSystem spaFileSystem) {
 		this.siteFileSystem = siteFileSystem;
+		this.spaFileSystem = spaFileSystem;
 	}
 
 	@Override
@@ -162,9 +160,9 @@ public class SpaSiteFileSystemImpl extends BaseWebzFileSystemImpl {
 		return null;
 	}
 
-	private static final String[] ORIGIN_SPA = { WebzFilter.FILE_ORIGIN_SPA };
 	private static final String[] ORIGIN_SITE = { WebzFilter.FILE_ORIGIN_SITE };
-	private static final String[] ORIGIN_SPA_AND_SITE = { WebzFilter.FILE_ORIGIN_SPA, WebzFilter.FILE_ORIGIN_SITE };
+	private static final String[] ORIGIN_SPA = { WebzFilter.FILE_ORIGIN_SPA };
+	private static final String[] ORIGIN_SITE_AND_SPA = { WebzFilter.FILE_ORIGIN_SITE, WebzFilter.FILE_ORIGIN_SPA };
 	private static final String[] ORIGIN_LINKED = { WebzFilter.FILE_ORIGIN_LINKED };
 
 	private FileFound checkLinkedPathnameInSpa(final String linkedPathname) throws IOException, WebzException {
@@ -190,7 +188,7 @@ public class SpaSiteFileSystemImpl extends BaseWebzFileSystemImpl {
 
 				WebzMetadata secondaryMetadata = spaStructure.getMetadata(pathname);
 				if (secondaryMetadata != null && secondaryMetadata.isFolder()) {
-					return new FileFound(metadata, ORIGIN_SPA_AND_SITE, null, siteFileSystem, spaFileSystem, WebzFilter.FILE_ORIGIN_SITE,
+					return new FileFound(metadata, ORIGIN_SITE_AND_SPA, null, siteFileSystem, spaFileSystem, WebzFilter.FILE_ORIGIN_SITE,
 							WebzFilter.FILE_ORIGIN_SPA, pathname);
 				}
 			}
@@ -243,7 +241,6 @@ public class SpaSiteFileSystemImpl extends BaseWebzFileSystemImpl {
 		if (found.secondaryHost != null) {
 			secondary = found.secondaryHost.getStructure().getChildPathnamesAndMetadata(found.actualPathname);
 		}
-
 		String[] originsPrimary = new String[] { found.primaryOrigin };
 		String[] originsSecondary = new String[] { found.secondaryOrigin };
 		String[] originsBoth = new String[] { found.secondaryOrigin, found.primaryOrigin };
@@ -254,25 +251,29 @@ public class SpaSiteFileSystemImpl extends BaseWebzFileSystemImpl {
 		if (primary == null) {
 			return wrapMetadataMap(secondary, originsSecondary);
 		}
+
+		secondary = new LinkedHashMap<String, WebzMetadata>(secondary);
+
 		Map<String, WebzMetadata> merged = new LinkedHashMap<String, WebzMetadata>(primary);
-		for (Map.Entry<String, WebzMetadata> secondaryEntry : secondary.entrySet()) {
+		for (Map.Entry<String, WebzMetadata> mergedEntry : merged.entrySet()) {
 
-			WebzMetadata alsoInPrimary = merged.get(secondaryEntry.getKey());
-			if (alsoInPrimary == null) {
+			WebzMetadata fromMerged = mergedEntry.getValue();
+			WebzMetadata alsoInSecondary = secondary.remove(mergedEntry.getKey());
+			if (alsoInSecondary == null) {
 
-				merged.put(secondaryEntry.getKey(), new ProxiedMetadata(secondaryEntry.getValue(), originsSecondary, null));
+				mergedEntry.setValue(new ProxiedMetadata(fromMerged, originsPrimary, null));
 			} else {
 
-				if (alsoInPrimary.isFolder() && secondaryEntry.getValue().isFolder()) {
-					merged.put(secondaryEntry.getKey(), new ProxiedMetadata(secondaryEntry.getValue(), originsBoth, null));
+				if (fromMerged.isFolder() && alsoInSecondary.isFolder()) {
+					mergedEntry.setValue(new ProxiedMetadata(fromMerged, originsBoth, null));
 				} else {
-					merged.put(secondaryEntry.getKey(), new ProxiedMetadata(secondaryEntry.getValue(), originsSecondary, null));
+					mergedEntry.setValue(new ProxiedMetadata(fromMerged, originsPrimary, null));
 				}
 			}
 		}
-
-		Set<String> newSecondaryKeys = new HashSet<String>(secondary.keySet());
-		newSecondaryKeys.removeAll(primary.keySet());
+		for (Map.Entry<String, WebzMetadata> secondaryNewEntry : secondary.entrySet()) {
+			merged.put(secondaryNewEntry.getKey(), new ProxiedMetadata(secondary.get(secondaryNewEntry.getValue()), originsSecondary, null));
+		}
 
 		return merged;
 	}

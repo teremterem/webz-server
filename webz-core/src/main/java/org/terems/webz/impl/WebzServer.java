@@ -71,21 +71,21 @@ public class WebzServer implements WebzServletContainerBridge {
 		}
 	}
 
-	public void start(String renderingSpaPath, String siteContentPath) {
-
-		WebzProperties spaFileSystemProperties = new WebzProperties(webzInternalProperties);
-		spaFileSystemProperties.put(WebzProperties.FS_BASE_PATH_PROPERTY, renderingSpaPath);
+	public void start(String siteContentPath, String renderingSpaPath) {
 
 		WebzProperties siteFileSystemProperties = new WebzProperties(webzInternalProperties);
 		siteFileSystemProperties.put(WebzProperties.FS_BASE_PATH_PROPERTY, siteContentPath);
 
+		WebzProperties spaFileSystemProperties = new WebzProperties(webzInternalProperties);
+		spaFileSystemProperties.put(WebzProperties.FS_BASE_PATH_PROPERTY, renderingSpaPath);
+
 		try {
 			WebzFileSystemManager fileSystemManager = WebzFileSystemManager.getManager(globalFactory);
 
-			WebzFileSystem spaFileSystem = fileSystemManager.createFileSystem(spaFileSystemProperties);
 			WebzFileSystem siteFileSystem = fileSystemManager.createFileSystem(siteFileSystemProperties);
+			WebzFileSystem spaFileSystem = fileSystemManager.createFileSystem(spaFileSystemProperties);
 
-			WebzFileSystem siteAndSpaFileSystem = fileSystemManager.createSpaSiteFileSystem(spaFileSystem, siteFileSystem,
+			WebzFileSystem siteAndSpaFileSystem = fileSystemManager.createSiteAndSpaFileSystem(siteFileSystem, spaFileSystem,
 					webzInternalProperties);
 
 			rootWebzApp = globalFactory.newDestroyable(GenericWebzApp.class);
