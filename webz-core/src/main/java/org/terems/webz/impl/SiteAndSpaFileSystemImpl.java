@@ -75,10 +75,10 @@ public class SiteAndSpaFileSystemImpl extends BaseWebzFileSystemImpl {
 		String secondaryOrigin; // can be null
 		String actualPathname;
 
-		FileFound(WebzMetadata metadataToProxy, String[] originNames, String linkedPathname, WebzFileSystem primaryHost,
+		FileFound(WebzMetadata metadataToProxy, String[] origins, String linkedPathname, WebzFileSystem primaryHost,
 				WebzFileSystem secondaryHost, String primaryOrigin, String secondaryOrigin, String actualPathname) {
 
-			this.proxiedMetadata = new ProxiedMetadata(metadataToProxy, originNames, linkedPathname);
+			this.proxiedMetadata = new ProxiedMetadata(metadataToProxy, origins, linkedPathname);
 			this.primaryHost = primaryHost;
 			this.secondaryHost = secondaryHost;
 			this.primaryOrigin = primaryOrigin;
@@ -106,7 +106,7 @@ public class SiteAndSpaFileSystemImpl extends BaseWebzFileSystemImpl {
 		}
 
 		@Override
-		public String[] getOriginNames() {
+		public String[] getOrigins() {
 			return originNames;
 		}
 

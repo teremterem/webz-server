@@ -252,9 +252,9 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 				Map<String, Object> webzChild = populateWebzFileMap(child, context);
 				webzAllChildren.add(webzChild);
 
-				populateChildAgainstOrigin(webzSubitems, isNotEmptySubitems, isNotEmptyAll, webzChild, ALL_MUSTACHE_VAR);
-				for (String originName : childMetadata.getOriginNames()) {
-					populateChildAgainstOrigin(webzSubitems, isNotEmptySubitems, isNotEmptyAll, webzChild, originName);
+				putChildAgainstOrigin(webzChild, webzSubitems, isNotEmptySubitems, isNotEmptyAll, ALL_MUSTACHE_VAR);
+				for (String origin : childMetadata.getOrigins()) {
+					putChildAgainstOrigin(webzChild, webzSubitems, isNotEmptySubitems, isNotEmptyAll, origin);
 				}
 			}
 		}
@@ -283,17 +283,17 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 		return webzFolderIndex.isEmpty() ? null : webzFolderIndex;
 	}
 
-	private void populateChildAgainstOrigin(Map<String, Collection<Object>> webzSubitems, Map<String, Object> isNotEmptySubitems,
-			Map<String, Object> isNotEmptyAll, Map<String, Object> webzChild, String originName) {
+	private void putChildAgainstOrigin(Map<String, Object> webzChild, Map<String, Collection<Object>> webzSubitems,
+			Map<String, Object> isNotEmptySubitems, Map<String, Object> isNotEmptyAll, String origin) {
 
-		Collection<Object> webzChildren = webzSubitems.get(originName);
+		Collection<Object> webzChildren = webzSubitems.get(origin);
 		if (webzChildren == null) {
 
 			webzChildren = new LinkedList<Object>();
-			webzSubitems.put(originName, webzChildren);
+			webzSubitems.put(origin, webzChildren);
 
-			isNotEmptySubitems.put(originName, Boolean.TRUE);
-			isNotEmptyAll.put(originName, Boolean.TRUE);
+			isNotEmptySubitems.put(origin, Boolean.TRUE);
+			isNotEmptyAll.put(origin, Boolean.TRUE);
 		}
 		webzChildren.add(webzChild);
 	}
