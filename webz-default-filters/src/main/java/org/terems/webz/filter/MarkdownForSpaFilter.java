@@ -23,11 +23,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -72,12 +73,17 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 
 	public static final String WEBZ_ROOT_MUSTACHE_VAR = "WEBZ-ROOT";
 	public static final String WEBZ_BREADCRUMBS_MUSTACHE_VAR = "WEBZ-BREADCRUMBS";
-	public static final String WEBZ_FOLDER_INDEX_MUSTACHE_VAR = "WEBZ-FOLDER-INDEX";
+
+	public static final String WEBZ_FOLDER_MUSTACHE_VAR = "WEBZ-FOLDER";
 	public static final String SUBFOLDERS_MUSTACHE_VAR = "SUBFOLDERS";
 	public static final String SUBFILES_MUSTACHE_VAR = "SUBFILES";
 
 	public static final String ALL_MUSTACHE_VAR = "ALL";
 	public static final String IS_NOT_EMPTY_MUSTACHE_VAR = "IS-NOT-EMPTY";
+	public static final String INDEX_MUSTACHE_VAR = "INDEX";
+	public static final String REVERSE_INDEX_MUSTACHE_VAR = "REVERSE-INDEX";
+	public static final String LIST_MUSTACHE_VAR = "LIST";
+	public static final String REVERSE_LIST_MUSTACHE_VAR = "REVERSE-LIST";
 
 	public static final String MAIN_CONTENT_MUSTACHE_VAR = "MAIN-CONTENT";
 
@@ -171,7 +177,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 
 			Map<String, Object> webzChildren = populateFolderIndex(file, context);
 			if (webzChildren != null) {
-				pageScope.put(WEBZ_FOLDER_INDEX_MUSTACHE_VAR, webzChildren);
+				pageScope.put(WEBZ_FOLDER_MUSTACHE_VAR, webzChildren);
 			}
 		}
 
@@ -183,7 +189,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 
 			Map<String, Object> webzSiblings = populateFolderIndex(parent, context);
 			if (webzSiblings != null) {
-				pageScope.put(WEBZ_FOLDER_INDEX_MUSTACHE_VAR, webzSiblings);
+				pageScope.put(WEBZ_FOLDER_MUSTACHE_VAR, webzSiblings);
 			}
 		}
 
@@ -292,17 +298,44 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 		webzChildren.add(webzChild);
 	}
 
-	private Collection<Object> populateWebzBreadcrumbs(WebzFile file, WebzContext context) throws IOException, WebzException {
+	private Map<String, Object> populateWebzBreadcrumbs(WebzFile file, WebzContext context) throws IOException, WebzException {
 
-		List<Object> breadcrumbs = new LinkedList<Object>();
-		WebzFile parent = file.getParent();
+		List<Map<String, Object>> reverseList = new LinkedList<Map<String, Object>>();
+		Map<String, Object> reverseIndex = new HashMap<String, Object>();
 
-		while (parent != null && parent.getParent() != null) {
+		// current file is stored in WEBZ-FILE var separately from WEBZ-BREADCRUMBS - skip
+		file = file.getParent();
+		for (int i = 0; file != null; i++) {
 
-			breadcrumbs.add(populateWebzFileMap(parent, context));
-			parent = parent.getParent();
+			WebzFile parent = file.getParent();
+			if (parent == null) {
+				// root folder is stored in WEBZ-ROOT var separately from WEBZ-BREADCRUMBS - skip
+				break;
+			}
+
+			Map<String, Object> webzFile = populateWebzFileMap(file, context);
+			reverseList.add(webzFile);
+			reverseIndex.put(String.valueOf(i), webzFile);
+
+			file = parent;
 		}
-		Collections.reverse(breadcrumbs);
+
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>(reverseList.size());
+		Map<String, Object> index = new HashMap<String, Object>();
+
+		ListIterator<Map<String, Object>> it = list.listIterator();
+		for (int i = 0; it.hasPrevious(); i++) {
+
+			Map<String, Object> webzFile = it.previous();
+			list.add(webzFile);
+			index.put(String.valueOf(i), webzFile);
+		}
+
+		Map<String, Object> breadcrumbs = new HashMap<String, Object>();
+		breadcrumbs.put(LIST_MUSTACHE_VAR, list);
+		breadcrumbs.put(REVERSE_LIST_MUSTACHE_VAR, reverseList);
+		breadcrumbs.put(INDEX_MUSTACHE_VAR, index);
+		breadcrumbs.put(REVERSE_INDEX_MUSTACHE_VAR, reverseIndex);
 
 		return breadcrumbs;
 	}

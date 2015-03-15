@@ -147,17 +147,21 @@ public class SiteAndSpaFileSystemImpl extends BaseWebzFileSystemImpl {
 			}
 			if (!matchFound) {
 
-				if (i > 0) {
-
-					found = checkLinkedPathnameInSpa(pathNormalizer.constructPathname(pathMembers, i, pathMembers.length));
-					if (found != null) {
-						return found;
-					}
-				}
-				return null;
+				return checkLinkedPathnames(pathMembers, i);
 			}
 		}
 		return null;
+	}
+
+	private FileFound checkLinkedPathnames(String[] pathMembers, int firstUnmatchIndex) throws IOException, WebzException {
+
+		WebzPathNormalizer pathNormalizer = getPathNormalizer();
+		FileFound found = null;
+
+		for (int i = firstUnmatchIndex; i > 0 && found == null; i--) {
+			found = checkLinkedPathnameInSpa(pathNormalizer.constructPathname(pathMembers, i, pathMembers.length));
+		}
+		return found;
 	}
 
 	private static final String[] ORIGIN_SITE = { WebzFilter.FILE_ORIGIN_SITE };
