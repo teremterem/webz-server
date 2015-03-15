@@ -75,6 +75,7 @@ public class RootWebzContext implements WebzContext, WebzConfig {
 	public String resolveUri(WebzFile file) {
 
 		// TODO take context path into account when it is introduced
+		// TODO should pathname be URL-escaped ?
 
 		if (file == null) {
 			return null;

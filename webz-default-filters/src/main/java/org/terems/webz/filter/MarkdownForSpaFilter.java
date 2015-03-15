@@ -64,6 +64,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 	public static final String NAME_MUSTACHE_VAR = "NAME";
 	public static final String PATHNAME_MUSTACHE_VAR = "PATHNAME";
 	public static final String IS_FOLDER_MUSTACHE_VAR = "IS-FOLDER";
+	public static final String IS_MARKDOWN_MUSTACHE_VAR = "IS-MARKDOWN";
 	// TODO private static final String SHORTEST_URI_MUSTACHE_VAR = "SHORTEST-URI";
 	// TODO private static final String SHORTEST_RELATIVE_URI_MUSTACHE_VAR = "SHORTEST-RELATIVE-URI";
 	// TODO private static final String SHORTEST_URL_MUSTACHE_VAR = "SHORTEST-URL";
@@ -124,6 +125,10 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 		}
 	}
 
+	private boolean isMarkdown(String name) {
+		return WebzUtils.toLowerCaseEng(name).endsWith(markdownSuffixLowerCased);
+	}
+
 	private boolean serveMarkdown(HttpServletRequest req, HttpServletResponse resp, WebzContext context) throws IOException, WebzException {
 
 		if (req.getParameterMap().containsKey(QUERY_PARAM_RAW)) {
@@ -133,7 +138,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 
 		WebzFile file = context.resolveFile(req);
 		WebzMetadata metadata = file.getMetadata();
-		if (metadata == null || !(metadata.isFolder() || WebzUtils.toLowerCaseEng(metadata.getName()).endsWith(markdownSuffixLowerCased))) {
+		if (metadata == null || !(metadata.isFolder() || isMarkdown(metadata.getName()))) {
 			return false;
 		}
 
@@ -208,6 +213,10 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 			String linkedPathname = metadata.getLinkedPathname();
 			if (linkedPathname != null) {
 				pathname = linkedPathname;
+			}
+
+			if (isMarkdown(metadata.getName())) {
+				webzFile.put(IS_MARKDOWN_MUSTACHE_VAR, Boolean.TRUE);
 			}
 			if (metadata.isFolder()) {
 				webzFile.put(IS_FOLDER_MUSTACHE_VAR, Boolean.TRUE);

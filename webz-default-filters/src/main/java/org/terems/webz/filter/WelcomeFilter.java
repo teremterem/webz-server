@@ -43,22 +43,22 @@ public class WelcomeFilter extends BaseWebzFilter {
 	private Collection<String> welcomeFilenamesLowerCased;
 
 	// dilemma: 301 (permanent) redirects are more SEO friendly however browsers usually treat them as "eternal"
-	private boolean usePermanentRedirects;
+	private boolean welcomeRedirectsPermanent;
 
 	@Override
 	public void init() throws WebzException {
 		GeneralAppConfig generalConfig = getAppConfig().getAppConfigObject(GeneralAppConfig.class);
 		welcomeFilenameSuffixesLowerCased = generalConfig.getWelcomeFilenameSuffixesLowerCased();
 		welcomeFilenamesLowerCased = generalConfig.getWelcomeFilenamesLowerCased();
-		usePermanentRedirects = generalConfig.isUsePermanentRedirects();
+		welcomeRedirectsPermanent = generalConfig.isWelcomeRedirectsPermanent();
 	}
 
 	@Override
 	public void serve(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException, WebzException {
 
-		boolean isMethodHead = WebzUtils.isHttpMethodHead(req);
+		boolean methodHead = WebzUtils.isHttpMethodHead(req);
 
-		if (isMethodHead || WebzUtils.isHttpMethodGet(req)) {
+		if (methodHead || WebzUtils.isHttpMethodGet(req)) {
 
 			WebzFile file = chainContext.resolveFile(req);
 			WebzMetadata metadata = file.getMetadata();
@@ -67,7 +67,7 @@ public class WelcomeFilter extends BaseWebzFilter {
 				String linkedPathname = metadata.getLinkedPathname();
 				if (linkedPathname != null) {
 
-					redirectToLinkedUri(req, resp, chainContext.resolveUri(file), isMethodHead);
+					redirectToLinkedUri(req, resp, chainContext.resolveUri(file), methodHead);
 					return;
 
 				} else {
@@ -75,12 +75,12 @@ public class WelcomeFilter extends BaseWebzFilter {
 
 					if (!uriEndsWithSlash && metadata.isFolder()) {
 
-						redirectToFileOrFolder(req, resp, true, isMethodHead);
+						redirectToFileOrFolder(req, resp, true, methodHead);
 						return;
 
 					} else if (uriEndsWithSlash && metadata.isFile()) {
 
-						redirectToFileOrFolder(req, resp, false, isMethodHead);
+						redirectToFileOrFolder(req, resp, false, methodHead);
 						return;
 
 					}
@@ -90,7 +90,7 @@ public class WelcomeFilter extends BaseWebzFilter {
 		chainContext.nextPlease(req, resp, new WelcomeContextProxy(chainContext));
 	}
 
-	private void redirectToFileOrFolder(HttpServletRequest req, HttpServletResponse resp, boolean toFolder, boolean isMethodHead)
+	private void redirectToFileOrFolder(HttpServletRequest req, HttpServletResponse resp, boolean toFolder, boolean methodHead)
 			throws IOException {
 
 		StringBuffer urlBuffer = req.getRequestURL();
@@ -105,10 +105,10 @@ public class WelcomeFilter extends BaseWebzFilter {
 			urlBuffer.append('?').append(queryString);
 		}
 
-		redirect(resp, urlBuffer.toString(), isMethodHead);
+		WebzUtils.doRedirect(resp, urlBuffer.toString(), welcomeRedirectsPermanent, methodHead);
 	}
 
-	private void redirectToLinkedUri(HttpServletRequest req, HttpServletResponse resp, String linkedUri, boolean isMethodHead)
+	private void redirectToLinkedUri(HttpServletRequest req, HttpServletResponse resp, String linkedUri, boolean methodHead)
 			throws IOException {
 
 		String queryString = req.getQueryString();
@@ -116,17 +116,7 @@ public class WelcomeFilter extends BaseWebzFilter {
 			linkedUri += '?' + queryString;
 		}
 
-		redirect(resp, linkedUri, isMethodHead);
-	}
-
-	private void redirect(HttpServletResponse resp, String redirectUrl, boolean isMethodHead) throws IOException {
-
-		resp.setStatus(usePermanentRedirects ? HttpServletResponse.SC_MOVED_PERMANENTLY : HttpServletResponse.SC_MOVED_TEMPORARILY);
-		resp.setHeader(HEADER_LOCATION, redirectUrl);
-
-		if (!isMethodHead) {
-			resp.getWriter().write("Redirect to " + redirectUrl);
-		}
+		WebzUtils.doRedirect(resp, linkedUri, welcomeRedirectsPermanent, methodHead);
 	}
 
 	private class WelcomeContextProxy extends WebzContextProxy {
