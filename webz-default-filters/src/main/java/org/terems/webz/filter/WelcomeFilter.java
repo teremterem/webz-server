@@ -57,7 +57,6 @@ public class WelcomeFilter extends BaseWebzFilter {
 	public void serve(HttpServletRequest req, HttpServletResponse resp, WebzChainContext chainContext) throws IOException, WebzException {
 
 		boolean methodHead = WebzUtils.isHttpMethodHead(req);
-
 		if (methodHead || WebzUtils.isHttpMethodGet(req)) {
 
 			WebzFile file = chainContext.resolveFile(req);
@@ -67,7 +66,7 @@ public class WelcomeFilter extends BaseWebzFilter {
 				String linkedPathname = metadata.getLinkedPathname();
 				if (linkedPathname != null) {
 
-					redirectToLinkedUri(req, resp, chainContext.resolveUri(file), methodHead);
+					redirectToLinkedUri(req, resp, chainContext.resolveUri(file, req), methodHead);
 					return;
 
 				} else {
@@ -104,7 +103,6 @@ public class WelcomeFilter extends BaseWebzFilter {
 		if (queryString != null) {
 			urlBuffer.append('?').append(queryString);
 		}
-
 		WebzUtils.doRedirect(resp, urlBuffer.toString(), welcomeRedirectsPermanent, methodHead);
 	}
 
@@ -115,7 +113,6 @@ public class WelcomeFilter extends BaseWebzFilter {
 		if (queryString != null) {
 			linkedUri += '?' + queryString;
 		}
-
 		WebzUtils.doRedirect(resp, linkedUri, welcomeRedirectsPermanent, methodHead);
 	}
 

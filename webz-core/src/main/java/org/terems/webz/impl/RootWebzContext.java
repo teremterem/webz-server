@@ -19,6 +19,8 @@
 package org.terems.webz.impl;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -39,8 +41,6 @@ import org.terems.webz.internals.WebzObjectFactory;
 public class RootWebzContext implements WebzContext, WebzConfig {
 
 	private static final Logger LOG = LoggerFactory.getLogger(RootWebzContext.class);
-
-	private static final String URI_RESOLUTION_FAILED_MSG = "failed to resolve WebZ File URI";
 
 	private WebzFileFactory fileFactory;
 	private WebzObjectFactory appFactory;
@@ -72,44 +72,34 @@ public class RootWebzContext implements WebzContext, WebzConfig {
 	}
 
 	@Override
-	public String resolveUri(WebzFile file) {
+	public String resolveUri(WebzFile file, HttpServletRequest req) throws IOException, WebzException {
 
-		// TODO take context path into account when it is introduced
-		// TODO should pathname be URL-escaped ?
+		// TODO take WebZ App context path into account if it is introduced
 
 		if (file == null) {
 			return null;
 		}
-
 		String pathname = file.getPathname();
 		if (pathname == null) {
 			return null;
 		}
-		try {
-			WebzMetadata metadata = file.getMetadata();
-			if (metadata != null) {
+		WebzMetadata metadata = file.getMetadata();
+		if (metadata != null) {
 
-				String linkedPathname = metadata.getLinkedPathname();
-				if (linkedPathname != null) {
-					pathname = linkedPathname;
-				}
-
-				if (metadata.isFolder()) {
-
-					if (pathname.length() > 0) {
-						return '/' + pathname + '/';
-					}
-					return "/";
-				}
+			String linkedPathname = metadata.getLinkedPathname();
+			if (linkedPathname != null) {
+				pathname = linkedPathname;
 			}
-
-		} catch (IOException e) {
-			LOG.warn(URI_RESOLUTION_FAILED_MSG, e);
-		} catch (WebzException e) {
-			LOG.warn(URI_RESOLUTION_FAILED_MSG, e);
+			if (metadata.isFolder() && pathname.length() > 0) {
+				pathname += '/';
+			}
 		}
+		try {
+			return new URI(null, req.getContextPath() + '/' + pathname, null).toASCIIString();
 
-		return '/' + pathname;
+		} catch (URISyntaxException e) {
+			throw new WebzException(e);
+		}
 	}
 
 	@Override

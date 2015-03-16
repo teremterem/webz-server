@@ -19,6 +19,9 @@
 package org.terems.webz.filter;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -67,8 +70,8 @@ public class ForcedRedirectsFilter extends BaseWebzFilter {
 		if (queryParamValue == null) {
 			return false;
 		}
-		String redirectUrl = redirectsConfig.getForcedRedirectsUrlPattern(queryParamValue);
-		if (redirectUrl == null) {
+		String urlPattern = redirectsConfig.getForcedRedirectsUrlPattern(queryParamValue);
+		if (urlPattern == null) {
 			return false;
 		}
 
@@ -82,11 +85,26 @@ public class ForcedRedirectsFilter extends BaseWebzFilter {
 		if (pathname == null) {
 			pathname = file.getPathname();
 		}
-		redirectUrl = redirectUrl.replace(URL_PATTERN_PATHNAME_PARAM, pathname);
-		// TODO should pathname be URL-escaped ?
-		WebzUtils.doRedirect(resp, redirectUrl, forcedRedirectsPermanent, WebzUtils.isHttpMethodHead(req));
 
+		URL url = new URL(urlPattern);
+		try {
+			URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), injectPathname(url.getPath(), pathname),
+					injectPathname(url.getQuery(), pathname), injectPathname(url.getRef(), pathname));
+
+			WebzUtils.doRedirect(resp, uri.toASCIIString(), forcedRedirectsPermanent, WebzUtils.isHttpMethodHead(req));
+
+		} catch (URISyntaxException e) {
+			throw new WebzException(e);
+		}
 		return true;
+	}
+
+	private String injectPathname(String template, String pathname) {
+
+		if (template == null) {
+			return null;
+		}
+		return template.replace(URL_PATTERN_PATHNAME_PARAM, pathname);
 	}
 
 }

@@ -67,6 +67,8 @@ public class WebzServer implements WebzServletContainerBridge {
 
 			webzInternalProperties = new WebzProperties(internalProperties);
 
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		} catch (WebzException e) {
 			throw new RuntimeException(e);
 		}
