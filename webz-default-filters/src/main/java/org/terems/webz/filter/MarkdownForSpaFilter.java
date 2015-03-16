@@ -25,6 +25,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,7 +65,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 	public static final String NAME_MUSTACHE_VAR = "NAME";
 	public static final String PATHNAME_MUSTACHE_VAR = "PATHNAME";
 	public static final String IS_FOLDER_MUSTACHE_VAR = "IS-FOLDER";
-	public static final String IS_MARKDOWN_MUSTACHE_VAR = "IS-MARKDOWN";
+	public static final String EXT_IS_MUSTACHE_VAR = "EXT-IS";
 	public static final String FULL_URI_MUSTACHE_VAR = "FULL-URI";
 
 	public static final String WEBZ_ROOT_MUSTACHE_VAR = "WEBZ-ROOT";
@@ -75,7 +76,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 	public static final String SUBFILES_MUSTACHE_VAR = "SUBFILES";
 
 	public static final String ALL_MUSTACHE_VAR = "ALL";
-	public static final String IS_NOT_EMPTY_MUSTACHE_VAR = "IS-NOT-EMPTY";
+	public static final String NOT_EMPTY_MUSTACHE_VAR = "NOT-EMPTY";
 	public static final String INDEX_MUSTACHE_VAR = "INDEX";
 	public static final String REVERSE_INDEX_MUSTACHE_VAR = "REVERSE-INDEX";
 	public static final String LIST_MUSTACHE_VAR = "LIST";
@@ -155,7 +156,6 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 			pageScope.put(MAIN_CONTENT_MUSTACHE_VAR, mainContent);
 			// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
 		}
-
 		WebzByteArrayOutputStream html = executeMustache(new Object[] { pageScope }, context);
 
 		WebzUtils.prepareStandardHeaders(resp, mustacheResultingMimetype, defaultEncoding, html.size());
@@ -212,8 +212,9 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 				pathname = linkedPathname;
 			}
 
-			if (isMarkdown(metadata.getName())) {
-				webzFile.put(IS_MARKDOWN_MUSTACHE_VAR, Boolean.TRUE);
+			String fileExtension = WebzUtils.getFileExtension(metadata);
+			if (fileExtension != null) {
+				webzFile.put(EXT_IS_MUSTACHE_VAR, Collections.singletonMap(WebzUtils.toLowerCaseEng(fileExtension), Boolean.TRUE));
 			}
 			if (metadata.isFolder()) {
 				webzFile.put(IS_FOLDER_MUSTACHE_VAR, Boolean.TRUE);
@@ -237,10 +238,10 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 		Map<String, Collection<Object>> webzSubfiles = new HashMap<String, Collection<Object>>();
 		Collection<Object> webzAllChildren = new LinkedList<Object>();
 
-		Map<String, Map<String, Object>> isNotEmpty = new HashMap<String, Map<String, Object>>();
-		Map<String, Object> isNotEmptySubfolders = new HashMap<String, Object>();
-		Map<String, Object> isNotEmptySubfiles = new HashMap<String, Object>();
-		Map<String, Object> isNotEmptyAll = new HashMap<String, Object>();
+		Map<String, Map<String, Object>> notEmpty = new HashMap<String, Map<String, Object>>();
+		Map<String, Object> notEmptySubfolders = new HashMap<String, Object>();
+		Map<String, Object> notEmptySubfiles = new HashMap<String, Object>();
+		Map<String, Object> notEmptyAll = new HashMap<String, Object>();
 
 		Map<String, Object> webzFolderIndex = new HashMap<String, Object>(children.size());
 		for (WebzFile child : children) {
@@ -250,30 +251,30 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 
 				boolean isChildFolder = childMetadata.isFolder();
 				Map<String, Collection<Object>> webzSubitems = isChildFolder ? webzSubfolders : webzSubfiles;
-				Map<String, Object> isNotEmptySubitems = isChildFolder ? isNotEmptySubfolders : isNotEmptySubfiles;
+				Map<String, Object> isNotEmptySubitems = isChildFolder ? notEmptySubfolders : notEmptySubfiles;
 
 				Map<String, Object> webzChild = populateWebzFileMap(child, req, context);
 				webzAllChildren.add(webzChild);
 
-				putChildAgainstOrigin(webzChild, webzSubitems, isNotEmptySubitems, isNotEmptyAll, ALL_MUSTACHE_VAR);
+				putChildAgainstOrigin(webzChild, webzSubitems, isNotEmptySubitems, notEmptyAll, ALL_MUSTACHE_VAR);
 				for (String origin : childMetadata.getOrigins()) {
-					putChildAgainstOrigin(webzChild, webzSubitems, isNotEmptySubitems, isNotEmptyAll, origin);
+					putChildAgainstOrigin(webzChild, webzSubitems, isNotEmptySubitems, notEmptyAll, origin);
 				}
 			}
 		}
 		if (!webzAllChildren.isEmpty()) {
 
 			webzFolderIndex.put(ALL_MUSTACHE_VAR, webzAllChildren);
-			webzFolderIndex.put(IS_NOT_EMPTY_MUSTACHE_VAR, isNotEmpty);
+			webzFolderIndex.put(NOT_EMPTY_MUSTACHE_VAR, notEmpty);
 
-			if (!isNotEmptySubfolders.isEmpty()) {
-				isNotEmpty.put(SUBFOLDERS_MUSTACHE_VAR, isNotEmptySubfolders);
+			if (!notEmptySubfolders.isEmpty()) {
+				notEmpty.put(SUBFOLDERS_MUSTACHE_VAR, notEmptySubfolders);
 			}
-			if (!isNotEmptySubfiles.isEmpty()) {
-				isNotEmpty.put(SUBFILES_MUSTACHE_VAR, isNotEmptySubfiles);
+			if (!notEmptySubfiles.isEmpty()) {
+				notEmpty.put(SUBFILES_MUSTACHE_VAR, notEmptySubfiles);
 			}
-			if (!isNotEmptyAll.isEmpty()) {
-				isNotEmpty.put(ALL_MUSTACHE_VAR, isNotEmptyAll);
+			if (!notEmptyAll.isEmpty()) {
+				notEmpty.put(ALL_MUSTACHE_VAR, notEmptyAll);
 			}
 		}
 		if (!webzSubfolders.isEmpty()) {
