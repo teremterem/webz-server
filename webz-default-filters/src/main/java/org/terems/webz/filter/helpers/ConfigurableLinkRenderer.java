@@ -13,6 +13,8 @@ import org.terems.webz.WebzConfig;
 
 public class ConfigurableLinkRenderer extends LinkRenderer {
 
+	// TODO Come on! Finish it!
+
 	public ConfigurableLinkRenderer(WebzConfig config) {
 
 		// TODO support configurable rel="nofollow" for links to foreign domains

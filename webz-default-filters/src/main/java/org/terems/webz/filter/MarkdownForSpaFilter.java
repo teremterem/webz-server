@@ -305,6 +305,8 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 	private Map<String, Object> populateWebzBreadcrumbs(WebzFile file, HttpServletRequest req, WebzContext context) throws IOException,
 			WebzException {
 
+		// TODO implement {{#PATHNAME-IS.webz-core.target}}
+
 		List<Map<String, Object>> reverseList = new LinkedList<Map<String, Object>>();
 		Map<String, Object> reverseIndex = new HashMap<String, Object>();
 
