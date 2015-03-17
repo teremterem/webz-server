@@ -1,7 +1,6 @@
 # WebZ Server v0.9 beta ([Pedesis](https://www.pinterest.com/terems_org/pedesis-from-ancient-greek-a-leaping/))
 
-> пребывание в потоке - это такое состояние,  
-> в котором время уже больше ничему не является препядствием...  
+> пребывание в потоке - это такое состояние, в котором время уже больше ничему не является препядствием...
 
 *Detailed project description is comming...*
 
