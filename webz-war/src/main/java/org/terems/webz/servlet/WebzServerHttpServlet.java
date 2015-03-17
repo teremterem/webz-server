@@ -43,18 +43,11 @@ public class WebzServerHttpServlet extends HttpServlet {
 
 	private static final String WEBZ_SERVER_INTERNAL_PROPERTIES_RESOURCE = "webz-server-internal.properties";
 
-	private WebzProperties webzInternalProperties;
-
 	@Override
 	public void init() throws ServletException {
 		try {
-			Properties internalProperties = new Properties();
-			WebzUtils.loadPropertiesFromClasspath(internalProperties, WEBZ_SERVER_INTERNAL_PROPERTIES_RESOURCE, true);
-
-			webzInternalProperties = new WebzProperties(internalProperties);
-
-			webzServer();
 			// TODO decide if WebzServer lazy initialization mechanism is needed at all
+			webzServer();
 
 		} catch (IOException e) {
 			throw new ServletException(e);
@@ -117,10 +110,15 @@ public class WebzServerHttpServlet extends HttpServlet {
 
 	private WebzServer initWebzServer() throws IOException, WebzException {
 
+		Properties internalProperties = new Properties();
+		WebzUtils.loadPropertiesFromClasspath(internalProperties, WEBZ_SERVER_INTERNAL_PROPERTIES_RESOURCE, true);
+
+		WebzProperties webzInternalProperties = new WebzProperties(internalProperties);
+
 		Properties webzProperties = fetchWebzProperties();
 		// TODO make logging configurable through WebZ properties as well
 
-		WebzServer webzServer = new WebzServer(webzInternalProperties);
+		WebzServer webzServer = new WebzServer();
 
 		String siteContentPath = webzProperties.getProperty(WebzLaunchHelper.SITE_CONTENT_PATH_PROPERTY);
 		String renderingSpaPath = webzProperties.getProperty(WebzLaunchHelper.RENDERING_SPA_PATH_PROPERTY);
@@ -132,9 +130,15 @@ public class WebzServerHttpServlet extends HttpServlet {
 			throw new WebzException(WebzLaunchHelper.SITE_CONTENT_PATH_PROPERTY + " WebZ property is not set");
 		}
 
-		// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
-		webzServer.start(siteContentPath, renderingSpaPath);
-		// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
+		WebzProperties siteProperties = new WebzProperties(webzInternalProperties);
+		siteProperties.put(WebzProperties.FS_BASE_PATH_PROPERTY, siteContentPath);
+
+		WebzProperties spaProperties = new WebzProperties(webzInternalProperties);
+		spaProperties.put(WebzProperties.FS_BASE_PATH_PROPERTY, renderingSpaPath);
+
+		// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
+		webzServer.start(siteProperties, spaProperties, webzInternalProperties);
+		// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
 
 		return webzServer;
 	}
