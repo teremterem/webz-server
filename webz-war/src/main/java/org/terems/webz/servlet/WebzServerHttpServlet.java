@@ -32,18 +32,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terems.WebzLaunchHelper;
 import org.terems.webz.WebzException;
+import org.terems.webz.WebzProperties;
 import org.terems.webz.impl.WebzServer;
+import org.terems.webz.util.WebzUtils;
 
 @SuppressWarnings("serial")
-public class WebzHttpServletEnvelope extends HttpServlet {
+public class WebzServerHttpServlet extends HttpServlet {
 
-	private static final Logger LOG = LoggerFactory.getLogger(WebzHttpServletEnvelope.class);
+	private static final Logger LOG = LoggerFactory.getLogger(WebzServerHttpServlet.class);
+
+	private static final String WEBZ_SERVER_INTERNAL_PROPERTIES_RESOURCE = "webz-server-internal.properties";
+
+	private WebzProperties webzInternalProperties;
 
 	@Override
 	public void init() throws ServletException {
 		try {
-			// TODO decide if WebzServer lazy initialization mechanism is needed at all
+			Properties internalProperties = new Properties();
+			WebzUtils.loadPropertiesFromClasspath(internalProperties, WEBZ_SERVER_INTERNAL_PROPERTIES_RESOURCE, true);
+
+			webzInternalProperties = new WebzProperties(internalProperties);
+
 			webzServer();
+			// TODO decide if WebzServer lazy initialization mechanism is needed at all
 
 		} catch (IOException e) {
 			throw new ServletException(e);
@@ -109,7 +120,7 @@ public class WebzHttpServletEnvelope extends HttpServlet {
 		Properties webzProperties = fetchWebzProperties();
 		// TODO make logging configurable through WebZ properties as well
 
-		WebzServer webzServer = new WebzServer();
+		WebzServer webzServer = new WebzServer(webzInternalProperties);
 
 		String siteContentPath = webzProperties.getProperty(WebzLaunchHelper.SITE_CONTENT_PATH_PROPERTY);
 		String renderingSpaPath = webzProperties.getProperty(WebzLaunchHelper.RENDERING_SPA_PATH_PROPERTY);

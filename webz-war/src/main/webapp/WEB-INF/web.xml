@@ -27,14 +27,14 @@
 	<description>${project.description}</description>
 
 	<servlet>
-		<servlet-name>WebZ</servlet-name>
-		<servlet-class>org.terems.webz.servlet.WebzHttpServletEnvelope</servlet-class>
+		<servlet-name>webzServer</servlet-name>
+		<servlet-class>org.terems.webz.servlet.WebzServerHttpServlet</servlet-class>
 
 		<load-on-startup>0</load-on-startup>
 	</servlet>
 
 	<servlet-mapping>
-		<servlet-name>WebZ</servlet-name>
+		<servlet-name>webzServer</servlet-name>
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
 

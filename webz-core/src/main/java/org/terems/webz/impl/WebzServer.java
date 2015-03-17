@@ -21,7 +21,6 @@ package org.terems.webz.impl;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,8 +46,6 @@ public class WebzServer implements WebzServletContainerBridge {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WebzServer.class);
 
-	private static final String WEBZ_INTERNAL_PROPERTIES_RESOURCE = "webz-internal.properties";
-
 	@SuppressWarnings("unchecked")
 	private static final Collection<Class<? extends WebzFilter>> DEFAULT_FILTERS = Arrays
 			.asList((Class<? extends WebzFilter>[]) new Class<?>[] { ErrorFilter.class, WelcomeFilter.class, ForcedRedirectsFilter.class,
@@ -59,19 +56,8 @@ public class WebzServer implements WebzServletContainerBridge {
 
 	private WebzProperties webzInternalProperties;
 
-	public WebzServer() {
-
-		try {
-			Properties internalProperties = new Properties();
-			WebzUtils.loadPropertiesFromClasspath(internalProperties, WEBZ_INTERNAL_PROPERTIES_RESOURCE, true);
-
-			webzInternalProperties = new WebzProperties(internalProperties);
-
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} catch (WebzException e) {
-			throw new RuntimeException(e);
-		}
+	public WebzServer(WebzProperties webzInternalProperties) {
+		this.webzInternalProperties = webzInternalProperties;
 	}
 
 	public void start(String siteContentPath, String renderingSpaPath) {
