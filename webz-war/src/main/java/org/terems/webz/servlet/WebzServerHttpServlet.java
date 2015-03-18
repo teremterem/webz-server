@@ -147,6 +147,7 @@ public class WebzServerHttpServlet extends HttpServlet {
 
 		Properties webzProperties = new Properties();
 
+		File file = null;
 		String path = System.getProperty(WebzLaunchHelper.WEBZ_PROPERTIES_PROPERTY);
 		if (path == null) {
 			path = System.getenv(WebzLaunchHelper.WEBZ_PROPERTIES_ENV_VAR);
@@ -154,10 +155,11 @@ public class WebzServerHttpServlet extends HttpServlet {
 			if (path != null && LOG.isInfoEnabled()) {
 				LOG.info(WebzLaunchHelper.getUsingEnvVarMessage(WebzLaunchHelper.WEBZ_PROPERTIES_ENV_VAR));
 			}
+		} else {
+			file = new File(path);
 		}
-		File file = new File(path);
 
-		if (!(file.exists() && file.isFile())) {
+		if (file == null || !(file.exists() && file.isFile())) {
 			if (LOG.isWarnEnabled()) {
 				LOG.warn(WebzLaunchHelper.getPropertiesNotLoadedMessage(file));
 			}

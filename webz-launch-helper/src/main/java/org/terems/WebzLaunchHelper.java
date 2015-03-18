@@ -56,7 +56,12 @@ public class WebzLaunchHelper {
 	}
 
 	public static String getPropertiesNotLoadedMessage(File webzPropertiesFile) {
-		return "WebZ properties were NOT loaded: " + webzPropertiesFile.getAbsolutePath() + " does not exist or is not a file";
+
+		String messagePrefix = "WebZ properties were NOT loaded: ";
+		if (webzPropertiesFile == null) {
+			return messagePrefix + "null WebZ properties pathname";
+		}
+		return messagePrefix + webzPropertiesFile.getAbsolutePath() + " does not exist or is not a file";
 	}
 
 	public static String getPropertiesPathMessage(File webzPropertiesFile) {
