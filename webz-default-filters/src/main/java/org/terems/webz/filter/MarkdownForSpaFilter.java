@@ -171,7 +171,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 
 		Map<String, Object> pageScope = new HashMap<String, Object>();
 
-		pageScope.put(WEBZ_FILE_MUSTACHE_VAR, populateWebzFileMap(file, req, context));
+		pageScope.put(WEBZ_FILE_MUSTACHE_VAR, populateWebzFileMap(file, false, req, context));
 
 		WebzMetadata metadata = file.getMetadata();
 		if (metadata.isFolder()) {
@@ -182,7 +182,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 			}
 		}
 
-		pageScope.put(WEBZ_ROOT_MUSTACHE_VAR, populateWebzFileMap(context.getFile(null), req, context));
+		pageScope.put(WEBZ_ROOT_MUSTACHE_VAR, populateWebzFileMap(context.getFile(null), false, req, context));
 		pageScope.put(WEBZ_BREADCRUMBS_MUSTACHE_VAR, populateWebzBreadcrumbs(file, req, context));
 
 		WebzFile parent = file.getParent();
@@ -197,10 +197,14 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 		return pageScope;
 	}
 
-	private Map<String, Object> populateWebzFileMap(WebzFile file, HttpServletRequest req, WebzContext context) throws IOException,
-			WebzException {
+	private Map<String, Object> populateWebzFileMap(WebzFile file, boolean javaPackageStyle, HttpServletRequest req, WebzContext context)
+			throws IOException, WebzException {
 
 		Map<String, Object> webzFile = new HashMap<String, Object>();
+
+		// TODO javaPackageStyle
+		if (javaPackageStyle) {
+		}
 
 		String pathname = file.getPathname();
 		WebzMetadata metadata = file.getMetadata();
@@ -253,7 +257,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 				Map<String, Collection<Object>> webzSubitems = isChildFolder ? webzSubfolders : webzSubfiles;
 				Map<String, Object> isNotEmptySubitems = isChildFolder ? notEmptySubfolders : notEmptySubfiles;
 
-				Map<String, Object> webzChild = populateWebzFileMap(child, req, context);
+				Map<String, Object> webzChild = populateWebzFileMap(child, true, req, context);
 				webzAllChildren.add(webzChild);
 
 				putChildAgainstOrigin(webzChild, webzSubitems, isNotEmptySubitems, notEmptyAll, ALL_MUSTACHE_VAR);
@@ -320,7 +324,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 				break;
 			}
 
-			Map<String, Object> webzFile = populateWebzFileMap(file, req, context);
+			Map<String, Object> webzFile = populateWebzFileMap(file, false, req, context);
 			reverseList.add(webzFile);
 			reverseIndex.put(String.valueOf(i), webzFile);
 
