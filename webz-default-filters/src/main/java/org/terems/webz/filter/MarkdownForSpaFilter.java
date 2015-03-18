@@ -27,10 +27,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -62,6 +64,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 
 	public static final String WEBZ_FILE_MUSTACHE_VAR = "WEBZ-FILE";
 
+	public static final String PARENT_PATH_MEMBERS_MUSTACHE_VAR = "PARENT-PATH-MEMBERS";
 	public static final String NAME_MUSTACHE_VAR = "NAME";
 	public static final String PATHNAME_MUSTACHE_VAR = "PATHNAME";
 	public static final String IS_FOLDER_MUSTACHE_VAR = "IS-FOLDER";
@@ -110,7 +113,6 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 		mustacheResultingMimetype = markdownForSpaConfig.getMustacheResultingMimetype();
 
 		linkRenderer = new ConfigurableLinkRenderer(getAppConfig());
-		// TODO make ConfigurableLinkRenderer configurable
 	}
 
 	@Override
@@ -171,7 +173,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 
 		Map<String, Object> pageScope = new HashMap<String, Object>();
 
-		pageScope.put(WEBZ_FILE_MUSTACHE_VAR, populateWebzFileMap(file, false, req, context));
+		pageScope.put(WEBZ_FILE_MUSTACHE_VAR, populateWebzFileMap(file, req, context));
 
 		WebzMetadata metadata = file.getMetadata();
 		if (metadata.isFolder()) {
@@ -182,7 +184,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 			}
 		}
 
-		pageScope.put(WEBZ_ROOT_MUSTACHE_VAR, populateWebzFileMap(context.getFile(null), false, req, context));
+		pageScope.put(WEBZ_ROOT_MUSTACHE_VAR, populateWebzFileMap(context.getFile(null), req, context));
 		pageScope.put(WEBZ_BREADCRUMBS_MUSTACHE_VAR, populateWebzBreadcrumbs(file, req, context));
 
 		WebzFile parent = file.getParent();
@@ -197,14 +199,10 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 		return pageScope;
 	}
 
-	private Map<String, Object> populateWebzFileMap(WebzFile file, boolean javaPackageStyle, HttpServletRequest req, WebzContext context)
-			throws IOException, WebzException {
+	private Map<String, Object> populateWebzFileMap(WebzFile file, HttpServletRequest req, WebzContext context) throws IOException,
+			WebzException {
 
 		Map<String, Object> webzFile = new HashMap<String, Object>();
-
-		// TODO javaPackageStyle
-		if (javaPackageStyle) {
-		}
 
 		String pathname = file.getPathname();
 		WebzMetadata metadata = file.getMetadata();
@@ -230,12 +228,22 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 		return webzFile;
 	}
 
+	private static final boolean LIST_HIDDEN = false;
+
 	private Map<String, Object> populateFolderIndex(WebzFile file, HttpServletRequest req, WebzContext context) throws IOException,
 			WebzException {
 
-		Collection<WebzFile> children = file.listChildren(false);
+		Collection<WebzFile> children = file.listChildren(LIST_HIDDEN);
 		if (children == null) {
 			return null;
+		}
+		Map<String, WebzFile> sortedChildren = new TreeMap<String, WebzFile>();
+		for (WebzFile child : children) {
+
+			WebzMetadata childMetadata = child.getMetadata();
+			if (childMetadata != null) {
+				sortedChildren.put(childMetadata.getName(), child);
+			}
 		}
 
 		Map<String, Collection<Object>> webzSubfolders = new HashMap<String, Collection<Object>>();
@@ -248,21 +256,47 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 		Map<String, Object> notEmptyAll = new HashMap<String, Object>();
 
 		Map<String, Object> webzFolderIndex = new HashMap<String, Object>(children.size());
-		for (WebzFile child : children) {
+		for (WebzFile child : sortedChildren.values()) {
 
 			WebzMetadata childMetadata = child.getMetadata();
+			boolean childIsFolder = childMetadata == null ? false : childMetadata.isFolder();
+
+			Collection<String> parentPathMembers = new LinkedHashSet<String>();
+			while (childIsFolder) {
+
+				Collection<WebzFile> grandChildren = child.listChildren(LIST_HIDDEN);
+				if (grandChildren == null || grandChildren.size() != 1) {
+					break;
+				}
+				WebzFile grandChild = grandChildren.iterator().next();
+				WebzMetadata grandChildMetadata = grandChild.getMetadata();
+				boolean grandChildIsFolder = grandChildMetadata == null ? false : grandChildMetadata.isFolder();
+				if (!grandChildIsFolder) {
+					break;
+				}
+
+				parentPathMembers.add(childMetadata.getName());
+
+				child = grandChild;
+				childMetadata = grandChildMetadata;
+				childIsFolder = grandChildIsFolder;
+			}
+
 			if (childMetadata != null) {
 
-				boolean isChildFolder = childMetadata.isFolder();
-				Map<String, Collection<Object>> webzSubitems = isChildFolder ? webzSubfolders : webzSubfiles;
-				Map<String, Object> isNotEmptySubitems = isChildFolder ? notEmptySubfolders : notEmptySubfiles;
+				Map<String, Object> webzChild = populateWebzFileMap(child, req, context);
+				if (!parentPathMembers.isEmpty()) {
+					webzChild.put(PARENT_PATH_MEMBERS_MUSTACHE_VAR, parentPathMembers);
+				}
 
-				Map<String, Object> webzChild = populateWebzFileMap(child, true, req, context);
+				Map<String, Collection<Object>> webzSubitems = childIsFolder ? webzSubfolders : webzSubfiles;
+				Map<String, Object> notEmptySubitems = childIsFolder ? notEmptySubfolders : notEmptySubfiles;
+
 				webzAllChildren.add(webzChild);
 
-				putChildAgainstOrigin(webzChild, webzSubitems, isNotEmptySubitems, notEmptyAll, ALL_MUSTACHE_VAR);
+				putChildAgainstOrigin(webzChild, webzSubitems, notEmptySubitems, notEmptyAll, ALL_MUSTACHE_VAR);
 				for (String origin : childMetadata.getOrigins()) {
-					putChildAgainstOrigin(webzChild, webzSubitems, isNotEmptySubitems, notEmptyAll, origin);
+					putChildAgainstOrigin(webzChild, webzSubitems, notEmptySubitems, notEmptyAll, origin);
 				}
 			}
 		}
@@ -309,7 +343,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 	private Map<String, Object> populateWebzBreadcrumbs(WebzFile file, HttpServletRequest req, WebzContext context) throws IOException,
 			WebzException {
 
-		// TODO implement {{#PATHNAME-IS.webz-core.target}}
+		// TODO implement {{#PATHNAME-IS.webz-core.src}}
 
 		List<Map<String, Object>> reverseList = new LinkedList<Map<String, Object>>();
 		Map<String, Object> reverseIndex = new HashMap<String, Object>();
@@ -324,7 +358,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 				break;
 			}
 
-			Map<String, Object> webzFile = populateWebzFileMap(file, false, req, context);
+			Map<String, Object> webzFile = populateWebzFileMap(file, req, context);
 			reverseList.add(webzFile);
 			reverseIndex.put(String.valueOf(i), webzFile);
 
