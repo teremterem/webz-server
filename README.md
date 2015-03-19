@@ -1,12 +1,5 @@
 # WebZ Server v0.9 beta ([Pedesis](https://www.pinterest.com/terems_org/pedesis-from-ancient-greek-a-leaping/))
 
-```
-настроение - это душа,  
-тогда как разум - это всего лишь средство связи  
-между настроением (то есть душой) и тем проявлением реальности,  
-которое ты сам же себе и выбираешь...
-```
-
 [***WebZ Server***](https://github.com/terems-org/webz-server) *is the core part of so called WebZ Platform -*
 *a Git-based web hosting platform.*
 *(The page you are looking at right now is being served to you by WebZ Platform "directy" from*
