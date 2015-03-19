@@ -3,7 +3,7 @@
 [**WebZ Server**](https://github.com/terems-org/webz-server) is the core part of so called WebZ Platform -
 a Git-based web hosting platform. (The page you are looking at right now is being served to you by WebZ Platform "directy" from
 [**this**](https://github.com/terems-org/webz-server#webz-server-v09-beta-pedesis) GitHub repo).  
-*WebZ Server is an open source project available under*
+WebZ Server is an open source project available under
 [**GNU Affero GPL v3.0**](http://www.gnu.org/licenses/agpl-3.0) - it is a web server that natively supports markdown.
 It's written in Java and is designed to serve web pages from various local and remote file sources as well as from so called
 file source "hybrids". It has an API that allows custom server-side
