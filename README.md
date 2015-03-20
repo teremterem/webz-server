@@ -8,7 +8,7 @@ WebZ Server is an open source project available under
 It's written in Java and is designed to serve web pages from various local and remote file sources as well as from so called
 file source "hybrids". It has an API that allows custom server-side
 [**WebZ Filters**](https://github.com/terems-org/webz-api/blob/master/src/main/java/org/terems/webz/WebzFilter.java)
-to be implemented in java for future injection into WebZ Site (although, the injection mechanism itself is not yet implemented).  
+to be implemented in java for future injection into WebZ sites (the injection mechanism itself is not dynamic yet - currently you need to package WebZ Filters together with the server, but later it will become possible to load them dynamically as part of WebZ site deployment).  
 This API is called [**WebZ API**](https://github.com/terems-org/webz-api) and is available under
 [**Apache License v2.0**](http://www.apache.org/licenses/LICENSE-2.0).  
 
