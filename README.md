@@ -15,6 +15,3 @@ This API is called [**WebZ API**](https://github.com/terems-org/webz-api) and is
 > ***NOTE:*** *Some time later a* ***contributor license agreement*** *will be applied to this particular repo.*
 > [***This article***](https://julien.ponge.org/blog/in-defense-of-contributor-license-agreements/)
 > *explains why it is a good idea to consider using contributor license agreements for certain open source projects.*
-
-P.S. All WebZ artifacts are available at
-[**Sonatype OSSRH**](https://oss.sonatype.org/content/repositories/snapshots/org/terems/).
