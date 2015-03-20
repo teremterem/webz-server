@@ -10,7 +10,7 @@ file source "hybrids". It has an API that allows custom server-side
 [**WebZ Filters**](https://github.com/terems-org/webz-api/blob/master/src/main/java/org/terems/webz/WebzFilter.java)
 to be implemented in Java. This API is called [**WebZ API**](https://github.com/terems-org/webz-api) and is available under
 [**Apache License v2.0**](http://www.apache.org/licenses/LICENSE-2.0).  
-WebZ Filter injection mechanism itself is not dynamic yet - currently you need to package WebZ Filters together with the Server, but later it will become possible to load them dynamically as part of WebZ site deployment.
+WebZ Filter injection mechanism itself is not dynamic yet - currently all WebZ Filters need to be packaged together with the Server, but later it will become possible to load them dynamically as part of WebZ site deployment.
 
 > ***NOTE:*** *Some time later a* ***contributor license agreement*** *will be applied to this particular repo.*
 > [***This article***](https://julien.ponge.org/blog/in-defense-of-contributor-license-agreements/)
