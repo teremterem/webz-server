@@ -34,6 +34,12 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import javax.script.SimpleBindings;
+import javax.script.SimpleScriptContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -46,6 +52,7 @@ import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzMetadata;
+import org.terems.webz.WebzProperties;
 import org.terems.webz.base.BaseWebzFilter;
 import org.terems.webz.config.GeneralAppConfig;
 import org.terems.webz.config.MarkdownForSpaConfig;
@@ -61,6 +68,15 @@ import com.github.mustachejava.MustacheResolver;
 public class MarkdownForSpaFilter extends BaseWebzFilter {
 
 	// TODO support browser caching (ETags or "last modified" timestamp stored in cache against request pathInfo ?)
+
+	public static final String WEBZ_TEMPLATE_ADAPTER_JS_FUNCTION = "webzTemplateAdapter";
+
+	public static final String CONTENT_TEMPLATE_JS_VAR = "CONTENT_TEMPLATE";
+	public static final String PAGE_SCOPE_JS_VAR = "PAGE_SCOPE";
+
+	public static final String SCRIPT_ENGINE_NAME = "nashorn";
+
+	// ~
 
 	public static final String WEBZ_FILE_MUSTACHE_VAR = "WEBZ-FILE";
 
@@ -87,10 +103,12 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 
 	public static final String MAIN_CONTENT_MUSTACHE_VAR = "MAIN-CONTENT";
 
+	// ~
+
 	private String defaultEncoding;
 	private String markdownSuffixLowerCased;
-	private String mustacheTemplate;
-	private String mustacheResultingMimetype;
+	private String contentTemplate;
+	private String resultingContentMimetype;
 
 	private LinkRenderer linkRenderer;
 
@@ -98,6 +116,13 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 		@Override
 		protected PegDownProcessor initialValue() {
 			return new PegDownProcessor();
+		}
+	};
+
+	private ThreadLocal<ScriptEngineManager> scriptEngineManager = new ThreadLocal<ScriptEngineManager>() {
+		@Override
+		protected ScriptEngineManager initialValue() {
+			return new ScriptEngineManager();
 		}
 	};
 
@@ -109,8 +134,8 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 
 		defaultEncoding = generalConfig.getDefaultEncoding();
 		markdownSuffixLowerCased = markdownForSpaConfig.getMarkdownSuffixLowerCased();
-		mustacheTemplate = markdownForSpaConfig.getMustacheTemplate();
-		mustacheResultingMimetype = markdownForSpaConfig.getMustacheResultingMimetype();
+		contentTemplate = markdownForSpaConfig.getContentTemplate();
+		resultingContentMimetype = markdownForSpaConfig.getResultingContentMimetype();
 
 		linkRenderer = new ConfigurableLinkRenderer(getAppConfig());
 	}
@@ -158,14 +183,76 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 			pageScope.put(MAIN_CONTENT_MUSTACHE_VAR, mainContent);
 			// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
 		}
-		WebzByteArrayOutputStream html = executeMustache(new Object[] { pageScope }, context);
+		String html = executeJavascript(context, pageScope);
+		byte[] htmlBytes = html.getBytes(defaultEncoding);
 
-		WebzUtils.prepareStandardHeaders(resp, mustacheResultingMimetype, defaultEncoding, html.size());
+		WebzUtils.prepareStandardHeaders(resp, resultingContentMimetype, defaultEncoding, htmlBytes.length);
 		if (!WebzUtils.isHttpMethodHead(req)) {
 
-			resp.getOutputStream().write(html.getInternalByteArray(), 0, html.size());
+			resp.getOutputStream().write(htmlBytes, 0, htmlBytes.length);
 		}
 		return true;
+	}
+
+	private String executeJavascript(WebzContext context, Map<String, Object> pageScope) throws IOException, WebzException {
+
+		ScriptEngine scriptEngine = scriptEngineManager.get().getEngineByName(SCRIPT_ENGINE_NAME);
+
+		WebzFile templateFile = context.getFile(contentTemplate);
+		WebzFileDownloader innerDownloader = templateFile.getFileDownloader();
+		if (innerDownloader == null) {
+			throw new WebzException("webz content template file was not found (or a folder of the same name was found instead)");
+		}
+
+		FileDownloaderWithBOM templateDownloader = new FileDownloaderWithBOM(innerDownloader, defaultEncoding);
+		String template = templateDownloader.getContentAsStringAndClose();
+
+		// TODO cache scriptContext
+		ScriptContext scriptContext = new SimpleScriptContext();
+
+		Map<String, Object> jsVars = new HashMap<String, Object>();
+		jsVars.put(CONTENT_TEMPLATE_JS_VAR, template);
+		jsVars.put(PAGE_SCOPE_JS_VAR, pageScope);
+		scriptContext.setBindings(new SimpleBindings(jsVars), ScriptContext.ENGINE_SCOPE);
+
+		loadAllWebzJsLibs(scriptEngine, context, scriptContext);
+		try {
+			return WebzUtils.assertString(scriptEngine.eval(WEBZ_TEMPLATE_ADAPTER_JS_FUNCTION + "(" + CONTENT_TEMPLATE_JS_VAR + ","
+					+ PAGE_SCOPE_JS_VAR + ");", scriptContext));
+			// return WebzUtils.assertString(scriptEngine.eval("(function(contentTemplate,pageScope){return "
+			// + WEBZ_TEMPLATE_ADAPTER_JS_FUNCTION + "(contentTemplate, pageScope);})(" + CONTENT_TEMPLATE_JS_VAR + ","
+			// + PAGE_SCOPE_JS_VAR + ");", scriptContext));
+		} catch (ScriptException e) {
+			throw new WebzException(e);
+		}
+	}
+
+	private void loadAllWebzJsLibs(ScriptEngine scriptEngine, WebzContext context, ScriptContext scriptContext) throws IOException,
+			WebzException {
+
+		WebzFile jsLibsFolder = context.getFile(WebzProperties.WEBZ_JS_LIBS_FOLDER);
+		WebzFile jsTxtFile = jsLibsFolder.getDescendant(WebzProperties.JS_TXT_FILE);
+
+		WebzFileDownloader jsTxtDownloader = jsTxtFile.getFileDownloader();
+		if (jsTxtDownloader == null) {
+			throw new WebzException("'" + jsTxtFile.getPathname() + "' was not found or is not a file");
+		}
+		try {
+			scriptEngine.eval("var window={};", scriptContext);
+
+			String[] jsLibs = new FileDownloaderWithBOM(jsTxtDownloader, defaultEncoding).getContentAsStringAndClose().split("\\s+");
+			for (String jsLib : jsLibs) {
+
+				// TODO make sure js libs loading never fails with NullPointerException
+				FileDownloaderWithBOM libDownoaderWithBOM = new FileDownloaderWithBOM(
+						jsLibsFolder.getDescendant(jsLib).getFileDownloader(), defaultEncoding);
+
+				// TODO switch from String to Stream
+				scriptEngine.eval(libDownoaderWithBOM.getContentAsStringAndClose(), scriptContext);
+			}
+		} catch (ScriptException e) {
+			throw new WebzException(e);
+		}
 	}
 
 	private Map<String, Object> populatePageScope(WebzFile file, HttpServletRequest req, WebzContext context) throws IOException,
@@ -387,7 +474,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 
 	private WebzByteArrayOutputStream executeMustache(Object[] scopes, WebzContext context) throws IOException {
 
-		Mustache mustache = newMustacheFactory(context).compile(mustacheTemplate);
+		Mustache mustache = newMustacheFactory(context).compile(contentTemplate);
 
 		WebzByteArrayOutputStream result = new WebzByteArrayOutputStream();
 		Writer writer = new OutputStreamWriter(result, defaultEncoding);
