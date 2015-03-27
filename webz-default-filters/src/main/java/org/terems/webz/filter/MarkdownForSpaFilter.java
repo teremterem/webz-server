@@ -238,6 +238,7 @@ public class MarkdownForSpaFilter extends BaseWebzFilter {
 			throw new WebzException("'" + jsTxtFile.getPathname() + "' was not found or is not a file");
 		}
 		try {
+			// TODO move window object initialization to a js file
 			scriptEngine.eval("var window={};", scriptContext);
 
 			String[] jsLibs = new FileDownloaderWithBOM(jsTxtDownloader, defaultEncoding).getContentAsStringAndClose().split("\\s+");
