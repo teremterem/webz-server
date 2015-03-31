@@ -29,14 +29,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzChainContext;
-import org.terems.webz.WebzConfig;
 import org.terems.webz.WebzContext;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFilter;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.base.WebzContextProxy;
 import org.terems.webz.config.GeneralAppConfig;
-import org.terems.webz.config.WebzConfigObject;
 import org.terems.webz.internals.WebzApp;
 import org.terems.webz.internals.WebzDestroyableObjectFactory;
 import org.terems.webz.internals.WebzFileFactory;
@@ -77,17 +75,17 @@ public class GenericWebzApp implements WebzApp {
 				throw new WebzException(WebzUtils.formatFileSystemMessage("root location is not a folder", fileSystem));
 			}
 
-			String configuredDisplayName = rootContext.getAppConfigObject(GeneralAppConfig.class).getAppDisplayName();
+			String configuredDisplayName = rootContext.getConfigObject(GeneralAppConfig.class).getAppDisplayName();
 			if (configuredDisplayName != null) {
 
 				this.displayName = configuredDisplayName;
 			}
 
+			initFilterChain(filterClassesList);
+
 		} catch (IOException e) {
 			throw new WebzException(e);
 		}
-
-		initFilterChain(filterClassesList);
 
 		if (LOG.isInfoEnabled()) {
 			LOG.info("WebZ App \"" + displayName + "\" initialized");
@@ -95,24 +93,15 @@ public class GenericWebzApp implements WebzApp {
 		return this;
 	}
 
-	private void initFilterChain(Collection<Class<? extends WebzFilter>> filterClassesList) throws WebzException {
+	private void initFilterChain(Collection<Class<? extends WebzFilter>> filterClassesList) throws IOException, WebzException {
 
 		filterChain = new ArrayList<WebzFilter>(filterClassesList.size());
 
 		for (Class<? extends WebzFilter> filterClass : filterClassesList) {
 			filterChain.add(appFactory.newDestroyable(filterClass));
 		}
-
-		WebzConfig filterConfig = new WebzConfig() {
-
-			@Override
-			public <T extends WebzConfigObject> T getAppConfigObject(Class<T> configObjectClass) throws WebzException {
-				return rootContext.getAppConfigObject(configObjectClass);
-			}
-		};
-
 		for (WebzFilter filter : filterChain) {
-			filter.init(filterConfig);
+			filter.init(rootContext, rootContext);
 		}
 	}
 
@@ -165,7 +154,7 @@ public class GenericWebzApp implements WebzApp {
 		}
 
 		@Override
-		protected WebzContext getInnerContext() {
+		protected WebzContext getInternalContext() {
 			return context;
 		}
 	}

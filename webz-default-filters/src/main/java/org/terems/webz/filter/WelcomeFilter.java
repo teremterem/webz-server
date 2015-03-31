@@ -46,8 +46,8 @@ public class WelcomeFilter extends BaseWebzFilter {
 	private boolean welcomeRedirectsPermanent;
 
 	@Override
-	public void init() throws WebzException {
-		GeneralAppConfig generalConfig = getAppConfig().getAppConfigObject(GeneralAppConfig.class);
+	public void init(WebzContext context) throws IOException, WebzException {
+		GeneralAppConfig generalConfig = getAppConfig().getConfigObject(GeneralAppConfig.class);
 		welcomeFilenameSuffixesLowerCased = generalConfig.getWelcomeFilenameSuffixesLowerCased();
 		welcomeFilenamesLowerCased = generalConfig.getWelcomeFilenamesLowerCased();
 		welcomeRedirectsPermanent = generalConfig.isWelcomeRedirectsPermanent();
@@ -118,16 +118,16 @@ public class WelcomeFilter extends BaseWebzFilter {
 
 	private class WelcomeContextProxy extends WebzContextProxy {
 
-		private WebzContext innerContext;
+		private WebzContext context;
 
-		private WelcomeContextProxy(WebzContext innerContext) {
-			this.innerContext = innerContext;
+		private WelcomeContextProxy(WebzContext context) {
+			this.context = context;
 		}
 
 		@Override
 		public WebzFile resolveFile(HttpServletRequest req) throws IOException, WebzException {
 
-			// TODO after first level cache is implemented start storing resolved WebzFile as a request attribute
+			// TODO store resolved WebzFile as a request attribute
 			WebzFile file = super.resolveFile(req);
 
 			WebzMetadata metadata = file.getMetadata();
@@ -172,8 +172,8 @@ public class WelcomeFilter extends BaseWebzFilter {
 		}
 
 		@Override
-		protected WebzContext getInnerContext() {
-			return innerContext;
+		protected WebzContext getInternalContext() {
+			return context;
 		}
 	}
 

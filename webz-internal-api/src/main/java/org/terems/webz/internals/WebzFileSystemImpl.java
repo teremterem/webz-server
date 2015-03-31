@@ -18,13 +18,42 @@
 
 package org.terems.webz.internals;
 
+import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
+
 import org.terems.webz.WebzDestroyable;
 import org.terems.webz.WebzException;
+import org.terems.webz.WebzFile;
+import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzIdentifiable;
+import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzProperties;
 
-public interface WebzFileSystemImpl extends WebzFileSystemStructure, WebzFileSystemOperations, WebzIdentifiable, WebzDestroyable {
+public interface WebzFileSystemImpl extends WebzIdentifiable, WebzDestroyable {
 
 	public void init(WebzPathNormalizer pathNormalizer, WebzProperties properties, WebzObjectFactory factory) throws WebzException;
+
+	public void inflate(WebzFile file) throws IOException, WebzException;
+
+	public void inflate(WebzFileSystemCache fsCache, WebzFile file) throws IOException, WebzException;
+
+	public WebzMetadata getMetadata(String pathname) throws IOException, WebzException;
+
+	public ParentChildrenMetadata getParentChildrenMetadata(String parentPathname) throws IOException, WebzException;
+
+	/**
+	 * @return {@code null} if folder hash has not changed, otherwise - {@code FreshParentChildrenMetadata} object that encapsulates
+	 *         {@code ParentChildrenMetadata} (<b>NOTE:</b> encapsulated {@code ParentChildrenMetadata} may be {@code null} if there is no
+	 *         such file or folder)
+	 **/
+	public FreshParentChildrenMetadata getParentChildrenMetadataIfChanged(String parentPathname, Object previousFolderHash)
+			throws IOException, WebzException;
+
+	public Map<String, WebzMetadata> getChildPathnamesAndMetadata(String parentPathname) throws IOException, WebzException;
+
+	public Set<String> getChildPathnames(String parentPathname) throws IOException, WebzException;
+
+	public WebzFileDownloader getFileDownloader(String pathname) throws IOException, WebzException;
 
 }

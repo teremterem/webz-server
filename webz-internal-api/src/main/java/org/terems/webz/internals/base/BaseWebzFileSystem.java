@@ -21,8 +21,7 @@ package org.terems.webz.internals.base;
 import org.terems.webz.base.BaseWebzDestroyable;
 import org.terems.webz.internals.WebzFileFactory;
 import org.terems.webz.internals.WebzFileSystem;
-import org.terems.webz.internals.WebzFileSystemOperations;
-import org.terems.webz.internals.WebzFileSystemStructure;
+import org.terems.webz.internals.WebzFileSystemImpl;
 import org.terems.webz.internals.WebzPathNormalizer;
 
 public abstract class BaseWebzFileSystem extends BaseWebzDestroyable implements WebzFileSystem {
@@ -30,8 +29,7 @@ public abstract class BaseWebzFileSystem extends BaseWebzDestroyable implements 
 	protected String uniqueId;
 	protected WebzFileFactory fileFactory;
 	protected WebzPathNormalizer pathNormalizer;
-	protected WebzFileSystemStructure structure;
-	protected WebzFileSystemOperations operations;
+	protected WebzFileSystemImpl impl;
 
 	@Override
 	public String getUniqueId() {
@@ -49,13 +47,8 @@ public abstract class BaseWebzFileSystem extends BaseWebzDestroyable implements 
 	}
 
 	@Override
-	public WebzFileSystemStructure getStructure() {
-		return structure;
-	}
-
-	@Override
-	public WebzFileSystemOperations getOperations() {
-		return operations;
+	public WebzFileSystemImpl getImpl() {
+		return impl;
 	}
 
 }

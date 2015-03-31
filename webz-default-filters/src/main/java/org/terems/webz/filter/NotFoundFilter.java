@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.terems.webz.WebzChainContext;
+import org.terems.webz.WebzContext;
 import org.terems.webz.WebzException;
 import org.terems.webz.base.BaseWebzFilter;
 import org.terems.webz.config.StatusCodesConfig;
@@ -35,8 +36,8 @@ public class NotFoundFilter extends BaseWebzFilter {
 	private StaticContentSender contentSender;
 
 	@Override
-	public void init() throws WebzException {
-		pathTo404file = getAppConfig().getAppConfigObject(StatusCodesConfig.class).getPathTo404file();
+	public void init(WebzContext context) throws IOException, WebzException {
+		pathTo404file = getAppConfig().getConfigObject(StatusCodesConfig.class).getPathTo404file();
 		contentSender = new StaticContentSender(getAppConfig());
 	}
 

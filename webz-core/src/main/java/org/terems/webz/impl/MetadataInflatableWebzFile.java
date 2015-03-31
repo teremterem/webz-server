@@ -42,7 +42,7 @@ public class MetadataInflatableWebzFile extends WebzFileProxy {
 	}
 
 	@Override
-	protected WebzFile getInnerFile() {
+	protected WebzFile getInternalFile() {
 		return file;
 	}
 

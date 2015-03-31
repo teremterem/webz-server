@@ -37,25 +37,23 @@ public class GenericWebzFileSystem extends BaseWebzFileSystem {
 		fileFactory = factory.newDestroyable(DefaultWebzFileFactory.class);
 		fileFactory.init(this, properties);
 
-		WebzFileSystemImpl fsImpl = ((WebzFileSystemImpl) factory.newDestroyable(properties.get(WebzProperties.WEBZ_FS_IMPL_CLASS_PROPERTY,
+		impl = ((WebzFileSystemImpl) factory.newDestroyable(properties.get(WebzProperties.WEBZ_FS_IMPL_CLASS_PROPERTY,
 				WebzDefaults.FS_IMPL_CLASS)));
-		fsImpl.init(pathNormalizer, properties, factory);
+		impl.init(pathNormalizer, properties, factory);
 
-		fsImpl = WebzFileSystemImplTracer.wrapIfApplicable(fsImpl);
+		impl = WebzFileSystemImplTracer.wrapIfApplicable(impl);
 
 		boolean cacheEnabled = Boolean.valueOf(properties.get(WebzProperties.FS_CACHE_ENABLED_PROPERTY,
 				String.valueOf(WebzDefaults.FS_CACHE_ENABLED)));
 		if (cacheEnabled) {
 
 			FileSystemCacheWrapper fsCacheWrapper = factory.newDestroyable(FileSystemCacheWrapper.class);
-			fsCacheWrapper.init(fsImpl, pathNormalizer, properties, factory);
+			fsCacheWrapper.init(impl, pathNormalizer, properties, factory);
 
-			fsImpl = fsCacheWrapper;
+			impl = fsCacheWrapper;
 		}
-		structure = fsImpl;
-		operations = fsImpl;
 
-		uniqueId = fsImpl.getUniqueId();
+		uniqueId = impl.getUniqueId();
 		return this;
 	}
 

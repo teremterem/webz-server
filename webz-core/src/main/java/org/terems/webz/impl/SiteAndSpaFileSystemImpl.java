@@ -19,7 +19,6 @@
 package org.terems.webz.impl;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -29,11 +28,9 @@ import org.terems.webz.WebzException;
 import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzFilter;
 import org.terems.webz.WebzMetadata;
-import org.terems.webz.WebzMetadata.FileSpecific;
 import org.terems.webz.base.WebzMetadataProxy;
 import org.terems.webz.internals.ParentChildrenMetadata;
-import org.terems.webz.internals.WebzFileSystem;
-import org.terems.webz.internals.WebzFileSystemStructure;
+import org.terems.webz.internals.WebzFileSystemImpl;
 import org.terems.webz.internals.WebzPathNormalizer;
 import org.terems.webz.internals.base.BaseWebzFileSystemImpl;
 
@@ -41,20 +38,20 @@ public class SiteAndSpaFileSystemImpl extends BaseWebzFileSystemImpl {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SiteAndSpaFileSystemImpl.class);
 
-	private WebzFileSystem siteFileSystem;
-	private WebzFileSystem spaFileSystem;
+	private WebzFileSystemImpl siteFsImpl;
+	private WebzFileSystemImpl spaFsImpl;
 
 	private String uniqueId;
 
-	public SiteAndSpaFileSystemImpl(WebzFileSystem siteFileSystem, WebzFileSystem spaFileSystem) {
-		this.siteFileSystem = siteFileSystem;
-		this.spaFileSystem = spaFileSystem;
+	public SiteAndSpaFileSystemImpl(WebzFileSystemImpl siteFsImpl, WebzFileSystemImpl spaFsImpl) {
+		this.siteFsImpl = siteFsImpl;
+		this.spaFsImpl = spaFsImpl;
 	}
 
 	@Override
 	protected void init() {
 
-		uniqueId = siteFileSystem.getUniqueId() + "-" + spaFileSystem.getUniqueId();
+		uniqueId = siteFsImpl.getUniqueId() + "-" + spaFsImpl.getUniqueId();
 
 		if (LOG.isInfoEnabled()) {
 			LOG.info("'" + uniqueId + "' hybrid file system was created");
@@ -69,18 +66,18 @@ public class SiteAndSpaFileSystemImpl extends BaseWebzFileSystemImpl {
 	private static class FileFound {
 
 		WebzMetadata proxiedMetadata;
-		WebzFileSystem primaryHost;
-		WebzFileSystem secondaryHost; // can be null
+		WebzFileSystemImpl primaryFsImpl;
+		WebzFileSystemImpl secondaryFsImpl; // can be null
 		String primaryOrigin;
 		String secondaryOrigin; // can be null
 		String actualPathname;
 
-		FileFound(WebzMetadata metadataToProxy, String[] origins, String linkedPathname, WebzFileSystem primaryHost,
-				WebzFileSystem secondaryHost, String primaryOrigin, String secondaryOrigin, String actualPathname) {
+		FileFound(WebzMetadata metadataToProxy, String[] origins, String linkedPathname, WebzFileSystemImpl primaryFsImpl,
+				WebzFileSystemImpl secondaryFsImpl, String primaryOrigin, String secondaryOrigin, String actualPathname) {
 
 			this.proxiedMetadata = new ProxiedMetadata(metadataToProxy, origins, linkedPathname);
-			this.primaryHost = primaryHost;
-			this.secondaryHost = secondaryHost;
+			this.primaryFsImpl = primaryFsImpl;
+			this.secondaryFsImpl = secondaryFsImpl;
 			this.primaryOrigin = primaryOrigin;
 			this.secondaryOrigin = secondaryOrigin;
 			this.actualPathname = actualPathname;
@@ -101,7 +98,7 @@ public class SiteAndSpaFileSystemImpl extends BaseWebzFileSystemImpl {
 		}
 
 		@Override
-		protected WebzMetadata getInnerMetadata() {
+		protected WebzMetadata getInternalMetadata() {
 			return metadataToProxy;
 		}
 
@@ -126,14 +123,13 @@ public class SiteAndSpaFileSystemImpl extends BaseWebzFileSystemImpl {
 		// TODO get rid of hitAgainstFullPathname() method when caching is implemented (integrate it's logic into the algorithm below)
 
 		WebzPathNormalizer pathNormalizer = getPathNormalizer();
-		WebzFileSystemStructure siteStructure = siteFileSystem.getStructure();
 
 		String currentPath = "";
 		String[] pathMembers = pathNormalizer.splitPathname(pathname);
 		for (int i = 0; i < pathMembers.length; i++) {
 
 			boolean matchFound = false;
-			Map<String, WebzMetadata> children = siteStructure.getChildPathnamesAndMetadata(currentPath);
+			Map<String, WebzMetadata> children = siteFsImpl.getChildPathnamesAndMetadata(currentPath);
 			if (children != null) {
 
 				String childPathname = pathNormalizer.concatPathname(currentPath, pathMembers[i]);
@@ -171,10 +167,10 @@ public class SiteAndSpaFileSystemImpl extends BaseWebzFileSystemImpl {
 
 	private FileFound checkLinkedPathnameInSpa(final String linkedPathname) throws IOException, WebzException {
 
-		final WebzMetadata metadataToProxy = spaFileSystem.getStructure().getMetadata(linkedPathname);
+		final WebzMetadata metadataToProxy = spaFsImpl.getMetadata(linkedPathname);
 		if (metadataToProxy != null) {
 
-			return new FileFound(metadataToProxy, ORIGIN_LINKED, linkedPathname, spaFileSystem, null, WebzFilter.FILE_ORIGIN_LINKED, null,
+			return new FileFound(metadataToProxy, ORIGIN_LINKED, linkedPathname, spaFsImpl, null, WebzFilter.FILE_ORIGIN_LINKED, null,
 					linkedPathname);
 		}
 		return null;
@@ -182,27 +178,24 @@ public class SiteAndSpaFileSystemImpl extends BaseWebzFileSystemImpl {
 
 	private FileFound hitAgainstFullPathname(String pathname) throws IOException, WebzException {
 
-		WebzFileSystemStructure spaStructure = spaFileSystem.getStructure();
-		WebzFileSystemStructure siteStructure = siteFileSystem.getStructure();
-
-		WebzMetadata metadata = siteStructure.getMetadata(pathname);
+		WebzMetadata metadata = siteFsImpl.getMetadata(pathname);
 		if (metadata != null) {
 
 			if (metadata.isFolder()) {
 
-				WebzMetadata secondaryMetadata = spaStructure.getMetadata(pathname);
+				WebzMetadata secondaryMetadata = spaFsImpl.getMetadata(pathname);
 				if (secondaryMetadata != null && secondaryMetadata.isFolder()) {
-					return new FileFound(metadata, ORIGIN_SITE_AND_SPA, null, siteFileSystem, spaFileSystem, WebzFilter.FILE_ORIGIN_SITE,
+					return new FileFound(metadata, ORIGIN_SITE_AND_SPA, null, siteFsImpl, spaFsImpl, WebzFilter.FILE_ORIGIN_SITE,
 							WebzFilter.FILE_ORIGIN_SPA, pathname);
 				}
 			}
-			return new FileFound(metadata, ORIGIN_SITE, null, siteFileSystem, null, WebzFilter.FILE_ORIGIN_SITE, null, pathname);
+			return new FileFound(metadata, ORIGIN_SITE, null, siteFsImpl, null, WebzFilter.FILE_ORIGIN_SITE, null, pathname);
 		}
 
-		metadata = spaStructure.getMetadata(pathname);
+		metadata = spaFsImpl.getMetadata(pathname);
 		if (metadata != null) {
 
-			return new FileFound(metadata, ORIGIN_SPA, null, spaFileSystem, null, WebzFilter.FILE_ORIGIN_SPA, null, pathname);
+			return new FileFound(metadata, ORIGIN_SPA, null, spaFsImpl, null, WebzFilter.FILE_ORIGIN_SPA, null, pathname);
 		}
 
 		return null;
@@ -240,10 +233,10 @@ public class SiteAndSpaFileSystemImpl extends BaseWebzFileSystemImpl {
 
 	private Map<String, WebzMetadata> fetchMergedChildren(FileFound found) throws IOException, WebzException {
 
-		Map<String, WebzMetadata> primary = found.primaryHost.getStructure().getChildPathnamesAndMetadata(found.actualPathname);
+		Map<String, WebzMetadata> primary = found.primaryFsImpl.getChildPathnamesAndMetadata(found.actualPathname);
 		Map<String, WebzMetadata> secondary = null;
-		if (found.secondaryHost != null) {
-			secondary = found.secondaryHost.getStructure().getChildPathnamesAndMetadata(found.actualPathname);
+		if (found.secondaryFsImpl != null) {
+			secondary = found.secondaryFsImpl.getChildPathnamesAndMetadata(found.actualPathname);
 		}
 		String[] originsPrimary = new String[] { found.primaryOrigin };
 		String[] originsSecondary = new String[] { found.secondaryOrigin };
@@ -301,42 +294,12 @@ public class SiteAndSpaFileSystemImpl extends BaseWebzFileSystemImpl {
 			return null;
 		}
 
-		WebzFileDownloader downloader = found.primaryHost.getOperations().getFileDownloader(found.actualPathname);
+		WebzFileDownloader downloader = found.primaryFsImpl.getFileDownloader(found.actualPathname);
 		if (downloader == null) {
 			return null;
 		}
 
 		return new WebzFileDownloader(found.proxiedMetadata.getFileSpecific(), downloader.content);
-	}
-
-	@Override
-	public WebzMetadata createFolder(String pathname) throws IOException, WebzException {
-		return siteFileSystem.getOperations().createFolder(pathname);
-	}
-
-	@Override
-	public FileSpecific uploadFile(String pathname, InputStream content, long numBytes) throws IOException, WebzException {
-		return siteFileSystem.getOperations().uploadFile(pathname, content, numBytes);
-	}
-
-	@Override
-	public FileSpecific uploadFile(String pathname, InputStream content) throws IOException, WebzException {
-		return siteFileSystem.getOperations().uploadFile(pathname, content);
-	}
-
-	@Override
-	public WebzMetadata move(String srcPathname, String destPathname) throws IOException, WebzException {
-		return siteFileSystem.getOperations().move(srcPathname, destPathname);
-	}
-
-	@Override
-	public WebzMetadata copy(String srcPathname, String destPathname) throws IOException, WebzException {
-		return siteFileSystem.getOperations().copy(srcPathname, destPathname);
-	}
-
-	@Override
-	public void delete(String pathname) throws IOException, WebzException {
-		siteFileSystem.getOperations().delete(pathname);
 	}
 
 }

@@ -49,9 +49,9 @@ public class StaticContentSender {
 
 	public StaticContentSender(WebzConfig config) throws WebzException {
 
-		mimetypes = config.getAppConfigObject(MimetypesConfig.class);
+		mimetypes = config.getConfigObject(MimetypesConfig.class);
 
-		GeneralAppConfig appConfig = config.getAppConfigObject(GeneralAppConfig.class);
+		GeneralAppConfig appConfig = config.getConfigObject(GeneralAppConfig.class);
 		defaultMimetype = appConfig.getDefaultMimetype();
 		defaultEncoding = appConfig.getDefaultEncoding();
 	}

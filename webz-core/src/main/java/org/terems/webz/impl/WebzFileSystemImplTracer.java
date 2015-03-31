@@ -19,7 +19,6 @@
 package org.terems.webz.impl;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,7 +28,6 @@ import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
 import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzMetadata;
-import org.terems.webz.WebzMetadata.FileSpecific;
 import org.terems.webz.WebzProperties;
 import org.terems.webz.base.BaseWebzDestroyable;
 import org.terems.webz.internals.FreshParentChildrenMetadata;
@@ -138,48 +136,6 @@ public class WebzFileSystemImplTracer extends BaseWebzDestroyable implements Web
 
 		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".getFileDownloader('" + pathname + "');", fsImpl));
 		return fsImpl.getFileDownloader(pathname);
-	}
-
-	@Override
-	public WebzMetadata createFolder(String pathname) throws IOException, WebzException {
-
-		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".createFolder('" + pathname + "');", fsImpl));
-		return fsImpl.createFolder(pathname);
-	}
-
-	@Override
-	public FileSpecific uploadFile(String pathname, InputStream content, long numBytes) throws IOException, WebzException {
-
-		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".uploadFile('" + pathname + "', " + numBytes + " bytes);", fsImpl));
-		return fsImpl.uploadFile(pathname, content, numBytes);
-	}
-
-	@Override
-	public FileSpecific uploadFile(String pathname, InputStream content) throws IOException, WebzException {
-
-		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".uploadFile('" + pathname + "');", fsImpl));
-		return fsImpl.uploadFile(pathname, content);
-	}
-
-	@Override
-	public WebzMetadata move(String srcPathname, String destPathname) throws IOException, WebzException {
-
-		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".move('" + srcPathname + "', '" + destPathname + "');", fsImpl));
-		return fsImpl.move(srcPathname, destPathname);
-	}
-
-	@Override
-	public WebzMetadata copy(String srcPathname, String destPathname) throws IOException, WebzException {
-
-		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".copy('" + srcPathname + "', '" + destPathname + "');", fsImpl));
-		return fsImpl.copy(srcPathname, destPathname);
-	}
-
-	@Override
-	public void delete(String pathname) throws IOException, WebzException {
-
-		LOG.trace(WebzUtils.formatFileSystemMessageNoBrackets(".delete('" + pathname + "');", fsImpl));
-		fsImpl.delete(pathname);
 	}
 
 	@Override

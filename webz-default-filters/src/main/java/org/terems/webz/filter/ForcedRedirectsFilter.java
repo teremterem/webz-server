@@ -45,9 +45,9 @@ public class ForcedRedirectsFilter extends BaseWebzFilter {
 	private ForcedRedirectsConfig redirectsConfig;
 
 	@Override
-	public void init() throws WebzException {
+	public void init(WebzContext context) throws IOException, WebzException {
 
-		redirectsConfig = getAppConfig().getAppConfigObject(ForcedRedirectsConfig.class);
+		redirectsConfig = getAppConfig().getConfigObject(ForcedRedirectsConfig.class);
 
 		forcedRedirectsQueryParam = redirectsConfig.getForcedRedirectsQueryParam();
 		forcedRedirectsPermanent = redirectsConfig.isForcedRedirectsPermanent();

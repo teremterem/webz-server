@@ -106,7 +106,7 @@ public class WebzLauncher {
 		int configuredPortNumber = getConfiguredPortNumber(webzProperties);
 
 		File tempFolder = initTempFolder(thisJarFile, configuredPortNumber);
-		// TODO delete temp folder on exit
+		// TODO delete temp folder on exit ?
 
 		Tomcat tomcat = prepareTomcat(thisJarFile, tempFolder);
 		int actualPortNumber = runTomcat(tomcat, configuredPortNumber);

@@ -23,16 +23,10 @@ import org.terems.webz.WebzIdentifiable;
 
 public interface WebzFileSystem extends WebzIdentifiable, WebzDestroyable {
 
-	// TODO elaborate a concept of WebzFileAccessController (in terms of servlet container it should be user session scoped)
-
 	public WebzFileFactory getFileFactory();
 
 	public WebzPathNormalizer getPathNormalizer();
 
-	public WebzFileSystemStructure getStructure();
-
-	public WebzFileSystemOperations getOperations();
-
-	// TODO should any kind of optimistic locking be supported when files are edited through "operations" ?
+	public WebzFileSystemImpl getImpl();
 
 }

@@ -42,7 +42,7 @@ public class StaticContentFilter extends BaseLastModifiedWebzFilter<WebzFile> {
 	private StaticContentSender contentSender;
 
 	@Override
-	public void init() throws WebzException {
+	public void init(WebzContext context) throws WebzException {
 		contentSender = new StaticContentSender(getAppConfig());
 	}
 

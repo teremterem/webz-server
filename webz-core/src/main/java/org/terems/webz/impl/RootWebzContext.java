@@ -65,7 +65,7 @@ public class RootWebzContext implements WebzContext, WebzConfig {
 			}
 
 		} catch (WebzPathnameException e) {
-			return new WebzFileNotAccessible(file, e);
+			return new WebzFileNotAccessible(file);
 		}
 
 		return file;
@@ -74,7 +74,7 @@ public class RootWebzContext implements WebzContext, WebzConfig {
 	@Override
 	public String resolveUri(WebzFile file, HttpServletRequest req) throws IOException, WebzException {
 
-		// TODO take WebZ App context path into account if it is introduced
+		// TODO take WebZ App context path into account if/when it is introduced
 
 		if (file == null) {
 			return null;
@@ -103,7 +103,7 @@ public class RootWebzContext implements WebzContext, WebzConfig {
 	}
 
 	@Override
-	public <T extends WebzConfigObject> T getAppConfigObject(Class<T> configObjectClass) throws WebzException {
+	public <T extends WebzConfigObject> T getConfigObject(Class<T> configObjectClass) throws WebzException {
 
 		T configObject = appFactory.getDestroyableSingleton(configObjectClass);
 

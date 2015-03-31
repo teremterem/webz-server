@@ -18,12 +18,15 @@
 
 package org.terems.webz.filter;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzChainContext;
+import org.terems.webz.WebzContext;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
 import org.terems.webz.WebzMetadata;
@@ -39,15 +42,12 @@ public class ErrorFilter extends BaseWebzFilter {
 	private static final String FAILED_TO_SHOW_ERROR_MSG = "FAILED TO SHOW PROPER ERROR PAGE TO THE CLIENT";
 	private static final String RESPONSE_ALREADY_COMMITTED_MSG = FAILED_TO_SHOW_ERROR_MSG + ": response is already committed";
 
-	// TODO make rethrowIfCannotHandle configurable ?
-	private final boolean rethrowIfCannotHandle = false;
-
 	private String pathTo500file;
 	private StaticContentSender contentSender;
 
 	@Override
-	public void init() throws WebzException {
-		pathTo500file = getAppConfig().getAppConfigObject(StatusCodesConfig.class).getPathTo500file();
+	public void init(WebzContext context) throws IOException, WebzException {
+		pathTo500file = getAppConfig().getConfigObject(StatusCodesConfig.class).getPathTo500file();
 		contentSender = new StaticContentSender(getAppConfig());
 	}
 
@@ -66,9 +66,6 @@ public class ErrorFilter extends BaseWebzFilter {
 			if (resp.isCommitted()) {
 
 				LOG.warn(RESPONSE_ALREADY_COMMITTED_MSG);
-				if (rethrowIfCannotHandle) {
-					throw new WebzException(th);
-				}
 			} else {
 
 				WebzFile errorFile = null;
@@ -78,6 +75,7 @@ public class ErrorFilter extends BaseWebzFilter {
 				resp.reset();
 				resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
+				// TODO come up with an alternative error page when pathTo500file is null
 				if (pathTo500file != null) {
 					try {
 						errorFile = chainContext.getFile(pathTo500file);
@@ -90,17 +88,11 @@ public class ErrorFilter extends BaseWebzFilter {
 					if (exceptionWhileShowingErrorPage != null) {
 
 						LOG.warn(FAILED_TO_SHOW_ERROR_MSG, exceptionWhileShowingErrorPage);
-						if (rethrowIfCannotHandle) {
-							throw new WebzException(th);
-						}
 					} else if (errorFileMetadata == null) {
 
 						if (LOG.isWarnEnabled()) {
 							LOG.warn(FAILED_TO_SHOW_ERROR_MSG + ": '" + (errorFile == null ? pathTo500file : errorFile.getPathname())
 									+ "' does not exist");
-						}
-						if (rethrowIfCannotHandle) {
-							throw new WebzException(th);
 						}
 					}
 				}

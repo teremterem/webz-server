@@ -18,10 +18,8 @@
 
 package org.terems.webz.impl;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -120,7 +118,7 @@ public class GenericWebzFile implements WebzFile {
 		if (!inflated) {
 
 			if (!isPathnameInvalid()) {
-				fileSystem.getStructure().inflate(this);
+				fileSystem.getImpl().inflate(this);
 			}
 			inflated = true;
 		}
@@ -133,7 +131,7 @@ public class GenericWebzFile implements WebzFile {
 			return null;
 		}
 
-		return fileSystem.getStructure().getMetadata(pathname);
+		return fileSystem.getImpl().getMetadata(pathname);
 	}
 
 	@Override
@@ -143,7 +141,7 @@ public class GenericWebzFile implements WebzFile {
 			return null;
 		}
 
-		return fileSystem.getOperations().getFileDownloader(pathname);
+		return fileSystem.getImpl().getFileDownloader(pathname);
 	}
 
 	@Override
@@ -187,7 +185,7 @@ public class GenericWebzFile implements WebzFile {
 			return null;
 		}
 
-		Collection<String> childPathnames = fileSystem.getStructure().getChildPathnames(pathname);
+		Collection<String> childPathnames = fileSystem.getImpl().getChildPathnames(pathname);
 		if (childPathnames == null) {
 			return null;
 		}
@@ -202,71 +200,6 @@ public class GenericWebzFile implements WebzFile {
 			}
 		}
 		return children;
-	}
-
-	@Override
-	public WebzMetadata createFolder() throws IOException, WebzException {
-
-		assertPathnameNotInvalid();
-
-		return fileSystem.getOperations().createFolder(pathname);
-	}
-
-	@Override
-	public WebzMetadata uploadFile(InputStream content, long numBytes) throws IOException, WebzException {
-
-		assertPathnameNotInvalid();
-
-		return fileSystem.getOperations().uploadFile(pathname, content, numBytes);
-	}
-
-	@Override
-	public WebzMetadata uploadFile(InputStream content) throws IOException, WebzException {
-
-		assertPathnameNotInvalid();
-
-		return fileSystem.getOperations().uploadFile(pathname, content);
-	}
-
-	@Override
-	public WebzMetadata uploadFile(byte[] content) throws IOException, WebzException {
-		return uploadFile(new ByteArrayInputStream(content), content.length);
-	}
-
-	@Override
-	public WebzMetadata move(WebzFile destFile) throws IOException, WebzException {
-
-		assertPathnameNotInvalid();
-		assertPathnameNotInvalid(destFile);
-
-		return fileSystem.getOperations().move(pathname, destFile.getPathname());
-	}
-
-	@Override
-	public WebzMetadata copy(WebzFile destFile) throws IOException, WebzException {
-
-		assertPathnameNotInvalid();
-		assertPathnameNotInvalid(destFile);
-
-		return fileSystem.getOperations().copy(pathname, destFile.getPathname());
-	}
-
-	@Override
-	public WebzMetadata move(String destPathname) throws IOException, WebzException {
-		return move(fileSystem.getFileFactory().get(destPathname));
-	}
-
-	@Override
-	public WebzMetadata copy(String destPathname) throws IOException, WebzException {
-		return copy(fileSystem.getFileFactory().get(destPathname));
-	}
-
-	@Override
-	public void delete() throws IOException, WebzException {
-
-		assertPathnameNotInvalid();
-
-		fileSystem.getOperations().delete(pathname);
 	}
 
 	protected void assertPathnameNotInvalid() throws WebzPathnameException {

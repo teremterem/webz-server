@@ -40,21 +40,6 @@
 			<artifactId>webz-api</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>org.pegdown</groupId>
-			<artifactId>pegdown</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.github.spullara.mustache.java</groupId>
-			<artifactId>compiler</artifactId>
-		</dependency>
-		<!--
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-		</dependency>
-		-->
-
 		<!-- Servlet API -->
 		<dependency>
 			<groupId>javax.servlet</groupId>

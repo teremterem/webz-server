@@ -21,7 +21,6 @@ package org.terems.webz.impl;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzProperties;
 import org.terems.webz.internals.WebzFileSystem;
-import org.terems.webz.internals.WebzFileSystemImpl;
 import org.terems.webz.internals.WebzObjectFactory;
 import org.terems.webz.internals.WebzPathNormalizer;
 import org.terems.webz.internals.base.BaseWebzFileSystem;
@@ -36,13 +35,10 @@ public class SiteAndSpaWebzFileSystem extends BaseWebzFileSystem {
 		fileFactory = factory.newDestroyable(DefaultWebzFileFactory.class);
 		fileFactory.init(this, properties);
 
-		WebzFileSystemImpl fsImpl = new SiteAndSpaFileSystemImpl(siteFileSystem, spaFileSystem);
-		fsImpl.init(pathNormalizer, properties, factory);
+		impl = new SiteAndSpaFileSystemImpl(siteFileSystem.getImpl(), spaFileSystem.getImpl());
+		impl.init(pathNormalizer, properties, factory);
 
-		structure = fsImpl;
-		operations = fsImpl;
-
-		uniqueId = fsImpl.getUniqueId();
+		uniqueId = impl.getUniqueId();
 		return this;
 	}
 

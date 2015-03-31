@@ -19,7 +19,6 @@
 package org.terems.webz.impl.cache;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 import java.util.Set;
 
@@ -89,30 +88,6 @@ public class FileSystemCacheWrapper extends BaseWebzFileSystemImpl {
 	@Override
 	public void inflate(WebzFile file) throws IOException, WebzException {
 		fileSystemImpl.inflate(cacheImpl, file);
-	}
-
-	private void dropFileContentAndChildPathnames(String pathname) {
-
-		cacheImpl.dropChildPathnamesHolderFromCache(pathname);
-		// TODO drop whole sub-tree (mind possible gaps in cache caused by evictions)
-
-		cacheImpl.dropFileContentHolderFromCache(pathname);
-	}
-
-	private void dropPathnameInCaches(String pathname) {
-		cacheImpl.dropMetadataFromCache(pathname);
-		dropFileContentAndChildPathnames(pathname);
-	}
-
-	private void dropPathnameInCachesAndUpdateMetadata(String pathname, WebzMetadata metadata) {
-
-		if (metadata == null) {
-			dropPathnameInCaches(pathname);
-		} else {
-			cacheImpl.putMetadataIntoCache(pathname, metadata);
-
-			dropFileContentAndChildPathnames(pathname);
-		}
 	}
 
 	@Override
@@ -185,58 +160,82 @@ public class FileSystemCacheWrapper extends BaseWebzFileSystemImpl {
 		}
 	}
 
-	@Override
-	public WebzMetadata createFolder(String pathname) throws IOException, WebzException {
-
-		WebzMetadata metadata = fileSystemImpl.createFolder(pathname);
-
-		dropPathnameInCachesAndUpdateMetadata(pathname, metadata);
-		return metadata;
-	}
-
-	@Override
-	public WebzMetadata.FileSpecific uploadFile(String pathname, InputStream content, long numBytes) throws IOException, WebzException {
-
-		WebzMetadata.FileSpecific fileSpecific = fileSystemImpl.uploadFile(pathname, content, numBytes);
-
-		dropPathnameInCachesAndUpdateMetadata(pathname, fileSpecific);
-		return fileSpecific;
-	}
-
-	@Override
-	public WebzMetadata.FileSpecific uploadFile(String pathname, InputStream content) throws IOException, WebzException {
-
-		WebzMetadata.FileSpecific fileSpecific = fileSystemImpl.uploadFile(pathname, content);
-
-		dropPathnameInCachesAndUpdateMetadata(pathname, fileSpecific);
-		return fileSpecific;
-	}
-
-	@Override
-	public WebzMetadata move(String srcPathname, String destPathname) throws IOException, WebzException {
-
-		WebzMetadata metadata = fileSystemImpl.move(srcPathname, destPathname);
-
-		dropPathnameInCaches(srcPathname);
-		dropPathnameInCachesAndUpdateMetadata(destPathname, metadata);
-		return metadata;
-	}
-
-	@Override
-	public WebzMetadata copy(String srcPathname, String destPathname) throws IOException, WebzException {
-
-		WebzMetadata metadata = fileSystemImpl.copy(srcPathname, destPathname);
-
-		dropPathnameInCachesAndUpdateMetadata(destPathname, metadata);
-		return metadata;
-	}
-
-	@Override
-	public void delete(String pathname) throws IOException, WebzException {
-
-		fileSystemImpl.delete(pathname);
-
-		dropPathnameInCaches(pathname);
-	}
+	// @Override
+	// public WebzMetadata createFolder(String pathname) throws IOException, WebzException {
+	//
+	// WebzMetadata metadata = fileSystemImpl.createFolder(pathname);
+	//
+	// dropPathnameInCachesAndUpdateMetadata(pathname, metadata);
+	// return metadata;
+	// }
+	//
+	// @Override
+	// public WebzMetadata.FileSpecific uploadFile(String pathname, InputStream content, long numBytes) throws IOException, WebzException {
+	//
+	// WebzMetadata.FileSpecific fileSpecific = fileSystemImpl.uploadFile(pathname, content, numBytes);
+	//
+	// dropPathnameInCachesAndUpdateMetadata(pathname, fileSpecific);
+	// return fileSpecific;
+	// }
+	//
+	// @Override
+	// public WebzMetadata.FileSpecific uploadFile(String pathname, InputStream content) throws IOException, WebzException {
+	//
+	// WebzMetadata.FileSpecific fileSpecific = fileSystemImpl.uploadFile(pathname, content);
+	//
+	// dropPathnameInCachesAndUpdateMetadata(pathname, fileSpecific);
+	// return fileSpecific;
+	// }
+	//
+	// @Override
+	// public WebzMetadata move(String srcPathname, String destPathname) throws IOException, WebzException {
+	//
+	// WebzMetadata metadata = fileSystemImpl.move(srcPathname, destPathname);
+	//
+	// dropPathnameInCaches(srcPathname);
+	// dropPathnameInCachesAndUpdateMetadata(destPathname, metadata);
+	// return metadata;
+	// }
+	//
+	// @Override
+	// public WebzMetadata copy(String srcPathname, String destPathname) throws IOException, WebzException {
+	//
+	// WebzMetadata metadata = fileSystemImpl.copy(srcPathname, destPathname);
+	//
+	// dropPathnameInCachesAndUpdateMetadata(destPathname, metadata);
+	// return metadata;
+	// }
+	//
+	// @Override
+	// public void delete(String pathname) throws IOException, WebzException {
+	//
+	// fileSystemImpl.delete(pathname);
+	//
+	// dropPathnameInCaches(pathname);
+	// }
+	//
+	// private void dropFileContentAndChildPathnames(String pathname) {
+	//
+	// cacheImpl.dropChildPathnamesHolderFromCache(pathname);
+	// // TODO drop whole sub-tree (mind possible gaps in cache caused by evictions)
+	//
+	// cacheImpl.dropFileContentHolderFromCache(pathname);
+	// }
+	//
+	// private void dropPathnameInCaches(String pathname) {
+	// cacheImpl.dropMetadataFromCache(pathname);
+	// dropFileContentAndChildPathnames(pathname);
+	// }
+	//
+	// private void dropPathnameInCachesAndUpdateMetadata(String pathname, WebzMetadata metadata) {
+	//
+	// if (metadata == null) {
+	// dropPathnameInCaches(pathname);
+	// } else {
+	// cacheImpl.putMetadataIntoCache(pathname, metadata);
+	//
+	// dropFileContentAndChildPathnames(pathname);
+	// }
+	// }
 
 }

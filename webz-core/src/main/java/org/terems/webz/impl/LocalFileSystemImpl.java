@@ -21,7 +21,6 @@ package org.terems.webz.impl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -32,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzMetadata;
-import org.terems.webz.WebzMetadata.FileSpecific;
 import org.terems.webz.WebzProperties;
 import org.terems.webz.internals.ParentChildrenMetadata;
 import org.terems.webz.internals.WebzPathNormalizer;
@@ -131,38 +129,6 @@ public class LocalFileSystemImpl extends BaseWebzFileSystemImpl {
 
 	protected boolean fileExists(File file, String pathnameToValidate) throws IOException {
 		return file.exists() && pathnameMatchesFileExactly(pathnameToValidate, file);
-	}
-
-	// TODO implement "operations" part of LocalFileSystemImpl
-
-	@Override
-	public WebzMetadata createFolder(String pathname) throws IOException, WebzException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public FileSpecific uploadFile(String pathname, InputStream content, long numBytes) throws IOException, WebzException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public FileSpecific uploadFile(String pathname, InputStream content) throws IOException, WebzException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public WebzMetadata move(String srcPathname, String destPathname) throws IOException, WebzException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public WebzMetadata copy(String srcPathname, String destPathname) throws IOException, WebzException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void delete(String pathname) throws IOException, WebzException {
-		throw new UnsupportedOperationException();
 	}
 
 }
