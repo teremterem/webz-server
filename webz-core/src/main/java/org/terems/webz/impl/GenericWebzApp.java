@@ -126,30 +126,40 @@ public class GenericWebzApp implements WebzApp {
 		}
 
 		@Override
-		public void nextPlease(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException {
+		public void nextPlease(HttpServletRequest req, HttpServletResponse resp, Class<? extends WebzFilter> nextFilter)
+				throws IOException, WebzException {
 
 			if (filterChainIterator == null) {
 				throw new WebzException("WebZ filter chain is already processed and cannot be invoked again");
 			}
 			if (filterChainIterator.hasNext()) {
 
-				// TODO implement fileMask concept to decide which filters to invoke and which to skip
+				// TODO todo TODO todo todo TODO todo TODO todo TODO todo
+				// TODO todo todo TODO todo TODO todo todo TODO todo todo
+				// TODO todo TODO todo todo TODO todo todo TODO todo todo
 
-				filterChainIterator.next().serve(req, resp, this);
+				WebzFilter next = filterChainIterator.next();
+				if (nextFilter != null) {
+
+					while (!nextFilter.isAssignableFrom(next.getClass())) {
+
+						if (!filterChainIterator.hasNext()) {
+							next = null;
+							break;
+						}
+						next = filterChainIterator.next();
+					}
+				}
+				if (next != null) {
+					next.serve(req, resp, this);
+				}
 
 				// invalidating iterator reference to make sure same filters don't invoke the chain for the second time...
 				filterChainIterator = null;
-			}
-		}
 
-		@Override
-		public void nextPlease(HttpServletRequest req, HttpServletResponse resp, WebzContext contextWrapper) throws IOException,
-				WebzException {
-
-			if (contextWrapper == this || contextWrapper == this.context) {
-				nextPlease(req, resp);
-			} else {
-				new ChainContext(filterChainIterator, contextWrapper).nextPlease(req, resp);
+				// TODO todo TODO todo TODO todo TODO todo TODO todo todo
+				// TODO todo todo TODO todo TODO todo TODO todo TODO todo
+				// todo TODO todo todo TODO todo TODO todo TODO todo TODO
 			}
 		}
 
@@ -157,6 +167,24 @@ public class GenericWebzApp implements WebzApp {
 		protected WebzContext getInternalContext() {
 			return context;
 		}
+
+		@Override
+		public void nextPlease(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException {
+			nextPlease(req, resp, (Class<? extends WebzFilter>) null);
+		}
+
+		@Override
+		public void nextPlease(HttpServletRequest req, HttpServletResponse resp, WebzContext contextWrapper) throws IOException,
+				WebzException {
+			nextPlease(req, resp, contextWrapper);
+		}
+
+		@Override
+		public void nextPlease(HttpServletRequest req, HttpServletResponse resp, WebzContext contextWrapper,
+				Class<? extends WebzFilter> nextFilter) throws IOException, WebzException {
+			nextPlease(req, resp, contextWrapper, nextFilter);
+		}
+
 	}
 
 	@Override

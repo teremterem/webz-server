@@ -51,6 +51,10 @@ public class WebzServer implements WebzServletContainerBridge {
 			.asList((Class<? extends WebzFilter>[]) new Class<?>[] { ErrorFilter.class, WelcomeFilter.class, ForcedRedirectsFilter.class,
 					JavascriptEngineFilter.class, StaticContentFilter.class, NotFoundFilter.class });
 
+	// TODO introduce ServiceUrlsFilter
+
+	// TODO implement FileMaskFilterMapping as a WebzFilter that leverages from chainContext.nextPlease(..., nextFilter) methods
+
 	private WebzDestroyableObjectFactory globalFactory = new GenericWebzObjectFactory();
 	private volatile WebzApp rootWebzApp;
 
