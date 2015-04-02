@@ -1,4 +1,4 @@
-# [WebZ.war](http://music.disasterpeace.com/album/the-floor-is-jelly-ost) (coming soon)
+# [WebZ.war](/humans.txt) (coming soon)
 
 музыка - это вибрации вселенной,  
 которые появляются в те самые моменты,  
