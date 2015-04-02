@@ -1,4 +1,4 @@
-# [WebZ.war](/humans.txt) (coming soon)
+# [WebZ.war](/server-jar.md) (coming soon)
 
 **музыка** - это вибрации вселенной,  
 которые проявляются в те самые моменты,  
