@@ -1,4 +1,4 @@
-# [Server-xxx.jar](http://music.disasterpeace.com/album/the-floor-is-jelly-ost)
+# [Server-xxx.jar]()
 
 настроение - это душа,  
 тогда как разум - это всего лишь средство связи  
