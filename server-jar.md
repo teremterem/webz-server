@@ -5,4 +5,4 @@
 между настроением (то есть душой) и тем проявлением реальности,  
 которое ты сам же себе и выбираешь...
 
-[<img src="/webz-server-packager/src/main/resources/favicon/favicon1024.png" style="width:100%" title="The Floor Is Jelly">](webz-war.md)
+[<img src="/webz-server-packager/src/main/resources/favicon/favicon128.png" style="max-width:100%" title="The Floor Is Jelly">](webz-war.md)
