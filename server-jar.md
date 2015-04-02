@@ -5,4 +5,4 @@
 между настроением (то есть душой) и тем проявлением реальности,  
 которое ты сам же себе и выбираешь...
 
-[See also...](webz-war.md)
+[<img src="http://f1.bcbits.com/img/a2776900997_10.jpg" style="width:100%" title="The Floor Is Jelly">](http://music.disasterpeace.com/album/the-floor-is-jelly-ost)
