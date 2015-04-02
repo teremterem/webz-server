@@ -5,4 +5,4 @@
 между настроением (то есть душой) и тем проявлением реальности,  
 которое ты сам же себе и выбираешь...
 
-[<img src="/terems-org.jpg" style="max-width:100%" title="The Floor Is Jelly">](webz-war.md)
+[<img src="/terems-org.jpg" style="max-width:100%" title="The Floor Is Jelly">](/webz-war.md)
