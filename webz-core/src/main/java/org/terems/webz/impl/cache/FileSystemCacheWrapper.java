@@ -27,9 +27,10 @@ import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzDefaults;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
-import org.terems.webz.WebzFileDownloader;
+import org.terems.webz.WebzInputStreamDownloader;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzProperties;
+import org.terems.webz.internals.FileDownloader;
 import org.terems.webz.internals.ParentChildrenMetadata;
 import org.terems.webz.internals.WebzFileSystemCache;
 import org.terems.webz.internals.WebzFileSystemImpl;
@@ -124,7 +125,7 @@ public class FileSystemCacheWrapper extends BaseWebzFileSystemImpl {
 	}
 
 	@Override
-	public WebzFileDownloader getFileDownloader(String pathname) throws IOException, WebzException {
+	public WebzInputStreamDownloader getFileDownloader(String pathname) throws IOException, WebzException {
 
 		FileContentHolder payloadHolder = cacheImpl.fetchFileContentHolder(pathname);
 		if (payloadHolder == null) {
@@ -156,7 +157,7 @@ public class FileSystemCacheWrapper extends BaseWebzFileSystemImpl {
 				return null;
 			}
 
-			return new WebzFileDownloader(fileSpecific, payloadHolder.content.createInputStream());
+			return new FileDownloader(fileSpecific, payloadHolder.content.createInputStream());
 		}
 	}
 

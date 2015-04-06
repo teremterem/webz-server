@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.terems.webz.impl;
+package org.terems.webz.internals;
 
 import java.io.IOException;
 import java.net.URI;
@@ -34,9 +34,6 @@ import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzPathnameException;
 import org.terems.webz.WebzProperties;
 import org.terems.webz.config.WebzConfigObject;
-import org.terems.webz.internals.WebzFileFactory;
-import org.terems.webz.internals.WebzFileNotAccessible;
-import org.terems.webz.internals.WebzObjectFactory;
 
 public class RootWebzContext implements WebzContext, WebzConfig {
 

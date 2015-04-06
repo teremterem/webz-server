@@ -35,6 +35,7 @@ import org.terems.webz.WebzFilter;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.base.WebzContextProxy;
 import org.terems.webz.config.GeneralAppConfig;
+import org.terems.webz.internals.RootWebzContext;
 import org.terems.webz.internals.WebzApp;
 import org.terems.webz.internals.WebzDestroyableObjectFactory;
 import org.terems.webz.internals.WebzFileFactory;
@@ -59,10 +60,6 @@ public class GenericWebzApp implements WebzApp {
 		this.appFactory = appFactory;
 		WebzFileFactory fileFactory = fileSystem.getFileFactory();
 
-		// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
-		this.rootContext = new RootWebzContext(fileFactory, appFactory);
-		// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
-
 		try {
 			WebzMetadata rootMetadata = fileFactory.get("").getMetadata();
 
@@ -74,12 +71,21 @@ public class GenericWebzApp implements WebzApp {
 			if (!rootMetadata.isFolder()) {
 				throw new WebzException(WebzUtils.formatFileSystemMessage("root location is not a folder", fileSystem));
 			}
+			GeneralAppConfig appConfig = rootContext.getConfigObject(GeneralAppConfig.class);
 
-			String configuredDisplayName = rootContext.getConfigObject(GeneralAppConfig.class).getAppDisplayName();
+			// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
+			fileSystem.setDefaultEncoding(appConfig.getDefaultEncoding());
+			// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
+
+			String configuredDisplayName = appConfig.getAppDisplayName();
 			if (configuredDisplayName != null) {
 
 				this.displayName = configuredDisplayName;
 			}
+
+			// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
+			this.rootContext = new RootWebzContext(fileSystem.getFileFactory(), appFactory);
+			// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
 
 			initFilterChain(filterClassesList);
 
@@ -156,10 +162,6 @@ public class GenericWebzApp implements WebzApp {
 
 				// invalidating iterator reference to make sure same filters don't invoke the chain for the second time...
 				filterChainIterator = null;
-
-				// TODO todo TODO todo TODO todo TODO todo TODO todo todo
-				// TODO todo todo TODO todo TODO todo TODO todo TODO todo
-				// todo TODO todo todo TODO todo TODO todo TODO todo TODO
 			}
 		}
 

@@ -25,8 +25,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzException;
-import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzFilter;
+import org.terems.webz.WebzInputStreamDownloader;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.base.WebzMetadataProxy;
 import org.terems.webz.internals.ParentChildrenMetadata;
@@ -287,19 +287,14 @@ public class SiteAndSpaFileSystemImpl extends BaseWebzFileSystemImpl {
 	}
 
 	@Override
-	public WebzFileDownloader getFileDownloader(String pathname) throws IOException, WebzException {
+	public WebzInputStreamDownloader getFileDownloader(String pathname) throws IOException, WebzException {
 
 		FileFound found = findFile(pathname);
 		if (found == null) {
 			return null;
 		}
 
-		WebzFileDownloader downloader = found.primaryFsImpl.getFileDownloader(found.actualPathname);
-		if (downloader == null) {
-			return null;
-		}
-
-		return new WebzFileDownloader(found.proxiedMetadata.getFileSpecific(), downloader.content);
+		return found.primaryFsImpl.getFileDownloader(found.actualPathname);
 	}
 
 }

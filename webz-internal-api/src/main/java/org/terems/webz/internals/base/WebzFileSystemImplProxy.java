@@ -24,7 +24,7 @@ import java.util.Set;
 
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
-import org.terems.webz.WebzFileDownloader;
+import org.terems.webz.WebzInputStreamDownloader;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzProperties;
 import org.terems.webz.base.BaseWebzDestroyable;
@@ -86,7 +86,7 @@ public abstract class WebzFileSystemImplProxy extends BaseWebzDestroyable implem
 	}
 
 	@Override
-	public WebzFileDownloader getFileDownloader(String pathname) throws IOException, WebzException {
+	public WebzInputStreamDownloader getFileDownloader(String pathname) throws IOException, WebzException {
 		return getInternalImpl().getFileDownloader(pathname);
 	}
 

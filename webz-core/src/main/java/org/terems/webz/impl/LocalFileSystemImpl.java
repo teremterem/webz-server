@@ -29,9 +29,10 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzException;
-import org.terems.webz.WebzFileDownloader;
+import org.terems.webz.WebzInputStreamDownloader;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzProperties;
+import org.terems.webz.internals.FileDownloader;
 import org.terems.webz.internals.ParentChildrenMetadata;
 import org.terems.webz.internals.WebzPathNormalizer;
 import org.terems.webz.internals.base.BaseWebzFileSystemImpl;
@@ -113,14 +114,14 @@ public class LocalFileSystemImpl extends BaseWebzFileSystemImpl {
 	}
 
 	@Override
-	public WebzFileDownloader getFileDownloader(String pathname) throws IOException, WebzException {
+	public WebzInputStreamDownloader getFileDownloader(String pathname) throws IOException, WebzException {
 
 		File file = new File(basePath, pathname);
 		if (!fileExists(file, pathname) || !file.isFile()) {
 			return null;
 		}
 
-		return new WebzFileDownloader(new LocalFileMetadata(file).getFileSpecific(), new FileInputStream(file));
+		return new FileDownloader(new LocalFileMetadata(file).getFileSpecific(), new FileInputStream(file));
 	}
 
 	protected boolean pathnameMatchesFileExactly(String pathnameToValidate, File file) throws IOException {

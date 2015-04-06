@@ -26,11 +26,13 @@ import java.util.Collection;
 
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
-import org.terems.webz.WebzFileDownloader;
+import org.terems.webz.WebzInputStreamDownloader;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzPathnameException;
 import org.terems.webz.WebzReadException;
+import org.terems.webz.WebzReaderDownloader;
 import org.terems.webz.WebzWriteException;
+import org.terems.webz.internals.FileDownloaderWithBOM;
 import org.terems.webz.internals.WebzFileFactory;
 import org.terems.webz.internals.WebzFileSystem;
 import org.terems.webz.internals.WebzPathNormalizer;
@@ -134,38 +136,46 @@ public class GenericWebzFile implements WebzFile {
 		return fileSystem.getImpl().getMetadata(pathname);
 	}
 
-	@Override
-	public WebzFileDownloader getFileDownloader() throws IOException, WebzException {
+	private WebzInputStreamDownloader getInputStreamDownloader() throws IOException, WebzException {
 
 		if (isPathnameInvalid()) {
 			return null;
 		}
-
 		return fileSystem.getImpl().getFileDownloader(pathname);
+	}
+
+	@Override
+	public WebzReaderDownloader getFileDownloader() throws IOException, WebzException {
+
+		WebzInputStreamDownloader inputStreamDownloader = getInputStreamDownloader();
+		if (inputStreamDownloader == null) {
+			return null;
+		}
+		return new FileDownloaderWithBOM(inputStreamDownloader, fileSystem.getDefaultEncoding());
 	}
 
 	@Override
 	public WebzMetadata.FileSpecific copyContentToOutputStream(OutputStream out) throws IOException, WebzReadException, WebzWriteException,
 			WebzException {
 
-		WebzFileDownloader downloader = getFileDownloader();
+		WebzInputStreamDownloader downloader = getInputStreamDownloader();
 		if (downloader == null) {
 			return null;
 		}
 
 		downloader.copyContentAndClose(out);
 
-		return downloader.fileSpecific;
+		return downloader.getFileSpecific();
 	}
 
 	@Override
 	public byte[] getFileContent() throws IOException, WebzReadException, WebzWriteException, WebzException {
 
-		WebzFileDownloader downloader = getFileDownloader();
+		WebzInputStreamDownloader downloader = getInputStreamDownloader();
 		if (downloader == null) {
 			return null;
 		}
-		WebzMetadata.FileSpecific fileSpecific = downloader.fileSpecific;
+		WebzMetadata.FileSpecific fileSpecific = downloader.getFileSpecific();
 
 		long numBytes = fileSpecific.getNumberOfBytes();
 		if (numBytes > Integer.MAX_VALUE) {

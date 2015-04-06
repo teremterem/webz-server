@@ -23,14 +23,13 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.ByteOrderMark;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terems.webz.WebzConfig;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
-import org.terems.webz.WebzFileDownloader;
 import org.terems.webz.WebzMetadata;
+import org.terems.webz.WebzReaderDownloader;
 import org.terems.webz.WebzWriteException;
 import org.terems.webz.config.GeneralAppConfig;
 import org.terems.webz.config.MimetypesConfig;
@@ -38,14 +37,10 @@ import org.terems.webz.util.WebzUtils;
 
 public class StaticContentSender {
 
-	public static final ByteOrderMark[] ALL_BOMS = { ByteOrderMark.UTF_8, ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_16LE,
-			ByteOrderMark.UTF_32BE, ByteOrderMark.UTF_32LE };
-
 	private static final Logger LOG = LoggerFactory.getLogger(StaticContentSender.class);
 
 	private MimetypesConfig mimetypes;
 	private String defaultMimetype;
-	private String defaultEncoding;
 
 	public StaticContentSender(WebzConfig config) throws WebzException {
 
@@ -53,24 +48,22 @@ public class StaticContentSender {
 
 		GeneralAppConfig appConfig = config.getConfigObject(GeneralAppConfig.class);
 		defaultMimetype = appConfig.getDefaultMimetype();
-		defaultEncoding = appConfig.getDefaultEncoding();
 	}
 
 	public WebzMetadata.FileSpecific serveStaticContent(HttpServletRequest req, HttpServletResponse resp, WebzFile content)
 			throws IOException, WebzException {
 
-		WebzFileDownloader downloader = content.getFileDownloader();
+		WebzReaderDownloader downloader = content.getFileDownloader();
 		if (downloader == null) {
 			return null;
 		}
-		WebzMetadata.FileSpecific fileSpecific = WebzUtils.assertNotNull(downloader.fileSpecific);
-		FileDownloaderWithBOM downloaderWithBom = new FileDownloaderWithBOM(downloader, defaultEncoding);
+		WebzMetadata.FileSpecific fileSpecific = WebzUtils.assertNotNull(downloader.getFileSpecific());
 
-		WebzUtils.prepareStandardHeaders(resp, mimetypes.getMimetype(fileSpecific, defaultMimetype), downloaderWithBom.actualEncoding,
-				downloaderWithBom.actualNumberOfBytes);
+		WebzUtils.prepareStandardHeaders(resp, mimetypes.getMimetype(fileSpecific, defaultMimetype), downloader.getActualEncoding(),
+				downloader.getActualNumberOfBytes());
 		try {
 			if (!WebzUtils.isHttpMethodHead(req)) {
-				downloaderWithBom.copyContentAndClose(resp.getOutputStream());
+				downloader.copyContentAndClose(resp.getOutputStream());
 			}
 
 		} catch (WebzWriteException e) {

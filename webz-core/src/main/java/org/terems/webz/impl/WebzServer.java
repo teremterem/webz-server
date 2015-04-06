@@ -64,6 +64,8 @@ public class WebzServer implements WebzServletContainerBridge {
 		try {
 			WebzFileSystemManager fileSystemManager = WebzFileSystemManager.getManager(globalFactory);
 
+			GenericWebzObjectFactory appFactory = globalFactory.newDestroyable(GenericWebzObjectFactory.class);
+
 			WebzFileSystem siteFileSystem = fileSystemManager.createFileSystem(siteFileSystemProperties);
 			WebzFileSystem spaFileSystem = fileSystemManager.createFileSystem(spaFileSystemProperties);
 
@@ -71,7 +73,7 @@ public class WebzServer implements WebzServletContainerBridge {
 					hybridFileSystemProperties);
 
 			rootWebzApp = globalFactory.newDestroyable(GenericWebzApp.class);
-			rootWebzApp.init(siteAndSpaFileSystem, DEFAULT_FILTERS, globalFactory.newDestroyable(GenericWebzObjectFactory.class));
+			rootWebzApp.init(siteAndSpaFileSystem, DEFAULT_FILTERS, appFactory);
 
 		} catch (WebzException e) {
 

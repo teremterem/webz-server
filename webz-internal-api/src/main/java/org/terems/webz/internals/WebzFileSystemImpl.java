@@ -25,7 +25,7 @@ import java.util.Set;
 import org.terems.webz.WebzDestroyable;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
-import org.terems.webz.WebzFileDownloader;
+import org.terems.webz.WebzInputStreamDownloader;
 import org.terems.webz.WebzIdentifiable;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzProperties;
@@ -54,6 +54,6 @@ public interface WebzFileSystemImpl extends WebzIdentifiable, WebzDestroyable {
 
 	public Set<String> getChildPathnames(String parentPathname) throws IOException, WebzException;
 
-	public WebzFileDownloader getFileDownloader(String pathname) throws IOException, WebzException;
+	public WebzInputStreamDownloader getFileDownloader(String pathname) throws IOException, WebzException;
 
 }

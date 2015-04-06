@@ -39,13 +39,12 @@ import org.terems.webz.WebzChainContext;
 import org.terems.webz.WebzContext;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
-import org.terems.webz.WebzFileDownloader;
+import org.terems.webz.WebzInputStreamDownloader;
 import org.terems.webz.WebzMetadata;
 import org.terems.webz.WebzProperties;
 import org.terems.webz.base.BaseWebzFilter;
 import org.terems.webz.config.GeneralAppConfig;
 import org.terems.webz.config.JavascriptEngineConfig;
-import org.terems.webz.filter.helpers.FileDownloaderWithBOM;
 import org.terems.webz.util.WebzUtils;
 
 public class JavascriptEngineFilter extends BaseWebzFilter {
@@ -83,7 +82,7 @@ public class JavascriptEngineFilter extends BaseWebzFilter {
 		WebzFile jsLibsFolder = context.getFile(WebzProperties.WEBZ_JS_LIBS_FOLDER);
 		WebzFile jsTxtFile = jsLibsFolder.getDescendant(WebzProperties.JS_TXT_FILE);
 
-		WebzFileDownloader jsTxtDownloader = jsTxtFile.getFileDownloader();
+		WebzInputStreamDownloader jsTxtDownloader = jsTxtFile.getFileDownloader();
 		if (jsTxtDownloader == null) {
 			throw new WebzException("'" + jsTxtFile.getPathname() + "' was not found or is not a file");
 		}
@@ -185,7 +184,7 @@ public class JavascriptEngineFilter extends BaseWebzFilter {
 
 	private String readFileAsString(WebzFile file) throws IOException, WebzException {
 
-		WebzFileDownloader downloader = file.getFileDownloader();
+		WebzInputStreamDownloader downloader = file.getFileDownloader();
 		if (downloader == null) {
 			// should not happen - otherwise metadata would have been null
 			return null;

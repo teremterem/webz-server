@@ -18,6 +18,7 @@
 
 package org.terems.webz.internals.base;
 
+import org.terems.webz.WebzDefaults;
 import org.terems.webz.base.BaseWebzDestroyable;
 import org.terems.webz.internals.WebzFileFactory;
 import org.terems.webz.internals.WebzFileSystem;
@@ -30,6 +31,8 @@ public abstract class BaseWebzFileSystem extends BaseWebzDestroyable implements 
 	protected WebzFileFactory fileFactory;
 	protected WebzPathNormalizer pathNormalizer;
 	protected WebzFileSystemImpl impl;
+
+	private String defaultEncoding = WebzDefaults.UTF8;
 
 	@Override
 	public String getUniqueId() {
@@ -49,6 +52,16 @@ public abstract class BaseWebzFileSystem extends BaseWebzDestroyable implements 
 	@Override
 	public WebzFileSystemImpl getImpl() {
 		return impl;
+	}
+
+	@Override
+	public String getDefaultEncoding() {
+		return defaultEncoding;
+	}
+
+	@Override
+	public void setDefaultEncoding(String defaultEncoding) {
+		this.defaultEncoding = defaultEncoding;
 	}
 
 }

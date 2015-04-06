@@ -29,4 +29,8 @@ public interface WebzFileSystem extends WebzIdentifiable, WebzDestroyable {
 
 	public WebzFileSystemImpl getImpl();
 
+	public String getDefaultEncoding();
+
+	public void setDefaultEncoding(String defaultEncoding);
+
 }
