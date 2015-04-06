@@ -27,10 +27,15 @@ import org.terems.webz.internals.base.BaseWebzFileSystem;
 
 public class SiteAndSpaWebzFileSystem extends BaseWebzFileSystem {
 
+	private WebzFileSystem siteFileSystem;
+	private WebzFileSystem spaFileSystem;
+
 	public SiteAndSpaWebzFileSystem init(WebzPathNormalizer pathNormalizer, WebzFileSystem siteFileSystem, WebzFileSystem spaFileSystem,
 			WebzProperties properties, WebzObjectFactory factory) throws WebzException {
 
 		this.pathNormalizer = pathNormalizer;
+		this.siteFileSystem = siteFileSystem;
+		this.spaFileSystem = spaFileSystem;
 
 		fileFactory = factory.newDestroyable(DefaultWebzFileFactory.class);
 		fileFactory.init(this, properties);
@@ -40,6 +45,14 @@ public class SiteAndSpaWebzFileSystem extends BaseWebzFileSystem {
 
 		uniqueId = impl.getUniqueId();
 		return this;
+	}
+
+	@Override
+	public void setDefaultEncoding(String defaultEncoding) {
+
+		super.setDefaultEncoding(defaultEncoding);
+		siteFileSystem.setDefaultEncoding(defaultEncoding);
+		spaFileSystem.setDefaultEncoding(defaultEncoding);
 	}
 
 }
