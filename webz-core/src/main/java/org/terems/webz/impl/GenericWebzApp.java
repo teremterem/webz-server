@@ -71,6 +71,11 @@ public class GenericWebzApp implements WebzApp {
 			if (!rootMetadata.isFolder()) {
 				throw new WebzException(WebzUtils.formatFileSystemMessage("root location is not a folder", fileSystem));
 			}
+
+			// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
+			this.rootContext = new RootWebzContext(fileSystem.getFileFactory(), appFactory);
+			// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
+
 			GeneralAppConfig appConfig = rootContext.getConfigObject(GeneralAppConfig.class);
 
 			// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
@@ -82,10 +87,6 @@ public class GenericWebzApp implements WebzApp {
 
 				this.displayName = configuredDisplayName;
 			}
-
-			// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
-			this.rootContext = new RootWebzContext(fileSystem.getFileFactory(), appFactory);
-			// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
 
 			initFilterChain(filterClassesList);
 
@@ -118,6 +119,8 @@ public class GenericWebzApp implements WebzApp {
 
 	@Override
 	public void serve(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException {
+
+		// TODO use asynch request processing and separate thread pool(s) to run filters
 		new ChainContext(filterChain.iterator(), rootContext).nextPlease(req, resp);
 	}
 
@@ -139,10 +142,6 @@ public class GenericWebzApp implements WebzApp {
 				throw new WebzException("WebZ filter chain is already processed and cannot be invoked again");
 			}
 			if (filterChainIterator.hasNext()) {
-
-				// TODO todo TODO todo todo TODO todo TODO todo TODO todo
-				// TODO todo todo TODO todo TODO todo todo TODO todo todo
-				// TODO todo TODO todo todo TODO todo todo TODO todo todo
 
 				WebzFilter next = filterChainIterator.next();
 				if (nextFilter != null) {
@@ -166,6 +165,17 @@ public class GenericWebzApp implements WebzApp {
 		}
 
 		@Override
+		public void nextPlease(HttpServletRequest req, HttpServletResponse resp, WebzContext contextWrapper,
+				Class<? extends WebzFilter> nextFilter) throws IOException, WebzException {
+
+			if (contextWrapper == this || contextWrapper == this.context) {
+				nextPlease(req, resp, nextFilter);
+			} else {
+				new ChainContext(filterChainIterator, contextWrapper).nextPlease(req, resp, nextFilter);
+			}
+		}
+
+		@Override
 		protected WebzContext getInternalContext() {
 			return context;
 		}
@@ -178,13 +188,7 @@ public class GenericWebzApp implements WebzApp {
 		@Override
 		public void nextPlease(HttpServletRequest req, HttpServletResponse resp, WebzContext contextWrapper) throws IOException,
 				WebzException {
-			nextPlease(req, resp, contextWrapper);
-		}
-
-		@Override
-		public void nextPlease(HttpServletRequest req, HttpServletResponse resp, WebzContext contextWrapper,
-				Class<? extends WebzFilter> nextFilter) throws IOException, WebzException {
-			nextPlease(req, resp, contextWrapper, nextFilter);
+			nextPlease(req, resp, contextWrapper, (Class<? extends WebzFilter>) null);
 		}
 
 	}
