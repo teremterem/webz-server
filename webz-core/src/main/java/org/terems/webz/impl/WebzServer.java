@@ -77,6 +77,7 @@ public class WebzServer implements WebzServletContainerBridge {
 
 		} catch (WebzException e) {
 
+			rootWebzApp = null;
 			if (LOG.isErrorEnabled()) {
 				LOG.error("failed to init WebZ App" + (rootWebzApp == null ? "" : " \"" + rootWebzApp.getDisplayName() + "\""), e);
 			}
