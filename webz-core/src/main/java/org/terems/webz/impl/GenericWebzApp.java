@@ -120,7 +120,7 @@ public class GenericWebzApp implements WebzApp {
 	@Override
 	public void serve(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException {
 
-		// TODO use asynch request processing and separate thread pool(s) to run filters
+		// TODO use asynch request processing and separate thread pool(s) to run filters ?
 		new ChainContext(filterChain.iterator(), rootContext).nextPlease(req, resp);
 	}
 

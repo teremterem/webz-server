@@ -19,93 +19,49 @@
 package org.terems.webz.filter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Set;
 
-import javax.script.Bindings;
-import javax.script.Compilable;
-import javax.script.CompiledScript;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import javax.script.SimpleScriptContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.terems.webz.WebzChainContext;
 import org.terems.webz.WebzContext;
+import org.terems.webz.WebzDefaults;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzFile;
 import org.terems.webz.WebzMetadata;
-import org.terems.webz.WebzProperties;
-import org.terems.webz.WebzReaderDownloader;
 import org.terems.webz.base.BaseWebzFilter;
 import org.terems.webz.config.GeneralAppConfig;
 import org.terems.webz.config.JavascriptEngineConfig;
+import org.terems.webz.config.MimetypesConfig;
+import org.terems.webz.filter.helpers.JavascriptEnginePool;
 import org.terems.webz.util.WebzUtils;
 
 public class JavascriptEngineFilter extends BaseWebzFilter {
 
-	private ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("nashorn");
-	private Collection<CompiledScript> compiledScripts;
-
-	public static final String WEBZ_JS_CONTEXT_VAR = "webzJsContext";
-
-	public static final String WEBZ_RUN_TEMPLATES_JS_FUNCTION = "webzRunTemplates";
+	public static final int NUMBER_OF_ENGINES = 3;
+	// TODO make number of javascript engines parameter configurable
 
 	private String defaultEncoding;
 	private Set<String> fileSuffixesLowerCased;
 	private boolean processFolders;
-	private String resultingMimetype;
+	private String pageDefaultMimetype;
+	private String jsonMimetype;
+
+	private JavascriptEnginePool enginePool;
 
 	@Override
 	public void init(WebzContext context) throws IOException, WebzException {
 
-		GeneralAppConfig generalConfig = getAppConfig().getConfigObject(GeneralAppConfig.class);
 		JavascriptEngineConfig jsEngineConfig = getAppConfig().getConfigObject(JavascriptEngineConfig.class);
-
-		defaultEncoding = generalConfig.getDefaultEncoding();
 		fileSuffixesLowerCased = jsEngineConfig.getFileSuffixesLowerCased();
 		processFolders = jsEngineConfig.getProcessFolders();
-		resultingMimetype = jsEngineConfig.getResultingMimetype();
+		pageDefaultMimetype = jsEngineConfig.getPageDefaultMimetype();
 
-		compileScripts(context);
-	}
+		defaultEncoding = getAppConfig().getConfigObject(GeneralAppConfig.class).getDefaultEncoding();
+		jsonMimetype = getAppConfig().getConfigObject(MimetypesConfig.class).getMimetype("json", WebzDefaults.JSON_MIMETYPE);
 
-	private void compileScripts(WebzContext context) throws IOException, WebzException {
-
-		if (!(scriptEngine instanceof Compilable)) {
-			throw new WebzException("ScriptEngine does not implement Compilable interface");
-		}
-		Compilable compilable = (Compilable) scriptEngine;
-
-		WebzFile jsLibsFolder = context.getFile(WebzProperties.WEBZ_JS_LIBS_FOLDER);
-		WebzFile jsTxtFile = jsLibsFolder.getDescendant(WebzProperties.JS_TXT_FILE);
-
-		WebzReaderDownloader jsTxtDownloader = jsTxtFile.getFileDownloader();
-		if (jsTxtDownloader == null) {
-			throw new WebzException("'" + jsTxtFile.getPathname() + "' was not found or is not a file");
-		}
-		try {
-			String[] jsLibs = jsTxtDownloader.getContentAsStringAndClose().split("\\s+");
-
-			compiledScripts = new ArrayList<CompiledScript>(jsLibs.length);
-
-			for (String jsLib : jsLibs) {
-
-				WebzFile jsLibFile = jsLibsFolder.getDescendant(jsLib);
-				WebzReaderDownloader jsLibDownloader = jsLibFile.getFileDownloader();
-
-				if (jsLibDownloader == null) {
-					throw new WebzException("'" + jsLibFile.getPathname() + "' does not exist or is not a file");
-				}
-				compiledScripts.add(compilable.compile(jsLibDownloader.getReader()));
-			}
-		} catch (ScriptException e) {
-			throw new WebzException(e);
-		}
+		enginePool = new JavascriptEnginePool(NUMBER_OF_ENGINES, context);
 	}
 
 	@Override
@@ -129,36 +85,22 @@ public class JavascriptEngineFilter extends BaseWebzFilter {
 			return false;
 		}
 
-		ScriptContext scriptContext = initScriptContext(req);
-		Bindings engineScope = scriptContext.getBindings(ScriptContext.ENGINE_SCOPE);
+		String content;
+		String mimetype;
+		if (req.getParameterMap().containsKey(QUERY_PARAM_PAGE_CONTEXT)) {
+			content = enginePool.invokePreparePageContextFunc(req, context);
+			mimetype = jsonMimetype;
+		} else {
+			JavascriptEnginePool.PageContent pageContent = enginePool.invokeRenderPageFunc(req, context);
+			content = pageContent.content;
+			mimetype = pageContent.mimetype == null ? pageDefaultMimetype : pageContent.mimetype;
+		}
+		byte[] contentBytes = content.getBytes(defaultEncoding);
 
-		// TODO declare this class in a separate file
-		engineScope.put(WEBZ_JS_CONTEXT_VAR, new Object() {
-
-			@SuppressWarnings("unused")
-			public WebzFile getCurrentFile() throws IOException, WebzException {
-				return context.resolveFile(req);
-			}
-
-			@SuppressWarnings("unused")
-			public WebzFile getFile(String pathInfo) throws IOException, WebzException {
-				return context.getFile(pathInfo);
-			}
-
-			@SuppressWarnings("unused")
-			public String resolveUri(WebzFile file) throws IOException, WebzException {
-				return context.resolveUri(file, req);
-			}
-
-		});
-
-		String html = executeJavascript(scriptContext);
-		byte[] htmlBytes = html.getBytes(defaultEncoding);
-
-		WebzUtils.prepareStandardHeaders(resp, resultingMimetype, defaultEncoding, htmlBytes.length);
+		WebzUtils.prepareStandardHeaders(resp, mimetype, defaultEncoding, contentBytes.length);
 		if (!WebzUtils.isHttpMethodHead(req)) {
 
-			resp.getOutputStream().write(htmlBytes, 0, htmlBytes.length);
+			resp.getOutputStream().write(contentBytes);
 		}
 		return true;
 	}
@@ -180,35 +122,6 @@ public class JavascriptEngineFilter extends BaseWebzFilter {
 			}
 		}
 		return false;
-	}
-
-	private ScriptContext initScriptContext(HttpServletRequest req) throws WebzException {
-
-		// TODO cache scriptContext
-		ScriptContext scriptContext = new SimpleScriptContext();
-		Bindings engineScope = scriptContext.getBindings(ScriptContext.ENGINE_SCOPE);
-		engineScope.put("window", engineScope);
-
-		try {
-			for (CompiledScript compiledScript : compiledScripts) {
-				compiledScript.eval(scriptContext);
-			}
-		} catch (ScriptException e) {
-
-			throw new WebzException(e);
-		}
-
-		return scriptContext;
-	}
-
-	private String executeJavascript(ScriptContext scriptContext) throws IOException, WebzException {
-
-		try {
-			return WebzUtils.assertString(scriptEngine.eval(WEBZ_RUN_TEMPLATES_JS_FUNCTION + "()", scriptContext));
-
-		} catch (ScriptException e) {
-			throw new WebzException(e);
-		}
 	}
 
 }

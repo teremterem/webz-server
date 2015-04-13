@@ -71,8 +71,6 @@ public class RootWebzContext implements WebzContext, WebzConfig {
 	@Override
 	public String resolveUri(WebzFile file, HttpServletRequest req) throws IOException, WebzException {
 
-		// TODO take WebZ App context path into account if/when it is introduced
-
 		if (file == null) {
 			return null;
 		}
@@ -93,6 +91,7 @@ public class RootWebzContext implements WebzContext, WebzConfig {
 		}
 		try {
 			return new URI(null, req.getContextPath() + '/' + pathname, null).toASCIIString();
+			// TODO take WebZ App context path into account as well if/when it is introduced
 
 		} catch (URISyntaxException e) {
 			throw new WebzException(e);
