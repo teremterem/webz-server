@@ -43,7 +43,8 @@ public class JavascriptEnginePool {
 			Invocable invocableEngine = (Invocable) engine;
 
 			JsWebzContext jsWebzContext = new JsWebzContext(context, req);
-			Object rawPageContext = invocableEngine.invokeFunction(WEBZ_PREPARE_PAGE_CONTEXT_JS_FUNCTION, jsWebzContext);
+			Object rawPageContext = invocableEngine.invokeFunction(WEBZ_PREPARE_PAGE_CONTEXT_JS_FUNCTION, jsWebzContext,
+					WebzUtils.getFullUrl(req));
 			return WebzUtils.assertString(invocableEngine.invokeMethod(engine.get("JSON"), "stringify", rawPageContext));
 
 		} catch (Throwable e) {
@@ -185,30 +186,28 @@ public class JavascriptEnginePool {
 		Bindings engineScope = engine.getBindings(ScriptContext.ENGINE_SCOPE);
 		engineScope.put("window", engineScope);
 
-		WebzFile jsLibsFolder = context.getFile(WebzProperties.WEBZ_JS_LIBS_FOLDER);
-		WebzFile jsTxtFile = jsLibsFolder.getDescendant(WebzProperties.JS_TXT_FILE);
+		WebzFile jsListFile = context.getFile(WebzProperties.WEBZ_JS_FILES_TXT_FILE);
 
-		WebzReaderDownloader jsTxtDownloader = jsTxtFile.getFileDownloader();
-		if (jsTxtDownloader == null) {
-			throw new WebzException("'" + jsTxtFile.getPathname() + "' was not found or is not a file");
+		WebzReaderDownloader jsListDownloader = jsListFile.getFileDownloader();
+		if (jsListDownloader == null) {
+			throw new WebzException("'" + jsListFile.getPathname() + "' was not found or is not a file");
 		}
-		String[] jsLibs = jsTxtDownloader.getContentAsStringAndClose().split("\\s+");
 
-		for (String jsLib : jsLibs) {
+		for (String jsFilePathname : WebzUtils.getTrimmedTxtLines(jsListDownloader.getContentAsStringAndClose())) {
 
-			WebzFile jsLibFile = jsLibsFolder.getDescendant(jsLib);
-			WebzReaderDownloader jsLibDownloader = jsLibFile.getFileDownloader();
+			WebzFile jsFile = context.getFile(jsFilePathname);
+			WebzReaderDownloader jsDownloader = jsFile.getFileDownloader();
 
-			if (jsLibDownloader == null) {
-				throw new WebzException("'" + jsLibFile.getPathname() + "' does not exist or is not a file");
+			if (jsDownloader == null) {
+				throw new WebzException("'" + jsFile.getPathname() + "' does not exist or is not a file");
 			}
 			try {
-				engine.eval(jsLibDownloader.getReader());
+				engine.eval(jsDownloader.getReader());
 
 			} catch (ScriptException e) {
 				throw new WebzException(e);
 			} finally {
-				jsLibDownloader.close();
+				jsDownloader.close();
 			}
 		}
 
