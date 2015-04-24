@@ -40,11 +40,35 @@ public class WebzFileSystemManager extends BaseWebzDestroyable {
 	private WebzObjectFactory factory;
 
 	public WebzFileSystem createFileSystem(WebzProperties webzProperties) throws WebzException {
+
+		if (webzProperties == null) {
+			return null;
+		}
 		return factory.newDestroyable(GenericWebzFileSystem.class).init(DEFAULT_PATH_NORMALIZER, webzProperties, factory);
+	}
+
+	public WebzFileSystem createSimpleFileSystemOverlay(WebzFileSystem primaryFileSystem, String primaryOrigin,
+			WebzFileSystem secondaryFileSystem, String secondaryOrigin, WebzProperties webzProperties) throws WebzException {
+
+		if (secondaryFileSystem == null) {
+			return primaryFileSystem;
+		}
+		if (primaryFileSystem == null) {
+			return secondaryFileSystem;
+		}
+		return factory.newDestroyable(SimpleWebzFileSystemOverlay.class).init(DEFAULT_PATH_NORMALIZER, primaryFileSystem, primaryOrigin,
+				secondaryFileSystem, secondaryOrigin, webzProperties, factory);
 	}
 
 	public WebzFileSystem createSiteAndSpaFileSystem(WebzFileSystem siteFileSystem, WebzFileSystem spaFileSystem,
 			WebzProperties webzProperties) throws WebzException {
+
+		if (spaFileSystem == null) {
+			return siteFileSystem;
+		}
+		if (siteFileSystem == null) {
+			return spaFileSystem;
+		}
 		return factory.newDestroyable(SiteAndSpaWebzFileSystem.class).init(DEFAULT_PATH_NORMALIZER, siteFileSystem, spaFileSystem,
 				webzProperties, factory);
 	}

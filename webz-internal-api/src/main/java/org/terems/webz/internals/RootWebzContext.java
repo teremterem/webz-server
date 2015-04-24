@@ -109,7 +109,7 @@ public class RootWebzContext implements WebzContext, WebzConfig {
 		return configObject;
 	}
 
-	private WebzFile getConfigFolder() {
+	public WebzFile getConfigFolder() {
 
 		WebzFile configFolder = fileFactory.get(WebzProperties.WEBZ_CONFIG_FOLDER);
 		if (configFolder.isPathnameInvalid()) {

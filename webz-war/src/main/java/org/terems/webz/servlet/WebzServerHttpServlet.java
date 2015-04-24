@@ -122,6 +122,7 @@ public class WebzServerHttpServlet extends HttpServlet {
 
 		String siteContentPath = webzProperties.getProperty(WebzLaunchHelper.SITE_CONTENT_PATH_PROPERTY);
 		String renderingSpaPath = webzProperties.getProperty(WebzLaunchHelper.RENDERING_SPA_PATH_PROPERTY);
+		String webzBoilerplatePath = webzProperties.getProperty(WebzLaunchHelper.WEBZ_BOILERPLATE_PATH_PROPERTY);
 
 		if (renderingSpaPath == null) {
 			throw new WebzException(WebzLaunchHelper.RENDERING_SPA_PATH_PROPERTY + " WebZ property is not set");
@@ -136,11 +137,15 @@ public class WebzServerHttpServlet extends HttpServlet {
 		WebzProperties spaProperties = new WebzProperties(webzInternalProperties);
 		spaProperties.put(WebzProperties.FS_BASE_PATH_PROPERTY, renderingSpaPath);
 
-		// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
-		webzServer.start(siteProperties, spaProperties, webzInternalProperties);
-		// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
+		WebzProperties boilerplateProperties = null;
+		if (webzBoilerplatePath != null) {
+			boilerplateProperties = new WebzProperties(webzInternalProperties);
+			boilerplateProperties.put(WebzProperties.FS_BASE_PATH_PROPERTY, webzBoilerplatePath);
+		}
 
-		return webzServer;
+		// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
+		return webzServer.start(siteProperties, spaProperties, boilerplateProperties, webzInternalProperties);
+		// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
 	}
 
 	private Properties fetchWebzProperties() throws IOException {

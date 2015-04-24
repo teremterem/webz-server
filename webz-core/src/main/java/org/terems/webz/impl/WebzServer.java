@@ -58,8 +58,8 @@ public class WebzServer implements WebzServletContainerBridge {
 	private WebzDestroyableObjectFactory globalFactory = new GenericWebzObjectFactory();
 	private volatile WebzApp rootWebzApp;
 
-	public void start(WebzProperties siteFileSystemProperties, WebzProperties spaFileSystemProperties,
-			WebzProperties hybridFileSystemProperties) {
+	public WebzServer start(WebzProperties siteFileSystemProperties, WebzProperties spaFileSystemProperties,
+			WebzProperties webzBoilerplateProperties, WebzProperties hybridFileSystemProperties) {
 
 		try {
 			WebzFileSystemManager fileSystemManager = WebzFileSystemManager.getManager(globalFactory);
@@ -68,12 +68,16 @@ public class WebzServer implements WebzServletContainerBridge {
 
 			WebzFileSystem siteFileSystem = fileSystemManager.createFileSystem(siteFileSystemProperties);
 			WebzFileSystem spaFileSystem = fileSystemManager.createFileSystem(spaFileSystemProperties);
+			WebzFileSystem boilerplateFileSystem = fileSystemManager.createFileSystem(webzBoilerplateProperties);
 
-			WebzFileSystem siteAndSpaFileSystem = fileSystemManager.createSiteAndSpaFileSystem(siteFileSystem, spaFileSystem,
-					hybridFileSystemProperties);
+			// TODO decide whether WebZ Boilerplate File System needs it's own Origin Name or not
+			WebzFileSystem spaAndBoilerplateOverlay = fileSystemManager.createSimpleFileSystemOverlay(spaFileSystem,
+					WebzFilter.FILE_ORIGIN_SPA, boilerplateFileSystem, WebzFilter.FILE_ORIGIN_SPA, hybridFileSystemProperties);
+			WebzFileSystem siteSpaAndBoilerplateOverlay = fileSystemManager.createSiteAndSpaFileSystem(siteFileSystem,
+					spaAndBoilerplateOverlay, hybridFileSystemProperties);
 
 			rootWebzApp = globalFactory.newDestroyable(GenericWebzApp.class);
-			rootWebzApp.init(siteAndSpaFileSystem, DEFAULT_FILTERS, appFactory);
+			rootWebzApp.init(siteSpaAndBoilerplateOverlay, DEFAULT_FILTERS, appFactory);
 
 		} catch (WebzException e) {
 
@@ -84,6 +88,7 @@ public class WebzServer implements WebzServletContainerBridge {
 		}
 
 		LOG.info("WebZ Server started\n");
+		return this;
 	}
 
 	@Override

@@ -76,11 +76,13 @@ public class GenericWebzApp implements WebzApp {
 			this.rootContext = new RootWebzContext(fileSystem.getFileFactory(), appFactory);
 			// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
 
-			GeneralAppConfig appConfig = rootContext.getConfigObject(GeneralAppConfig.class);
-
+			GeneralAppConfig appConfig = new GeneralAppConfig();
+			appConfig.init(rootContext.getConfigFolder());
 			// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
 			fileSystem.setDefaultEncoding(appConfig.getDefaultEncoding());
 			// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
+			appConfig.destroy();
+			appConfig = rootContext.getConfigObject(GeneralAppConfig.class);
 
 			String configuredDisplayName = appConfig.getAppDisplayName();
 			if (configuredDisplayName != null) {

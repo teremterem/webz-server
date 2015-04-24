@@ -15,6 +15,7 @@ public class WebzLaunchHelper {
 	public static final String WEBZ_PROPERTIES_PROPERTY = WEBZ_PROPERTIES_DEFAULT_FILENAME;
 	public static final String WEBZ_PROPERTIES_ENV_VAR = WEBZ_PROPERTIES_PROPERTY.replace('.', '_').toUpperCase(Locale.ENGLISH);
 
+	public static final String WEBZ_BOILERPLATE_PATH_PROPERTY = "webz.boilerplate.path";
 	public static final String RENDERING_SPA_PATH_PROPERTY = "rendering.spa.path";
 	public static final String SITE_CONTENT_PATH_PROPERTY = "site.content.path";
 
