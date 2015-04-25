@@ -143,7 +143,7 @@ public class SimpleFileSystemOverlayImpl extends BaseWebzFileSystemImpl {
 		metadata = secondaryFsImpl.getMetadata(pathname);
 		if (metadata != null) {
 
-			return new FileFound(metadata, secondaryOriginArray, primaryFsImpl, null, secondaryOrigin, null, pathname);
+			return new FileFound(metadata, secondaryOriginArray, secondaryFsImpl, null, secondaryOrigin, null, pathname);
 		}
 
 		return null;
