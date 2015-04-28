@@ -1,6 +1,6 @@
 # WebZ Server v0.9 beta ([Pedesis](https://www.pinterest.com/terems_org/pedesis-from-ancient-greek-a-leaping/))
 
-[**WebZ Server**](https://github.com/terems-org/webz-server) is the core part of so called WebZ Platform -
+[**WebZ Server**](https://github.com/terems-org/webz-server) is the core part of so called **WebZ Platform** -
 a Git-based web hosting platform. (The page you are looking at right now is being served to you by WebZ Platform "directy" from
 [**this**](https://github.com/terems-org/webz-server#webz-server-v09-beta-pedesis) GitHub repo).  
 WebZ Server is an open source project available under
