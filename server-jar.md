@@ -1,4 +1,4 @@
-# [Server.jar](https://vimeo.com/77703019) (coming soon)
+# [Server.jar](http://www.nicolasmenard.com/somewhere) (coming soon)
 
 **настроение** - это **душа**,  
 тогда как **разум** - это всего лишь средство связи  
