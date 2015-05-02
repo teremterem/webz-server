@@ -97,6 +97,16 @@ public class JavascriptEnginePool {
 		return pageContent;
 	}
 
+	private int enginesInited = 0;
+
+	public int getNumOfInitedEngines() {
+		return enginesInited;
+	}
+
+	public int getNumOfAvailableEngines() {
+		return enginePool.size();
+	}
+
 	public JavascriptEnginePool(final int numOfEngines, final WebzContext context) throws WebzException {
 
 		if (numOfEngines < 1) {
@@ -108,6 +118,7 @@ public class JavascriptEnginePool {
 
 		spawnNewEngine(context, jsWebzFiles, true);
 		final int enginesInitedSoFar = 1;
+		enginesInited = enginesInitedSoFar;
 
 		if (enginesInitedSoFar == numOfEngines) {
 			logEnginesInited(numOfEngines);
@@ -117,7 +128,6 @@ public class JavascriptEnginePool {
 				@Override
 				public void run() {
 
-					int enginesInited = enginesInitedSoFar;
 					for (int i = enginesInited; i < numOfEngines; i++) {
 
 						try {
