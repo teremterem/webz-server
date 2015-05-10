@@ -47,7 +47,7 @@ public class JavascriptEnginePool {
 					WebzUtils.getFullUrl(req));
 			return WebzUtils.assertString(invocableEngine.invokeMethod(engine.get("JSON"), "stringify", rawPageContext));
 
-		} catch (Throwable e) {
+		} catch (InterruptedException | NoSuchMethodException | ScriptException e) {
 			throw new WebzException(e);
 
 		} finally {
@@ -68,7 +68,7 @@ public class JavascriptEnginePool {
 			Object rawPageContext = invocableEngine.invokeFunction(WEBZ_PREPARE_PAGE_CONTEXT_JS_FUNCTION, jsWebzContext);
 			return processRawPageContent(invocableEngine.invokeFunction(WEBZ_RENDER_PAGE_JS_FUNCTION, rawPageContext));
 
-		} catch (Throwable e) {
+		} catch (InterruptedException | NoSuchMethodException | ScriptException e) {
 			throw new WebzException(e);
 
 		} finally {

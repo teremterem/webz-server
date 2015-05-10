@@ -148,6 +148,8 @@ public class GenericWebzObjectFactoryTest {
 
 	// TODO test exceptions while creating objects as well
 
+	// TODO test the order of destruction (should be reverse to construction order)
+
 	private static final long SLOW_SINGLETON_CONSTRUCTOR_DELAY_MILLIS = 55;
 
 	@Test

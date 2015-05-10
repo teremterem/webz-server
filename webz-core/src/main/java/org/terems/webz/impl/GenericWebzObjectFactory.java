@@ -18,6 +18,8 @@
 
 package org.terems.webz.impl;
 
+import java.util.ArrayList;
+import java.util.ListIterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -57,15 +59,7 @@ public class GenericWebzObjectFactory implements WebzDestroyableObjectFactory {
 		try {
 			readLock.lock();
 
-			Queue<WebzDestroyable> destroyables = this.destroyables;
-			if (destroyables == null) {
-				throwFactoryDestroyed();
-			}
-
-			T destroyable = newDestroyable0(destroyableClass);
-			destroyables.add(destroyable);
-
-			return destroyable;
+			return newDestroyable0(destroyableClass);
 
 		} finally {
 			readLock.unlock();
@@ -126,22 +120,15 @@ public class GenericWebzObjectFactory implements WebzDestroyableObjectFactory {
 		try {
 			writeLock.lock();
 
-			Queue<WebzDestroyable> destroyables = this.destroyables;
-			ConcurrentMap<Class<? extends WebzDestroyable>, DestroyableWrapper> singletons = this.singletons;
+			this.singletons = null;
+			if (this.destroyables != null) {
 
-			if (destroyables != null) {
+				Queue<WebzDestroyable> destroyables = this.destroyables;
+				ListIterator<WebzDestroyable> destroyablesListIt = new ArrayList<>(destroyables).listIterator(destroyables.size());
 				this.destroyables = null;
 
-				for (WebzDestroyable destroyable : destroyables) {
-					destroySafely(destroyable);
-				}
-			}
-
-			if (singletons != null) {
-				this.singletons = null;
-
-				for (DestroyableWrapper wrapper : singletons.values()) {
-					destroySafely(wrapper.destroyable);
+				while (destroyablesListIt.hasPrevious()) {
+					destroySafely(destroyablesListIt.previous());
 				}
 			}
 
@@ -171,8 +158,16 @@ public class GenericWebzObjectFactory implements WebzDestroyableObjectFactory {
 
 	private <T extends WebzDestroyable> T newDestroyable0(Class<T> destroyableClass) throws WebzException {
 
+		Queue<WebzDestroyable> destroyables = this.destroyables;
+		if (destroyables == null) {
+			throwFactoryDestroyed();
+		}
+
 		try {
-			return destroyableClass.newInstance();
+			T destroyable = destroyableClass.newInstance();
+			destroyables.add(destroyable);
+
+			return destroyable;
 
 		} catch (InstantiationException e) {
 			throw new WebzException(e);
