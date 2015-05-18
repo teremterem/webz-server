@@ -23,92 +23,24 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terems.WebzLaunchHelper;
 import org.terems.webz.WebzException;
 import org.terems.webz.WebzProperties;
+import org.terems.webz.impl.AbstractWebzHttpServlet;
 import org.terems.webz.impl.WebzServer;
 import org.terems.webz.util.WebzUtils;
 
 @SuppressWarnings("serial")
-public class WebzServerHttpServlet extends HttpServlet {
+public class WebzServerHttpServlet extends AbstractWebzHttpServlet {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WebzServerHttpServlet.class);
 
 	private static final String WEBZ_SERVER_INTERNAL_PROPERTIES_RESOURCE = "webz-server-internal.properties";
 
 	@Override
-	public void init() throws ServletException {
-		try {
-			// TODO decide if WebzServer lazy initialization mechanism is needed at all
-			webzServer();
-
-		} catch (IOException e) {
-			throw new ServletException(e);
-		} catch (WebzException e) {
-			throw new ServletException(e);
-		}
-	}
-
-	@Override
-	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-		try {
-			// // ~~~ \\ // ~~~ \\ //
-			webzServer().serve(req, resp);
-			// \\ ~~~ // \\ ~~~ // \\
-
-		} catch (WebzException e) {
-			throw new ServletException(e);
-		}
-	}
-
-	/**
-	 * <a href="http://en.wikipedia.org/wiki/Double-checked_locking#Usage_in_Java">Double-checked locking - Usage in Java</a>
-	 **/
-	private WebzServer webzServer() throws IOException, WebzException {
-
-		WebzServer webzServer = this.webzServer;
-		if (webzServer == null) {
-
-			synchronized (webzServerMutex) {
-
-				webzServer = this.webzServer;
-				if (webzServer == null) {
-
-					// // ~~~ \\ // ~~~ \\ // ~~~ \\ //
-					this.webzServer = initWebzServer();
-					// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
-				}
-			}
-		}
-		return webzServer;
-	}
-
-	private volatile WebzServer webzServer;
-	private final Object webzServerMutex = new Object();
-
-	@Override
-	public void destroy() {
-
-		synchronized (webzServerMutex) {
-
-			WebzServer webzServer = this.webzServer;
-			if (webzServer != null) {
-
-				this.webzServer = null;
-				webzServer.destroy();
-			}
-		}
-	}
-
-	private WebzServer initWebzServer() throws IOException, WebzException {
+	protected WebzServer initWebzServer() throws IOException, WebzException {
 
 		Properties internalProperties = new Properties();
 		WebzUtils.loadPropertiesFromClasspath(internalProperties, WEBZ_SERVER_INTERNAL_PROPERTIES_RESOURCE, true);
