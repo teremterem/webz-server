@@ -13,5 +13,11 @@ to be implemented in Java.
 > [***This article***](https://julien.ponge.org/blog/in-defense-of-contributor-license-agreements/)
 > *explains why it is a good idea to consider using contributor license agreements for certain open source projects.*
 
+<style>
+  .twitter-tweet {
+    background: rgba(80, 84, 40, 0.85);
+  }
+</style>
+
 <blockquote class="twitter-tweet" lang="ru"><p lang="ht" dir="ltr"><a href="http://t.co/kUbpzrPndQ">http://t.co/kUbpzrPndQ</a> - WebZ Server v0.9.1 beta (Pedesis)</p>&mdash; Terem&#39;s .org (@terems_org) <a href="https://twitter.com/terems_org/status/600490287299952641">19 мая 2015</a></blockquote>
 <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
