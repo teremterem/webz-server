@@ -16,7 +16,7 @@ to be implemented in Java.
 <style>
   .twitter-tweet {
     //background: rgba(80, 84, 40, 0.85);
-    opacity: 0.6;
+    opacity: 0.8;
   }
 </style>
 
