@@ -9,6 +9,8 @@ file source "hybrids". It has an API ([**WebZ API**](https://github.com/terems-o
 [**WebZ Filters**](https://github.com/terems-org/webz-api/blob/master/src/main/java/org/terems/webz/WebzFilter.java)
 to be implemented in Java.
 
+---
+
 > ***NOTE:*** *Some time later a* ***contributor license agreement*** *will be applied to this particular repo.*
 > [***This article***](https://julien.ponge.org/blog/in-defense-of-contributor-license-agreements/)
 > *explains why it is a good idea to consider using contributor license agreements for certain open source projects.*
