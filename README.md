@@ -29,6 +29,6 @@ to be implemented in Java.
 
 ---
 
-<a href="//ru.pinterest.com/pin/create/button/" data-pin-do="buttonBookmark"  data-pin-color="red" data-pin-height="28"><img src="https://s-media-cache-ak0.pinimg.com/736x/02/f8/b8/02f8b8a1dd9a06f8413e69bd082031f1.jpg" /></a>
+<a href="//ru.pinterest.com/pin/create/button/?url=http%3A%2F%2Fwww.flickr.com%2Fphotos%2Fkentbrew%2F6851755809%2F&media=https%3A%2F%2Fs-media-cache-ak0.pinimg.com%2F736x%2F02%2Ff8%2Fb8%2F02f8b8a1dd9a06f8413e69bd082031f1.jpg&description=WebZ%20Server%20v0.9.1%20beta%20(Pedesis)" data-pin-do="buttonPin" data-pin-config="beside" data-pin-color="red" data-pin-height="28"><img src="//assets.pinterest.com/images/pidgets/pinit_fg_en_rect_red_28.png" /></a>
 <!-- Please call pinit.js only once per page -->
 <script type="text/javascript" async defer src="//assets.pinterest.com/js/pinit.js"></script>
