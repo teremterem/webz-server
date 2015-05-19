@@ -13,6 +13,8 @@ to be implemented in Java.
 > [***This article***](https://julien.ponge.org/blog/in-defense-of-contributor-license-agreements/)
 > *explains why it is a good idea to consider using contributor license agreements for certain open source projects.*
 
+---
+
 <style>
   .twitter-tweet {
     //background: rgba(80, 84, 40, 0.85);
