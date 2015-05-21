@@ -71,9 +71,9 @@ public abstract class AbstractWebzHttpServlet extends HttpServlet {
 				webzServer = this.webzServer;
 				if (webzServer == null) {
 
-					// // ~~~ \\ // ~~~ \\ // ~~~ \\ //
-					this.webzServer = initWebzServer();
-					// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
+					// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
+					this.webzServer = webzServer = initWebzServer();
+					// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
 				}
 			}
 		}
