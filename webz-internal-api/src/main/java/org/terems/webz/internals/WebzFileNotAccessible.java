@@ -89,6 +89,11 @@ public class WebzFileNotAccessible implements WebzFile {
 	}
 
 	@Override
+	public String getFileContentAsString() throws WebzReadException, WebzWriteException, IOException {
+		return null;
+	}
+
+	@Override
 	public FileSpecific copyContentToOutputStream(OutputStream out) throws IOException, WebzReadException, WebzWriteException,
 			WebzException {
 		return null;

@@ -155,6 +155,16 @@ public class GenericWebzFile implements WebzFile {
 	}
 
 	@Override
+	public String getFileContentAsString() throws WebzReadException, WebzWriteException, IOException, WebzException {
+
+		WebzReaderDownloader downloader = getFileDownloader();
+		if (downloader == null) {
+			return null;
+		}
+		return downloader.getContentAsStringAndClose();
+	}
+
+	@Override
 	public WebzMetadata.FileSpecific copyContentToOutputStream(OutputStream out) throws IOException, WebzReadException, WebzWriteException,
 			WebzException {
 
