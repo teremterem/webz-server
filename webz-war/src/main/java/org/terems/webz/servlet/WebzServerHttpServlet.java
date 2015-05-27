@@ -50,8 +50,6 @@ public class WebzServerHttpServlet extends AbstractWebzHttpServlet {
 		Properties webzProperties = fetchWebzProperties();
 		// TODO make logging configurable through WebZ properties as well
 
-		WebzServer webzServer = new WebzServer();
-
 		String siteContentPath = webzProperties.getProperty(WebzLaunchHelper.SITE_CONTENT_PATH_PROPERTY);
 		String renderingSpaPath = webzProperties.getProperty(WebzLaunchHelper.RENDERING_SPA_PATH_PROPERTY);
 		String webzBoilerplatePath = webzProperties.getProperty(WebzLaunchHelper.WEBZ_BOILERPLATE_PATH_PROPERTY);
@@ -76,7 +74,7 @@ public class WebzServerHttpServlet extends AbstractWebzHttpServlet {
 		}
 
 		// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
-		return webzServer.start(siteProperties, spaProperties, boilerplateProperties, webzInternalProperties);
+		return WebzServer.start(siteProperties, spaProperties, boilerplateProperties, webzInternalProperties);
 		// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
 	}
 

@@ -58,13 +58,14 @@ public class WebzServer implements WebzServletContainerBridge {
 	private WebzDestroyableObjectFactory globalFactory = new GenericWebzObjectFactory();
 	private volatile WebzApp rootWebzApp;
 
-	public WebzServer start(WebzProperties siteFileSystemProperties, WebzProperties spaFileSystemProperties,
+	public static WebzServer start(WebzProperties siteFileSystemProperties, WebzProperties spaFileSystemProperties,
 			WebzProperties webzBoilerplateProperties, WebzProperties hybridFileSystemProperties) {
 
-		try {
-			WebzFileSystemManager fileSystemManager = WebzFileSystemManager.getManager(globalFactory);
+		WebzServer webzServer = new WebzServer();
 
-			GenericWebzObjectFactory appFactory = globalFactory.newDestroyable(GenericWebzObjectFactory.class);
+		try {
+			WebzFileSystemManager fileSystemManager = WebzFileSystemManager.getManager(webzServer.globalFactory);
+			GenericWebzObjectFactory appFactory = webzServer.globalFactory.newDestroyable(GenericWebzObjectFactory.class);
 
 			WebzFileSystem siteFileSystem = fileSystemManager.createFileSystem(siteFileSystemProperties);
 			WebzFileSystem spaFileSystem = fileSystemManager.createFileSystem(spaFileSystemProperties);
@@ -76,19 +77,21 @@ public class WebzServer implements WebzServletContainerBridge {
 			WebzFileSystem siteSpaAndBoilerplateOverlay = fileSystemManager.createSiteAndSpaFileSystem(siteFileSystem,
 					spaAndBoilerplateOverlay, hybridFileSystemProperties);
 
-			rootWebzApp = globalFactory.newDestroyable(GenericWebzApp.class);
-			rootWebzApp.init(siteSpaAndBoilerplateOverlay, DEFAULT_FILTERS, appFactory);
+			webzServer.rootWebzApp = webzServer.globalFactory.newDestroyable(GenericWebzApp.class);
+			webzServer.rootWebzApp.init(siteSpaAndBoilerplateOverlay, DEFAULT_FILTERS, appFactory);
 
 		} catch (WebzException e) {
 
-			rootWebzApp = null;
+			webzServer.rootWebzApp = null;
 			if (LOG.isErrorEnabled()) {
-				LOG.error("failed to init WebZ App" + (rootWebzApp == null ? "" : " \"" + rootWebzApp.getDisplayName() + "\""), e);
+				LOG.error(
+						"failed to init WebZ App"
+								+ (webzServer.rootWebzApp == null ? "" : " \"" + webzServer.rootWebzApp.getDisplayName() + "\""), e);
 			}
 		}
 
 		LOG.info("WebZ Server started\n");
-		return this;
+		return webzServer;
 	}
 
 	@Override
