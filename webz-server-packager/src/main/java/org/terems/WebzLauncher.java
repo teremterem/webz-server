@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.CodeSource;
@@ -33,12 +34,16 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.juli.FileHandler;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 
 public class WebzLauncher {
@@ -100,18 +105,49 @@ public class WebzLauncher {
 		}
 	}
 
+	private static FileHandler fileHandler = null;
+	private static LoggingOutputStream lout = null;
+	private static LoggingOutputStream lerr = null;
+
+	private static void redirectStdErrOutToFile(File serverFolder) {
+
+		// initialize logging to go to rolling log file
+		LogManager logManager = LogManager.getLogManager();
+		logManager.reset();
+		File logsFolder = null;
+
+		// log file max size 10K, 3 rolling files, append-on-open
+		try {
+			logsFolder = createFolder(serverFolder, "logs");
+			fileHandler = new FileHandler(logsFolder.getAbsolutePath(), "webz-server.", ".log");
+
+			fileHandler.setFormatter(new WebzLogFormatter());
+			Logger.getLogger("").addHandler(fileHandler);
+
+			lout = new LoggingOutputStream(Logger.getLogger("stdout"), Level.INFO, System.out);
+			System.setOut(new PrintStream(lout, true, "utf8"));
+			lerr = new LoggingOutputStream(Logger.getLogger("stderr"), Level.SEVERE, System.err);
+			System.setErr(new PrintStream(lerr, true, "utf8"));
+
+		} catch (Throwable th) {
+
+			if (logsFolder != null) {
+				System.err.println("Failed to start writing logs to '" + logsFolder.getAbsolutePath() + "' folder. See stack trace below.");
+			}
+			th.printStackTrace();
+		}
+	}
+
 	private static void prepareAndRun(File thisJarFile) throws URISyntaxException, IOException, ServletException, LifecycleException {
 
 		Properties webzProperties = WebzLaunchHelper.initWebzPropertiesInLauncher(thisJarFile);
 		int configuredPortNumber = getConfiguredPortNumber(webzProperties);
 
-		File tempFolder = initTempFolder(thisJarFile, configuredPortNumber);
-		// TODO delete temp folder on exit ?
+		File serverFolder = initServerFolder(thisJarFile, configuredPortNumber);
+		redirectStdErrOutToFile(serverFolder);
 
-		Tomcat tomcat = prepareTomcat(thisJarFile, tempFolder);
+		Tomcat tomcat = prepareTomcat(thisJarFile, serverFolder);
 		int actualPortNumber = runTomcat(tomcat, configuredPortNumber);
-		// TODO make WebZ Server write it's log into a file
-
 		if (actualPortNumber < 0) {
 
 			if (gui) {
@@ -148,15 +184,15 @@ public class WebzLauncher {
 		}
 	}
 
-	private static Tomcat prepareTomcat(File thisJarFile, File tempFolder) throws ServletException, IOException {
+	private static Tomcat prepareTomcat(File thisJarFile, File serverFolder) throws ServletException, IOException {
 
-		createFolder(tempFolder, "webapps");
+		createFolder(serverFolder, "webapps");
 		// Tomcat wants this folder to be there before it starts
 
 		Tomcat tomcat = new Tomcat();
-		tomcat.setBaseDir(tempFolder.getAbsolutePath());
+		tomcat.setBaseDir(serverFolder.getAbsolutePath());
 
-		tomcat.addWebapp("", fetchWebzWar(thisJarFile, tempFolder).getAbsolutePath());
+		tomcat.addWebapp("", fetchWebzWar(thisJarFile, serverFolder).getAbsolutePath());
 
 		return tomcat;
 	}
@@ -166,11 +202,36 @@ public class WebzLauncher {
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			@Override
 			public void run() {
+
 				try {
 					tomcat.stop();
 					tomcat.destroy();
 				} catch (LifecycleException e) {
 					throw new RuntimeException(e);
+
+				} finally {
+					try {
+						if (lout != null) {
+							lout.close();
+						}
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+
+					} finally {
+						try {
+							if (lerr != null) {
+								lerr.close();
+							}
+						} catch (IOException e) {
+							throw new RuntimeException(e);
+
+						} finally {
+							if (fileHandler != null) {
+								fileHandler.flush();
+								fileHandler.close();
+							}
+						}
+					}
 				}
 			}
 		}));
@@ -228,7 +289,7 @@ public class WebzLauncher {
 		return thisJarFile;
 	}
 
-	private static File initTempFolder(File thisJarFile, int portNumber) throws URISyntaxException {
+	private static File initServerFolder(File thisJarFile, int portNumber) throws URISyntaxException {
 
 		File parentFolder = thisJarFile.getParentFile();
 		String thisJarName = thisJarFile.getName();
@@ -239,7 +300,7 @@ public class WebzLauncher {
 		if (thisJarName.toLowerCase().endsWith(".jar")) {
 			thisJarName = thisJarName.substring(0, thisJarName.length() - 4);
 		}
-		return createFolder(parentFolder, "." + thisJarName + ".port-" + portNumber + ".temp");
+		return createFolder(parentFolder, "." + thisJarName + ".port-" + portNumber);
 	}
 
 	private static File createFolder(File parentFolder, String name) {
