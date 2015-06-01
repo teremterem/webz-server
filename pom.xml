@@ -258,8 +258,8 @@
 										<directory>.</directory>
 										<filtering>false</filtering>
 										<includes>
-											<include>LICENSE</include>
-											<include>NOTICE</include>
+											<include>LICENSE.md</include>
+											<include>NOTICE.md</include>
 										</includes>
 									</resource>
 								</resources>
@@ -298,8 +298,8 @@
 								<directory>.</directory>
 								<targetPath>META-INF</targetPath>
 								<includes>
-									<include>LICENSE</include>
-									<include>NOTICE</include>
+									<include>LICENSE.md</include>
+									<include>NOTICE.md</include>
 								</includes>
 							</resource>
 							<resource>
