@@ -77,7 +77,7 @@ public class WebzServer implements WebzServletContainerBridge {
 			WebzFileSystem siteSpaAndBoilerplateOverlay = fileSystemManager.createSiteAndSpaFileSystem(siteFileSystem,
 					spaAndBoilerplateOverlay, hybridFileSystemProperties);
 
-			webzServer.rootWebzApp = webzServer.globalFactory.newDestroyable(GenericWebzApp.class);
+			webzServer.rootWebzApp = webzServer.globalFactory.newDestroyable(GenericWebzBlog.class);
 			webzServer.rootWebzApp.init(siteSpaAndBoilerplateOverlay, DEFAULT_FILTERS, appFactory);
 
 		} catch (WebzException e) {

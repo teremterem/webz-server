@@ -42,9 +42,9 @@ import org.terems.webz.internals.WebzFileFactory;
 import org.terems.webz.internals.WebzFileSystem;
 import org.terems.webz.util.WebzUtils;
 
-public class GenericWebzApp implements WebzApp {
+public class GenericWebzBlog implements WebzApp {
 
-	private static final Logger LOG = LoggerFactory.getLogger(GenericWebzApp.class);
+	private static final Logger LOG = LoggerFactory.getLogger(GenericWebzBlog.class);
 
 	private String displayName;
 
@@ -54,7 +54,7 @@ public class GenericWebzApp implements WebzApp {
 	private WebzDestroyableObjectFactory appFactory;
 
 	@Override
-	public GenericWebzApp init(WebzFileSystem fileSystem, Collection<Class<? extends WebzFilter>> filterClassesList,
+	public GenericWebzBlog init(WebzFileSystem fileSystem, Collection<Class<? extends WebzFilter>> filterClassesList,
 			WebzDestroyableObjectFactory appFactory) throws WebzException {
 
 		this.appFactory = appFactory;
@@ -97,7 +97,7 @@ public class GenericWebzApp implements WebzApp {
 		}
 
 		if (LOG.isInfoEnabled()) {
-			LOG.info("WebZ App \"" + displayName + "\" initialized");
+			LOG.info("WebZ Blog \"" + displayName + "\" initialized");
 		}
 		return this;
 	}
@@ -201,7 +201,7 @@ public class GenericWebzApp implements WebzApp {
 		appFactory.destroy();
 
 		if (LOG.isInfoEnabled()) {
-			LOG.info("WebZ App \"" + displayName + "\" destroyed");
+			LOG.info("WebZ Blog \"" + displayName + "\" destroyed");
 		}
 	}
 
