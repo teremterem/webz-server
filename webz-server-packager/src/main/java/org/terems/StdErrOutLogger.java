@@ -36,7 +36,8 @@ public class StdErrOutLogger extends PrintStream {
 		PrintStream stdErr = System.err;
 		PrintStream stdOut = System.out;
 		try {
-			fileStream = new FileOutputStream(logFile, true); // TODO some kind of log rotation logic ?
+			fileStream = new FileOutputStream(logFile, true);
+			// TODO think of some kind of log rotation logic
 
 			System.setErr(new StdErrOutLogger(fileStream, stdErr));
 			System.setOut(new StdErrOutLogger(fileStream, stdOut));
@@ -53,7 +54,7 @@ public class StdErrOutLogger extends PrintStream {
 	protected PrintStream stdStream;
 
 	protected StdErrOutLogger(OutputStream fileStream, PrintStream stdStream) throws UnsupportedEncodingException {
-		super(fileStream, false, "utf8"); // sure ?
+		super(fileStream, false, "utf8");
 		this.stdStream = stdStream;
 	}
 
