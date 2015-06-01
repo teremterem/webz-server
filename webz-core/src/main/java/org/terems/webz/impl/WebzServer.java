@@ -85,7 +85,7 @@ public class WebzServer implements WebzServletContainerBridge {
 			webzServer.rootWebzApp = null;
 			if (LOG.isErrorEnabled()) {
 				LOG.error(
-						"failed to init WebZ App"
+						"failed to deploy WebZ App"
 								+ (webzServer.rootWebzApp == null ? "" : " \"" + webzServer.rootWebzApp.getDisplayName() + "\""), e);
 			}
 		}
@@ -98,7 +98,7 @@ public class WebzServer implements WebzServletContainerBridge {
 	public void serve(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException {
 
 		if (rootWebzApp == null) {
-			throw new WebzException("root WebZ App is already stopped or has not been started yet");
+			throw new WebzException("root WebZ App is already destroyed or has not been deployed yet");
 		}
 
 		traceRequestStart(req);

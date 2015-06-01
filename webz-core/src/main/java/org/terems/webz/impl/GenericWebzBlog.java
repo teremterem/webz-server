@@ -97,7 +97,7 @@ public class GenericWebzBlog implements WebzApp {
 		}
 
 		if (LOG.isInfoEnabled()) {
-			LOG.info("WebZ Blog \"" + displayName + "\" initialized");
+			LOG.info("WebZ Blog \"" + displayName + "\" deployed");
 		}
 		return this;
 	}
