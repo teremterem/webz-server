@@ -7,7 +7,7 @@ javax.servlet
 javax.servlet-api  
 3.0.1  
 https://glassfish.java.net/nonav/public/CDDL+GPL.html  
-https://java.net/projects/servlet-spec/
+https://java.net/projects/servlet-spec/  
 
 ## Apache
 
@@ -73,7 +73,7 @@ javassist
 3.19.0-GA  
 http://www.mozilla.org/MPL/MPL-1.1.html  
 http://www.gnu.org/licenses/lgpl-2.1.html  
-http://www.apache.org/licenses/    
+http://www.apache.org/licenses/  
 http://jboss-javassist.github.io/javassist/  
 
 org.objenesis  
