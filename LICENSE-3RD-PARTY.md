@@ -57,7 +57,7 @@ http://logging.apache.org/log4j/
 
 org.testng  
 testng  
-6.8.21  
+6.9.4  
 http://testng.org/license/  
 http://testng.org/doc/index.html  
 
