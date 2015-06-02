@@ -58,9 +58,9 @@
 		<maven.war.plugin.version>2.6</maven.war.plugin.version>
 		<maven.assembly.plugin.version>2.5.3</maven.assembly.plugin.version>
 
-		<tomcat.version>8.0.20</tomcat.version>
+		<tomcat.version>8.0.23</tomcat.version>
 
-		<slf4j.log4j12.version>1.7.10</slf4j.log4j12.version>
+		<slf4j.log4j12.version>1.7.12</slf4j.log4j12.version>
 		<log4j.version>1.2.17</log4j.version>
 
 		<testng.version>6.8.21</testng.version>
