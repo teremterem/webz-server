@@ -92,13 +92,13 @@ https://maven.apache.org/plugins/maven-resources-plugin/
 
 org.apache.maven.plugins  
 maven-compiler-plugin  
-3.2  
+3.3  
 http://www.apache.org/licenses/  
 http://maven.apache.org/plugins/maven-compiler-plugin/  
 
 org.apache.maven.plugins  
 maven-eclipse-plugin  
-2.9  
+2.10  
 http://www.apache.org/licenses/  
 https://maven.apache.org/plugins/maven-eclipse-plugin/  
 
@@ -110,7 +110,7 @@ https://maven.apache.org/plugins/maven-war-plugin/
 
 org.apache.maven.plugins  
 maven-assembly-plugin  
-2.5.3  
+2.5.4  
 http://www.apache.org/licenses/  
 http://maven.apache.org/plugins/maven-assembly-plugin/  
 
@@ -122,7 +122,7 @@ https://maven.apache.org/plugins/maven-source-plugin/
 
 org.apache.maven.plugins  
 maven-javadoc-plugin  
-2.10.1  
+2.10.3  
 http://www.apache.org/licenses/  
 https://maven.apache.org/plugins/maven-javadoc-plugin/  
 
