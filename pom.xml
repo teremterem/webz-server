@@ -260,6 +260,7 @@
 										<includes>
 											<include>LICENSE.md</include>
 											<include>NOTICE.md</include>
+											<include>LICENSE-3RD-PARTY.md</include>
 										</includes>
 									</resource>
 								</resources>
@@ -300,6 +301,7 @@
 								<includes>
 									<include>LICENSE.md</include>
 									<include>NOTICE.md</include>
+									<include>LICENSE-3RD-PARTY.md</include>
 								</includes>
 							</resource>
 							<resource>
