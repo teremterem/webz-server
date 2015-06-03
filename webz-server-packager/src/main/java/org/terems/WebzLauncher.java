@@ -49,6 +49,14 @@ public class WebzLauncher {
 	private static final String HTTP_PORT_PROPERTY = "webz.http.port";
 	private static final String DEFAULT_HTTP_PORT = "8887";
 
+	private static final String WEBZ_SERVER_LOG_FILE = "webz-server.log";
+
+	private static final String LICENSE_FILE = "LICENSE.md";
+	private static final String NOTICE_FILE = "NOTICE.md";
+	private static final String LICENSE_3RD_PARTY_FILE = "LICENSE-3RD-PARTY.md";
+
+	private static final String META_INF_FOLDER = "META-INF";
+
 	private static final Pattern WEBZ_WAR_PATTERN = Pattern.compile("webz-[^/\\\\]*.war");
 
 	private static final int GENERIC_FATAL_EXIT_CODE = 1;
@@ -108,7 +116,7 @@ public class WebzLauncher {
 		int configuredPortNumber = getConfiguredPortNumber(webzProperties);
 
 		File serverFolder = initServerFolder(thisJarFile, configuredPortNumber);
-		logFile = StdErrOutLogger.install(new File(serverFolder, "webz-server.log"));
+		logFile = StdErrOutLogger.install(new File(serverFolder, WEBZ_SERVER_LOG_FILE));
 
 		// TODO also make log4j global log level configurable through a sys/env property
 
@@ -158,6 +166,9 @@ public class WebzLauncher {
 		Tomcat tomcat = new Tomcat();
 		tomcat.setBaseDir(serverFolder.getAbsolutePath());
 
+		extractResourceIntoFolder(META_INF_FOLDER, LICENSE_FILE, serverFolder, false);
+		extractResourceIntoFolder(META_INF_FOLDER, NOTICE_FILE, serverFolder, false);
+		extractResourceIntoFolder(META_INF_FOLDER, LICENSE_3RD_PARTY_FILE, serverFolder, false);
 		tomcat.addWebapp("", fetchWebzWar(thisJarFile, serverFolder).getAbsolutePath());
 
 		return tomcat;
@@ -210,7 +221,7 @@ public class WebzLauncher {
 
 					if (WEBZ_WAR_PATTERN.matcher(jarEntryName).matches()) {
 
-						webzWarFile = extractResourceIntoFolder(jarEntryName, serverFolder);
+						webzWarFile = extractResourceIntoFolder(null, jarEntryName, serverFolder, true);
 						break;
 					}
 				}
@@ -274,23 +285,38 @@ public class WebzLauncher {
 		return folder;
 	}
 
-	private static File extractResourceIntoFolder(String resourceName, File folder) throws IOException {
+	private static File extractResourceIntoFolder(String resourceInternalPath, String resourceSimpleName, File folder,
+			boolean failIfCantExtract) throws IOException {
 
-		if (!resourceName.startsWith("/")) {
-			resourceName = "/" + resourceName;
+		if (resourceInternalPath == null) {
+			resourceInternalPath = "";
+		}
+		if (!resourceInternalPath.startsWith("/")) {
+			resourceInternalPath = "/" + resourceInternalPath;
+		}
+		if (!resourceInternalPath.endsWith("/")) {
+			resourceInternalPath = resourceInternalPath + "/";
 		}
 
-		InputStream in = WebzLauncher.class.getResourceAsStream(resourceName);
+		String resourcePathname = resourceInternalPath + resourceSimpleName;
+		InputStream in = WebzLauncher.class.getResourceAsStream(resourcePathname);
 		if (in == null) {
-			throw new RuntimeException(resourceName + " was not found in the jar");
+			throw new RuntimeException(resourcePathname + " was not found in the jar");
 		}
 
-		File file = new File(folder, resourceName);
+		File file = new File(folder, resourceSimpleName);
 
 		OutputStream out = null;
 		try {
 			out = new FileOutputStream(file);
 			IOUtils.copy(in, out);
+
+		} catch (IOException e) {
+			if (failIfCantExtract) {
+				throw e;
+			} else {
+				System.err.println("Failed to extract resource '" + resourcePathname + "' from the jar: " + e.getMessage());
+			}
 
 		} finally {
 
@@ -339,7 +365,8 @@ public class WebzLauncher {
 
 	private static String formatFatalMessage(Throwable th, String thisJarName) {
 
-		String message = th.toString() + "\n\nStart in a console to see the stack trace";
+		String message = th.toString() + "\n\nStart in a console to see the stack trace (or checkout '{server-folder}/"
+				+ WEBZ_SERVER_LOG_FILE + "')";
 		if (thisJarName == null) {
 			return message + ".";
 		} else {
