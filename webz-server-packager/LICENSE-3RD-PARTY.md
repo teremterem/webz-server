@@ -2,11 +2,11 @@
 Third Party License Info
 ========================
 
-As a whole, **WebZ Server** is released under the terms of
-[**GNU Affero GPL v3.0**](LICENSE.md). However, internally it depends on
-(and hence is packaged with) certain 3rd-party open source libraries. These
-**3rd-party libraries** are released under the terms of licenses verbatim
-copies of which you will find below.
+As a whole, WebZ Server is released under the terms of
+[GNU Affero GPL v3.0](LICENSE.md). However, internally it depends on (and
+hence is packaged with) certain 3rd-party open source libraries. These
+3rd-party libraries are released under the terms of licenses verbatim copies
+of which you will find below.
 
 -----------------------------------------------------------------------------
 ## The MIT License (MIT)
