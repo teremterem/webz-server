@@ -135,13 +135,13 @@ public class JavascriptEnginePool {
 							enginesInited++;
 
 						} catch (WebzException e) {
-							LOG.error("failed to init additional javascript engine", e);
+							LOG.error("failed to init additional javascript engine(s)\n", e);
 						}
 					}
 					if (enginesInited < numOfEngines) {
 
 						if (LOG.isWarnEnabled()) {
-							LOG.warn("only " + enginesInited + " out of " + numOfEngines + " javascript engines were initialized");
+							LOG.warn("only " + enginesInited + " out of " + numOfEngines + " javascript engines were initialized\n");
 						}
 					} else {
 						logEnginesInited(enginesInited);
@@ -156,7 +156,7 @@ public class JavascriptEnginePool {
 	private void logEnginesInited(int numOfEngines) {
 
 		if (LOG.isInfoEnabled()) {
-			LOG.info(numOfEngines + " javascript engines were initialized");
+			LOG.info(numOfEngines + " javascript engines were initialized\n");
 		}
 	}
 
