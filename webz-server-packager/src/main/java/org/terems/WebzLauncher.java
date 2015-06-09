@@ -118,7 +118,7 @@ public class WebzLauncher {
 		File serverFolder = initServerFolder(thisJarFile, configuredPortNumber);
 		logFile = StdErrOutLogger.install(new File(serverFolder, WEBZ_SERVER_LOG_FILE));
 
-		// TODO also make log4j global log level configurable through a sys/env property
+		// TODO make log4j global log level configurable through a sys/env property (mayble also through webz.properties files)
 
 		Tomcat tomcat = prepareTomcat(thisJarFile, serverFolder);
 		int actualPortNumber = runTomcat(tomcat, configuredPortNumber);

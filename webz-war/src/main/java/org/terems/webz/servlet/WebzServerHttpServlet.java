@@ -44,11 +44,9 @@ public class WebzServerHttpServlet extends AbstractWebzHttpServlet {
 
 		Properties internalProperties = new Properties();
 		WebzUtils.loadPropertiesFromClasspath(internalProperties, WEBZ_SERVER_INTERNAL_PROPERTIES_RESOURCE, true);
-
 		WebzProperties webzInternalProperties = new WebzProperties(internalProperties);
 
 		Properties webzProperties = fetchWebzProperties();
-		// TODO make logging configurable through WebZ properties as well
 
 		String siteContentPath = webzProperties.getProperty(WebzLaunchHelper.SITE_CONTENT_PATH_PROPERTY);
 		String renderingSpaPath = webzProperties.getProperty(WebzLaunchHelper.RENDERING_SPA_PATH_PROPERTY);

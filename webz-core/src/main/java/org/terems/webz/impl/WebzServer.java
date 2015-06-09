@@ -61,6 +61,10 @@ public class WebzServer implements WebzServletContainerBridge {
 	public static WebzServer start(WebzProperties siteFileSystemProperties, WebzProperties spaFileSystemProperties,
 			WebzProperties webzBoilerplateProperties, WebzProperties hybridFileSystemProperties) {
 
+		// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
+		// TODO !!! implement configurable WebZ Deployment(s) !!!
+		// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
+
 		WebzServer webzServer = new WebzServer();
 
 		try {
