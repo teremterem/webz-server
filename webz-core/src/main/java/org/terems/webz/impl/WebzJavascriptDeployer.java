@@ -18,39 +18,46 @@
 
 package org.terems.webz.impl;
 
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
-import org.terems.webz.WebzDefaults;
 import org.terems.webz.WebzException;
+import org.terems.webz.WebzReaderDownloader;
 import org.terems.webz.internals.WebzDeployer;
-import org.terems.webz.internals.WebzDestroyableObjectFactory;
 import org.terems.webz.internals.WebzFileSystem;
-import org.terems.webz.internals.WebzNode;
 import org.terems.webz.util.WebzUtils;
 
-public class WebzJsonDeployer implements WebzDeployer {
+public class WebzJavascriptDeployer implements WebzDeployer {
 
-	private WebzFileSystem jsonFolder;
+	public static final String WEBZ_DEPLOYER_JS_FILE = "webz-deployer.js";
 
-	public WebzJsonDeployer(WebzFileSystem jsonFolder) {
-		this.jsonFolder = jsonFolder;
+	public static final String WEBZ_DEPLOY_JS_FUNCTION = "webzDeploy";
+
+	private WebzFileSystem deploymentMetadata;
+
+	public WebzJavascriptDeployer(WebzFileSystem deploymentMetadata) {
+		this.deploymentMetadata = deploymentMetadata;
 	}
 
 	@Override
-	public WebzNode deploy() throws WebzException {
+	public WebzServer deploy() throws WebzException {
 
 		try {
+			WebzReaderDownloader webzDeployerScript = deploymentMetadata.getFileFactory().get(WEBZ_DEPLOYER_JS_FILE).getFileDownloader();
+			if (webzDeployerScript == null) {
+				throw new WebzException("'" + WEBZ_DEPLOYER_JS_FILE + "' was not found in '" + deploymentMetadata.getUniqueId()
+						+ "' file system");
+			}
+
 			ScriptEngine jsEngine = WebzUtils.createJavascriptEngine();
-			jsEngine.eval(new InputStreamReader(getClass().getResourceAsStream("webz-json-deployer.js"), WebzDefaults.UTF8));
+			jsEngine.eval(webzDeployerScript.getReader());
 
-			WebzDestroyableObjectFactory objectFactory = new GenericWebzObjectFactory();
-			return (WebzNode) WebzUtils.assertInvocable(jsEngine).invokeFunction("deployFromJson", jsonFolder, objectFactory);
+			WebzServer webzServer = new WebzServer();
+			return (WebzServer) WebzUtils.assertInvocable(jsEngine).invokeFunction(WEBZ_DEPLOY_JS_FUNCTION, deploymentMetadata, webzServer);
 
-		} catch (UnsupportedEncodingException | ScriptException | NoSuchMethodException e) {
+		} catch (ScriptException | NoSuchMethodException | IOException e) {
 			throw new WebzException(e);
 		}
 	}
