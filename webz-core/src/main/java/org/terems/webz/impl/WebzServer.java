@@ -164,7 +164,7 @@ public class WebzServer implements WebzNode {
 
 	@Override
 	public String toString() {
-		return "WebZ Server [" + super.toString() + "]";
+		return "WebZ Server ( " + super.toString() + " )";
 	}
 
 }
