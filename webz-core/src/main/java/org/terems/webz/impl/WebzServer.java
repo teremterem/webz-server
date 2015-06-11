@@ -124,9 +124,11 @@ public class WebzServer implements WebzNode {
 	@Override
 	public void destroy() {
 
-		rootWebzApp = null;
-		LOG.info(toString() + " stopped\n");
-
+		if (rootWebzApp != null) {
+			String appStoppedMsg = rootWebzApp + " stopped\n";
+			rootWebzApp = null;
+			LOG.info(appStoppedMsg);
+		}
 		globalFactory.destroy();
 		LOG.info(toString() + " destroyed\n");
 	}
