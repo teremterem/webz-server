@@ -215,13 +215,13 @@ public class WebzBlog implements WebzApp {
 		appFactory.destroy();
 
 		if (LOG.isInfoEnabled()) {
-			LOG.info(toString() + "\" undeployed");
+			LOG.info(toString() + " undeployed");
 		}
 	}
 
 	@Override
 	public String toString() {
-		return "WebZ Blog \"" + displayName + "\" (" + super.toString() + ")";
+		return "WebZ Blog \"" + displayName + "\" [" + super.toString() + "]";
 	}
 
 }
