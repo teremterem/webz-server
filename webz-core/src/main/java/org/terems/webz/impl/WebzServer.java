@@ -21,6 +21,7 @@ package org.terems.webz.impl;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -58,6 +59,30 @@ public class WebzServer implements WebzNode {
 	private WebzDestroyableObjectFactory globalFactory = new GenericWebzObjectFactory();
 	private volatile WebzApp rootWebzApp;
 
+	/**
+	 * @return by default returns {@code null} which means serve from any hostnames
+	 */
+	@Override
+	public Set<String> getHostNamesLowerCased() {
+
+		// TODO support configurable domain names
+		return null;
+	}
+
+	@Override
+	public void serve(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException {
+
+		if (rootWebzApp == null) {
+			throw new WebzException("root WebZ App is already destroyed or has not been deployed yet");
+		}
+
+		traceRequestStart(req);
+
+		rootWebzApp.serve(req, resp);
+
+		traceRequestEnd(req, resp);
+	}
+
 	public static WebzServer start(WebzProperties siteFileSystemProperties, WebzProperties spaFileSystemProperties,
 			WebzProperties webzBoilerplateProperties, WebzProperties hybridFileSystemProperties) {
 
@@ -81,45 +106,29 @@ public class WebzServer implements WebzNode {
 			WebzFileSystem siteSpaAndBoilerplateOverlay = fileSystemManager.createSiteAndSpaFileSystem(siteFileSystem,
 					spaAndBoilerplateOverlay, hybridFileSystemProperties);
 
-			webzServer.rootWebzApp = webzServer.globalFactory.newDestroyable(GenericWebzBlog.class);
+			webzServer.rootWebzApp = webzServer.globalFactory.newDestroyable(WebzBlog.class);
 			webzServer.rootWebzApp.init(siteSpaAndBoilerplateOverlay, DEFAULT_FILTERS, appFactory);
 
 		} catch (WebzException e) {
 
 			webzServer.rootWebzApp = null;
 			if (LOG.isErrorEnabled()) {
-				LOG.error(
-						"failed to deploy WebZ App"
-								+ (webzServer.rootWebzApp == null ? "" : " \"" + webzServer.rootWebzApp.getDisplayName() + "\""), e);
+				LOG.error("failed to deploy " + (webzServer.rootWebzApp == null ? "root WebZ App" : webzServer.rootWebzApp), e);
 			}
 		}
 
-		LOG.info("WebZ Server started\n");
+		LOG.info(webzServer + " started\n");
 		return webzServer;
-	}
-
-	@Override
-	public void serve(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException {
-
-		if (rootWebzApp == null) {
-			throw new WebzException("root WebZ App is already destroyed or has not been deployed yet");
-		}
-
-		traceRequestStart(req);
-
-		rootWebzApp.serve(req, resp);
-
-		traceRequestEnd(req, resp);
 	}
 
 	@Override
 	public void destroy() {
 
 		rootWebzApp = null;
-		LOG.info("WebZ Server stopped\n");
+		LOG.info(toString() + " stopped\n");
 
 		globalFactory.destroy();
-		LOG.info("WebZ Server destroyed\n");
+		LOG.info(toString() + " destroyed\n");
 	}
 
 	private void traceRequestStart(HttpServletRequest req) {
@@ -151,6 +160,11 @@ public class WebzServer implements WebzNode {
 							: "\n\\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ // \\\\ ~~~ //")
 					+ "\n\n\n");
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "WebZ Server (" + super.toString() + ")";
 	}
 
 }

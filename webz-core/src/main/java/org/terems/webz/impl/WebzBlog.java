@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,9 +43,9 @@ import org.terems.webz.internals.WebzFileFactory;
 import org.terems.webz.internals.WebzFileSystem;
 import org.terems.webz.util.WebzUtils;
 
-public class GenericWebzBlog implements WebzApp {
+public class WebzBlog implements WebzApp {
 
-	private static final Logger LOG = LoggerFactory.getLogger(GenericWebzBlog.class);
+	private static final Logger LOG = LoggerFactory.getLogger(WebzBlog.class);
 
 	private String displayName;
 
@@ -53,8 +54,25 @@ public class GenericWebzBlog implements WebzApp {
 
 	private WebzDestroyableObjectFactory appFactory;
 
+	/**
+	 * @return by default returns {@code null} which means serve from any hostnames (or from those from which WebZ Server is configured to
+	 *         serve)
+	 */
 	@Override
-	public GenericWebzBlog init(WebzFileSystem fileSystem, Collection<Class<? extends WebzFilter>> filterClassesList,
+	public Set<String> getHostNamesLowerCased() {
+
+		// TODO support configurable domain names
+		return null;
+	}
+
+	@Override
+	public void serve(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException {
+
+		new ChainContext(filterChain.iterator(), rootContext).nextPlease(req, resp);
+	}
+
+	@Override
+	public WebzBlog init(WebzFileSystem fileSystem, Collection<Class<? extends WebzFilter>> filterClassesList,
 			WebzDestroyableObjectFactory appFactory) throws WebzException {
 
 		this.appFactory = appFactory;
@@ -120,12 +138,6 @@ public class GenericWebzBlog implements WebzApp {
 	@Override
 	public String getDisplayName() {
 		return displayName;
-	}
-
-	@Override
-	public void serve(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException {
-
-		new ChainContext(filterChain.iterator(), rootContext).nextPlease(req, resp);
 	}
 
 	private static class ChainContext extends WebzContextProxy implements WebzChainContext {
@@ -203,13 +215,13 @@ public class GenericWebzBlog implements WebzApp {
 		appFactory.destroy();
 
 		if (LOG.isInfoEnabled()) {
-			LOG.info("WebZ Blog \"" + displayName + "\" destroyed");
+			LOG.info(toString() + "\" undeployed");
 		}
 	}
 
 	@Override
 	public String toString() {
-		return displayName + " - " + super.toString();
+		return "WebZ Blog \"" + displayName + "\" (" + super.toString() + ")";
 	}
 
 }
