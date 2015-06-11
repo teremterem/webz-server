@@ -221,7 +221,7 @@ public class WebzBlog implements WebzApp {
 
 	@Override
 	public String toString() {
-		return "WebZ Blog \"" + displayName + "\" ( " + super.toString() + " )";
+		return "WebZ Blog \"" + displayName + "\" (" + super.toString() + ")";
 	}
 
 }
