@@ -18,18 +18,10 @@
 
 package org.terems.webz.internals;
 
-import java.io.IOException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.terems.webz.WebzDestroyable;
 import org.terems.webz.WebzException;
 
-public interface WebzServletContainerBridge extends WebzDestroyable {
+public interface WebzDeployer {
 
-	// TODO implement your own http request and response classes ?
-
-	public void serve(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException;
+	public WebzNode deploy() throws WebzException;
 
 }

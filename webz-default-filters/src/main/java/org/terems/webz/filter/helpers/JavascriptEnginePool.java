@@ -24,9 +24,7 @@ import java.util.concurrent.BlockingQueue;
 
 import javax.script.Bindings;
 import javax.script.Invocable;
-import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.servlet.http.HttpServletRequest;
 
@@ -204,15 +202,8 @@ public class JavascriptEnginePool {
 
 	private ScriptEngine createEngineAndLoadScripts(WebzContext context) throws IOException, WebzException {
 
-		ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
-		// TODO try --no-java to make nashorn secure:
-		// http://stackoverflow.com/questions/20793089/secure-nashorn-js-execution
-		if (!(engine instanceof Invocable)) {
-			throw new RuntimeException(engine.getClass() + " does not implement " + Invocable.class);
-		}
-
-		Bindings engineScope = engine.getBindings(ScriptContext.ENGINE_SCOPE);
-		engineScope.put("window", engineScope);
+		ScriptEngine engine = WebzUtils.createJavascriptEngine();
+		WebzUtils.assertInvocable(engine);
 
 		WebzFile jsListFile = context.getFile(WebzProperties.WEBZ_JS_FILES_TXT_FILE);
 

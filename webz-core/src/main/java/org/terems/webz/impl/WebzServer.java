@@ -39,10 +39,10 @@ import org.terems.webz.filter.WelcomeFilter;
 import org.terems.webz.internals.WebzApp;
 import org.terems.webz.internals.WebzDestroyableObjectFactory;
 import org.terems.webz.internals.WebzFileSystem;
-import org.terems.webz.internals.WebzServletContainerBridge;
+import org.terems.webz.internals.WebzNode;
 import org.terems.webz.util.WebzUtils;
 
-public class WebzServer implements WebzServletContainerBridge {
+public class WebzServer implements WebzNode {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WebzServer.class);
 

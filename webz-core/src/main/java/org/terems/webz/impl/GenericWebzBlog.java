@@ -78,9 +78,12 @@ public class GenericWebzBlog implements WebzApp {
 
 			GeneralAppConfig appConfig = new GeneralAppConfig();
 			appConfig.init(rootContext.getConfigFolder());
-			// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
+
+			// // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ // ~~~ \\ //
+			// TODO move app encoding property to deployment level:
+			// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
 			fileSystem.setDefaultEncoding(appConfig.getDefaultEncoding());
-			// \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\ ~~~ // \\
+
 			appConfig.destroy();
 			appConfig = rootContext.getConfigObject(GeneralAppConfig.class);
 

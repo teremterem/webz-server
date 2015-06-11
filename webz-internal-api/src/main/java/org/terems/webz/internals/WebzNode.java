@@ -18,16 +18,21 @@
 
 package org.terems.webz.internals;
 
-import java.util.Collection;
+import java.io.IOException;
+import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.terems.webz.WebzDestroyable;
 import org.terems.webz.WebzException;
-import org.terems.webz.WebzFilter;
 
-public interface WebzApp extends WebzNode {
+public interface WebzNode extends WebzDestroyable {
 
-	public WebzApp init(WebzFileSystem fileSystem, Collection<Class<? extends WebzFilter>> filterClassesList,
-			WebzDestroyableObjectFactory appFactory) throws WebzException;
+	public Set<String> getHostNamesLowerCased();
 
-	public String getDisplayName();
+	public void serve(HttpServletRequest req, HttpServletResponse resp) throws IOException, WebzException;
+
+	// TODO implement your own http request and response classes ?
 
 }
